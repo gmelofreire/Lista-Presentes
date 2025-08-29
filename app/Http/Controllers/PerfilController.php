@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PerfilValidator;
 use App\Models\User;
+use App\Services\FileUploadService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -24,12 +25,11 @@ class PerfilController extends Controller
         ]);
     }
 
-    public function update(PerfilValidator $request): RedirectResponse
+    public function update(PerfilValidator $request, FileUploadService $uploader): RedirectResponse
     {
         try {
             $user = $request->user();
             $validatedData = $request->validated();
-            
             $user->fill([
                 'name' => $validatedData['name'],
                 'email' => $validatedData['email'],
@@ -41,47 +41,10 @@ class PerfilController extends Controller
             $perfilData = $validatedData['perfil'];
             
             if ($request->hasFile('imagem')) {
-                $image = $request->file('imagem');
-                
-                // Método mais robusto para obter a extensão
-                $extension = $image->getClientOriginalExtension();
-                
-                // Se não conseguir a extensão do nome original, usar o MIME type
-                if (empty($extension)) {
-                    $mimeType = $image->getMimeType();
-                    $extension = match($mimeType) {
-                        'image/jpeg' => 'jpg',
-                        'image/png' => 'png',
-                        'image/gif' => 'gif',
-                        'image/webp' => 'webp',
-                        'image/bmp' => 'bmp',
-                        default => 'jpg' // fallback padrão
-                    };
-                }
-                
-                // Garantir que sempre tenha uma extensão válida
-                if (empty($extension)) {
-                    $extension = 'jpg';
-                }
-                
-                $imageName = 'perfil_' . time() . '_' . uniqid() . '.' . $extension;
-                
-                $imagePath = $image->storeAs('perfil', $imageName, 'public');
-                $perfilData['image_url'] = '/storage/' . $imagePath;
-                
-                if ($user->perfil?->image_url) {
-                    $oldImagePath = str_replace('/storage/', '', $user->perfil->image_url);
-                    if (Storage::disk('public')->exists($oldImagePath)) {
-                        Storage::disk('public')->delete($oldImagePath);
-                    }
-                }
+                $perfilData['image_url'] = $uploader->upload($request->file('imagem'), 'perfil', $uploader->extensoesImagem);
             }
             
-            if ($user->perfil) {
-                $user->perfil->update($perfilData);
-            } else {
-                $user->perfil()->create($perfilData);
-            }
+            $user->perfil::updateOrCreate(['user_id' => $user->id], $perfilData);
             
             return Redirect::route('perfil.edit')->with('status', 'Perfil atualizado com sucesso!');
             

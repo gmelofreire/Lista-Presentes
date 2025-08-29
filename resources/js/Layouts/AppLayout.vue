@@ -22,13 +22,10 @@
                   </button>
                 </div>
               </TransitionChild>
-
-              <!-- Sidebar component, swap this element with another sidebar if you like -->
               <div class="relative flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4">
-                <div class="relative flex h-16 shrink-0 items-center">
-                  <img class="h-8 w-auto"
-                    src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
-                    alt="Your Company" />
+                <div class="relative flex h-16 shrink-0 items-center gap-3">
+                  <GiftIcon class="size-8 text-indigo-600" />
+                  <span class="text-lg font-bold mt-1 text-gray-900">Desejário</span>
                 </div>
                 <nav class="relative flex flex-1 flex-col">
                   <ul role="list" class="flex flex-1 flex-col gap-y-7">
@@ -62,13 +59,12 @@
       </Dialog>
     </TransitionRoot>
 
-    <!-- Static sidebar for desktop -->
     <div class="hidden bg-gray-900 lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
       <!-- Sidebar component, swap this element with another sidebar if you like -->
       <div class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4">
-        <div class="flex h-16 shrink-0 items-center">
-          <img class="h-8 w-auto" src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
-            alt="Your Company" />
+        <div class="flex h-16 shrink-0 items-center gap-3">
+          <GiftIcon class="size-8 text-indigo-600" />
+          <span class="text-lg font-bold mt-1 text-gray-900">Desejário</span>
         </div>
         <nav class="flex flex-1 flex-col">
           <ul role="list" class="flex flex-1 flex-col gap-y-7">
@@ -181,12 +177,12 @@ import {
 import {
   Bars3Icon,
   BellIcon,
-  CalendarIcon,
-  ChartPieIcon,
   Cog6ToothIcon,
-  DocumentDuplicateIcon,
-  FolderIcon,
+  GiftTopIcon,
+  GiftIcon,
   HomeIcon,
+  TagIcon,
+  UserGroupIcon,
   UsersIcon,
   XMarkIcon,
 } from '@heroicons/vue/24/outline'
@@ -205,11 +201,10 @@ const user = usePage().props.user;
 const sidebarOpen = ref(false)
 
 const navigation = [
-  { name: 'Dashboard', href: route('dashboard'), icon: HomeIcon, current: true },
-  { name: 'Team', href: '#', icon: UsersIcon, current: false },
-  { name: 'Projects', href: '#', icon: FolderIcon, current: false },
-  { name: 'Calendar', href: '#', icon: CalendarIcon, current: false },
-  { name: 'Documents', href: '#', icon: DocumentDuplicateIcon, current: false },
-  { name: 'Reports', href: '#', icon: ChartPieIcon, current: false },
+  { name: 'Página inicial', href: route('dashboard'), icon: HomeIcon, current: true },
+  { name: 'Listas de presentes', href: route('listas.index'), icon: GiftTopIcon, current: false },
+  { name: 'Grupos', href: '#', icon: UserGroupIcon, current: false },
+  { name: 'Categorias', href: '#', icon: TagIcon, current: false },
+  { name: 'Amigo Secreto', href: '#', icon: UsersIcon, current: false },
 ]
 </script>

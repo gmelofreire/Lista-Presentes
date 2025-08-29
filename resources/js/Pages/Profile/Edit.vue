@@ -28,8 +28,6 @@ defineProps({
     }
 });
 
-// Computed para verificar se há mensagens de status
-// Corrigido: acessar através das props da página
 const hasSuccessMessage = computed(() => {
     return page.props.flash?.status || page.props.status;
 });
@@ -88,7 +86,6 @@ const compressImage = (file, maxSizeMB = 5, quality = 0.8) => {
     });
 };
 
-// Modifique o handleFileChange existente
 const handleFileChange = async (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -135,16 +132,12 @@ const submit = () => {
     <AppLayout :title="title">
         <div class="w-full">
             <div class="mx-auto max-w-7xl space-y-4 sm:space-y-6">
-                <!-- Alert de Sucesso -->
-                <!-- Corrigido: usar a mensagem correta -->
                 <Alert 
                     v-if="hasSuccessMessage"
                     type="success" 
                     :title="page.props.flash?.status || page.props.status || 'Sucesso'"
                     class="mb-6"
                 />
-                
-                <!-- Alert de Erro -->
                 <Alert 
                     v-if="hasErrorMessage"
                     type="danger" 
@@ -152,7 +145,6 @@ const submit = () => {
                     message="Por favor, corrija os erros abaixo e tente novamente."
                     class="mb-6"
                 />
-
                 <div class="bg-white p-4 sm:p-6 lg:p-8 shadow sm:rounded-lg">
                     <header>
                         <h2 class="text-lg sm:text-xl text-center font-medium text-gray-900">
