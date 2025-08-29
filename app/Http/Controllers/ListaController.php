@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ListaStoreValidator;
+use App\Http\Requests\ListaUpdateValidator;
 use App\Models\Lista;
 use App\Services\FileUploadService;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
@@ -15,7 +17,9 @@ class ListaController extends Controller
 
     public function index(Request $request)
     {
-        $query = Lista::where("cadastrado_por_id", auth()->user()->id);
+        $query = Lista::whereHas('usuarios', function ($q) {
+            $q->where('Usuario_UUID', auth()->user()->id);
+        });
 
         if ($request->has('search') && !empty($request->search)) {
             $searchTerm = $request->search;
@@ -37,6 +41,16 @@ class ListaController extends Controller
         ]);
     }
 
+    public function show($id)
+    {
+        $lista = Lista::find($id);
+
+        return Inertia::render('Lista/Show', [
+            'title' => $this->title,
+            'lista' => $lista
+        ]);
+    }
+
     public function create()
     {
         return Inertia::render('Lista/Create', [
@@ -50,10 +64,34 @@ class ListaController extends Controller
             $dados = $request->validated();
             $dados['image_url'] = $uploader->upload($dados["image_url"], "listas", $uploader->extensoesImagem);
             $lista = Lista::create($dados);
+            $lista->usuarios()->attach(auth()->user()->id);
             return Redirect::route('listas.index')->with('status', 'Lista criada com sucesso!');
         } catch (\Exception $e) {
             return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
 
+    }
+
+    public function edit($id)
+    {
+        $lista = Lista::find($id);
+        return Inertia::render('Lista/Edit', [
+            'title' => $this->title,
+            'lista' => $lista
+        ]);
+    }
+
+    public function update($id, Request $request, FileUploadService $uploader)
+    {
+        try {
+            $dados = $request->all();
+            if ($dados['image_url'] instanceof UploadedFile) {
+                $dados['image_url'] = $uploader->upload($dados['image_url'], 'listas', $uploader->extensoesImagem);
+            }
+            Lista::find($id)->update($dados);
+            return Redirect::route('listas.index')->with('status', 'Lista atualizada com sucesso!');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
+        }
     }
 }

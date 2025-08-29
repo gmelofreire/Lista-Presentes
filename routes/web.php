@@ -22,7 +22,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/perfil', [PerfilController::class, 'update'])->name('perfil.update');
     Route::delete('/perfil', [PerfilController::class, 'destroy'])->name('perfil.destroy');
 
-    Route::resource('/listas', ListaController::class);
+    Route::resource('/listas', ListaController::class)->except(['update']);
+    Route::post('/listas/{id}', [ListaController::class, 'update'])->name('listas.update');
 });
 
 require __DIR__.'/auth.php';
