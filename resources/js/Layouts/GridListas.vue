@@ -56,11 +56,16 @@
 
         <ul role="list" class="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <li v-for="lista in listas.data" :key="lista.id"
-                class="col-span-1 divide-y divide-gray-200 rounded-lg bg-blue-50 shadow-sm">
+                class="col-span-1 divide-y divide-gray-200 rounded-lg bg-blue-50 shadow-sm group hover:shadow-md transition-shadow duration-200">
                 <div class="flex w-full items-center justify-between space-x-6 pt-9 rounded-t-lg bg-cover bg-center bg-no-repeat relative"
                     :style="{ backgroundImage: `url(${lista.image_url})` }">
                     <div
                         class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent rounded-t-lg">
+                            <div class="flex text-white justify-end p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                <Link :href="route('listas.edit', lista.id)">
+                                    <PencilIcon class="size-5" />
+                                </Link>
+                            </div>
                     </div>
                     <div class="flex-1 truncate rounded-lg py-3 relative z-10">
                         <div class="flex items-center space-x-3">
@@ -71,10 +76,12 @@
                 </div>
                 <div>
                     <div class="-mt-px flex divide-x divide-gray-200">
+                        <Link :href="route('listas.show', lista.id)" class="w-full">
                         <button
                             class="text-center w-full h-12 bg-indigo-400 text-white rounded-b-lg hover:bg-indigo-500 transition-colors">
                             Acessar
                         </button>
+                        </Link>
                     </div>
                 </div>
             </li>
@@ -154,8 +161,10 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed } from 'vue';
 import { router } from '@inertiajs/vue3'
+import { Link } from '@inertiajs/vue3'
+import PencilIcon from '@heroicons/vue/24/outline/PencilIcon'
 
 // Props
 const props = defineProps({

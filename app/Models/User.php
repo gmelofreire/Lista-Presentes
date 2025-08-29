@@ -46,4 +46,17 @@ class User extends Authenticatable
     {
         return $this->hasOne(Perfil::class);
     }
+
+    public function listas()
+{
+    return $this->belongsToMany(
+        Lista::class,
+        'lista_usuarios',
+        'Usuario_UUID',
+        'Lista_UUID',
+        'id',
+        'id'
+    );
+}
+
 }

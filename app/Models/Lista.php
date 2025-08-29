@@ -25,4 +25,17 @@ class Lista extends Model
     {
         return $this->belongsTo(User::class, 'cadastrado_por_id');
     }
+
+    public function usuarios()
+{
+    return $this->belongsToMany(
+        User::class,
+        'lista_usuarios',
+        'Lista_UUID',    // foreign key da model atual
+        'Usuario_UUID',  // foreign key da outra model
+        'id',
+        'id'
+    );
+}
+
 }

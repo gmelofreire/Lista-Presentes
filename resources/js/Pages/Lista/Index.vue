@@ -24,7 +24,6 @@ const hasSuccessMessage = computed(() => {
 </script>
 
 <template>
-
     <Head :title="title" />
     <AppLayout :title="title">
         <div>
