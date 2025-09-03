@@ -18,7 +18,7 @@ class ListaController extends Controller
     public function index(Request $request)
     {
         $query = Lista::whereHas('usuarios', function ($q) {
-            $q->where('Usuario_UUID', auth()->user()->id);
+            $q->where('usuario_id', auth()->user()->id);
         });
 
         if ($request->has('search') && !empty($request->search)) {
@@ -43,11 +43,11 @@ class ListaController extends Controller
 
     public function show($id)
     {
-        $lista = Lista::find($id);
+        $lista = Lista::with('presentes')->find($id);
 
         return Inertia::render('Lista/Show', [
             'title' => $this->title,
-            'lista' => $lista
+            'lista' => $lista,
         ]);
     }
 
@@ -62,7 +62,9 @@ class ListaController extends Controller
     {
         try {
             $dados = $request->validated();
-            $dados['image_url'] = $uploader->upload($dados["image_url"], "listas", $uploader->extensoesImagem);
+            if (isset($dados['image_url']) && $dados['image_url'] instanceof UploadedFile) {
+                $dados['image_url'] = $uploader->upload($dados['image_url'], "listas", $uploader->extensoesImagem);
+            }
             $lista = Lista::create($dados);
             $lista->usuarios()->attach(auth()->user()->id);
             return Redirect::route('listas.index')->with('status', 'Lista criada com sucesso!');

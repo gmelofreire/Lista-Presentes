@@ -27,15 +27,19 @@ class Lista extends Model
     }
 
     public function usuarios()
-{
-    return $this->belongsToMany(
-        User::class,
-        'lista_usuarios',
-        'Lista_UUID',    // foreign key da model atual
-        'Usuario_UUID',  // foreign key da outra model
-        'id',
-        'id'
-    );
-}
+    {
+        return $this->belongsToMany(
+            User::class,
+            'lista_usuarios',
+            'lista_id',
+            'usuario_id',
+            'id',
+            'id'
+        );
+    }
 
+    public function presentes()
+    {
+        return $this->hasMany(Presente::class, 'lista_id', 'id');
+    }
 }

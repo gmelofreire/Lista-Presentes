@@ -48,15 +48,15 @@ class User extends Authenticatable
     }
 
     public function listas()
-{
-    return $this->belongsToMany(
-        Lista::class,
-        'lista_usuarios',
-        'Usuario_UUID',
-        'Lista_UUID',
-        'id',
-        'id'
-    );
-}
+    {
+        return $this->belongsToMany(
+            Lista::class,
+            'lista_usuarios',
+            'usuario_id',
+            'lista_id',
+            'id',
+            'id'
+        );
+    }
 
 }

@@ -9,13 +9,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('lista_usuarios', function (Blueprint $table) {
-            $table->uuid('Lista_UUID');
-            $table->uuid('Usuario_UUID');
+            $table->uuid('lista_id');
+            $table->uuid('usuario_id');
 
-            $table->primary(['Lista_UUID', 'Usuario_UUID']);
+            $table->primary(['lista_id', 'usuario_id']);
 
-            $table->foreign('Lista_UUID')->references('id')->on('listas')->onDelete('cascade');
-            $table->foreign('Usuario_UUID')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('lista_id')->references('id')->on('listas')->onDelete('cascade');
+            $table->foreign('usuario_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
