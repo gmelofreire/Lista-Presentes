@@ -25,7 +25,6 @@ const form = useForm({
 })
 
 const submit = () => {
-    console.log('Form para envio:', form);
     form.post(route('listas.update', props.lista.id), {
         forceFormData: true,
         preserveScroll: true,
@@ -37,8 +36,6 @@ const submit = () => {
         }
     });
 };
-
-
 
 const hasErrorMessage = computed(() => Object.keys(form.errors).length > 0);
 const imagePreview = ref(props.lista.image_url || null);
@@ -84,7 +81,6 @@ const compressImage = (file, maxSizeMB = 5, quality = 0.8) => {
         const img = new Image();
 
         img.onload = () => {
-            // Calcular novo tamanho mantendo proporção
             let { width, height } = img;
             const maxDimension = 1200; // pixels
 
@@ -99,10 +95,8 @@ const compressImage = (file, maxSizeMB = 5, quality = 0.8) => {
             canvas.width = width;
             canvas.height = height;
 
-            // Desenhar imagem redimensionada
             ctx.drawImage(img, 0, 0, width, height);
 
-            // Converter para blob com qualidade especificada
             canvas.toBlob(resolve, 'image/jpeg', quality);
         };
 

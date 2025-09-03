@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
-import { usePage } from '@inertiajs/vue3'
+import { usePage, Link } from '@inertiajs/vue3'
 import GridPresentes from '@/Layouts/GridPresentes.vue'
 import BotaoVoltar from '@/Components/BotaoVoltar.vue'
 
@@ -17,9 +17,9 @@ defineProps({
 })
 </script>
 <template>
-
     <Head :title="title" />
     <AppLayout :title="title">
+
         <div>
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
@@ -40,7 +40,14 @@ defineProps({
                                 <div class="mt-2">{{ lista.descricao }}</div>
                             </div>
 
-                            <GridPresentes />
+                            <div class="flex justify-between mx-6">
+                                <div class="text-2xl  font-bold">Presentes</div>
+                                <Link :href="route('presentes.create', { lista_id: lista.id })">
+                                <button class="bg-blue-500 text-white px-4 py-2 rounded-md">Adicionar Presente</button>
+                                </Link>
+                            </div>
+
+                            <GridPresentes :presentes="lista.presentes" />
 
                         </div>
                     </div>

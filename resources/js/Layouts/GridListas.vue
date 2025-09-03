@@ -56,7 +56,7 @@
 
         <ul role="list" class="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <li v-for="lista in listas.data" :key="lista.id"
-                class="col-span-1 divide-y divide-gray-200 rounded-lg bg-blue-50 shadow-sm group hover:shadow-md transition-shadow duration-200">
+                class="col-span-1 divide-y divide-gray-200 rounded-2xl bg-blue-50 shadow-sm group hover:shadow-md transition-shadow duration-200">
                 <div class="flex w-full items-center justify-between space-x-6 pt-9 rounded-t-lg bg-cover bg-center bg-no-repeat relative"
                     :style="{ backgroundImage: `url(${lista.image_url})` }">
                     <div
