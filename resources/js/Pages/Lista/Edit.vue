@@ -121,6 +121,41 @@ const compressImage = (file, maxSizeMB = 5, quality = 0.8) => {
                         <div class="mt-6">
                             <form @submit.prevent="submit">
                                 <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                                    <div class="col-span-full">
+                                        <InputLabel for="image_url" value="Foto do Presente" />
+
+                                        <!-- Área de Upload -->
+                                        <div v-if="!imagePreview" class=" mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-lg cursor-pointer border-gray-300 hover:border-indigo-500 hover:bg-indigo-50 transition" @click="$refs.fileInput.click()">
+                                            <div class="space-y-1 text-center">
+                                                <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor"
+                                                    fill="none" viewBox="0 0 48 48">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M28 8H12a4 4 0 00-4 4v24a4 4 0 004 4h24a4 4 0 004-4V20l-12-12z" />
+                                                </svg>
+                                                <div class="flex text-sm text-gray-600 justify-center">
+                                                    <span
+                                                        class="relative font-medium text-indigo-600 hover:text-indigo-500">
+                                                        Clique para enviar
+                                                    </span>
+                                                </div>
+                                                <p class="text-xs text-gray-500">PNG, JPG até 5MB</p>
+                                            </div>
+                                        </div>
+
+                                        <input type="file" ref="fileInput" id="image_url" name="image_url"
+                                            accept="image/*" class="hidden" @change="handleFileChange" />
+
+                                        <div v-if="imagePreview" class="mt-4 relative">
+                                            <img :src="imagePreview" alt="Preview da imagem"
+                                                class="w-full h-56 object-cover rounded-lg border shadow-sm" />
+                                            <button type="button" @click="removeImage"
+                                                class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600">
+                                                ×
+                                            </button>
+                                        </div>
+                                        <InputError class="mt-2" :message="form.errors.image_url" />
+                                    </div>
                                     <div class="sm:col-span-1">
                                         <InputLabel for="nome" value="Nome da Lista" :required="true" />
                                         <TextInput id="nome" type="text" class="mt-1 block w-full" v-model="form.nome"
@@ -152,26 +187,6 @@ const compressImage = (file, maxSizeMB = 5, quality = 0.8) => {
                                         <TextInput id="data_evento" type="date" class="mt-1 block w-full"
                                             v-model="form.data_evento" autofocus autocomplete="data_evento" />
                                         <InputError class="mt-2" :message="form.errors.data_evento" />
-                                    </div>
-                                    <div class="col-span-full">
-                                        <InputLabel for="image_url" value="Foto de capa" />
-                                        <div v-if="imagePreview" class="mt-4">
-                                            <div class="relative">
-                                                <img :src="imagePreview" alt="Preview da imagem de capa"
-                                                    class="w-full h-56 object-cover rounded-lg border-2 border-gray-200 shadow-sm">
-                                                <button type="button" @click="removeImage"
-                                                    class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
-                                                    ×
-                                                </button>
-                                            </div>
-                                            <p class="text-sm text-gray-500 mt-2">Preview da imagem selecionada</p>
-                                        </div>
-                                        <div class="mt-2">
-                                            <input type="file" name="image_url" id="image_url" accept="image/*"
-                                                @change="handleFileChange"
-                                                class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                                        </div>
-                                        <InputError class="mt-2" :message="form.errors.image_url" />
                                     </div>
                                     <div class="col-span-full">
                                         <div class="flex justify-end">
