@@ -65,6 +65,9 @@ class ListaController extends Controller
             if (isset($dados['image_url']) && $dados['image_url'] instanceof UploadedFile) {
                 $dados['image_url'] = $uploader->upload($dados['image_url'], "listas", $uploader->extensoesImagem);
             }
+            else{
+                $dados['image_url'] = "/img/default_cover.png";
+            }
             $lista = Lista::create($dados);
             $lista->usuarios()->attach(auth()->user()->id);
             return Redirect::route('listas.index')->with('status', 'Lista criada com sucesso!');
@@ -89,6 +92,9 @@ class ListaController extends Controller
             $dados = $request->all();
             if ($dados['image_url'] instanceof UploadedFile) {
                 $dados['image_url'] = $uploader->upload($dados['image_url'], 'listas', $uploader->extensoesImagem);
+            }
+            else{
+                $dados['image_url'] = "/img/default_cover.png";
             }
             Lista::find($id)->update($dados);
             return Redirect::route('listas.index')->with('status', 'Lista atualizada com sucesso!');

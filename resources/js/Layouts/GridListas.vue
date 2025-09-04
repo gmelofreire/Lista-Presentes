@@ -57,10 +57,10 @@
         <ul role="list" class="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <li v-for="lista in listas.data" :key="lista.id"
                 class="col-span-1 divide-y divide-gray-200 rounded-2xl bg-blue-50 shadow-sm group hover:shadow-md transition-shadow duration-200">
-                <div class="flex w-full items-center justify-between space-x-6 pt-9 rounded-t-lg bg-cover bg-center bg-no-repeat relative"
+                <div class="flex h-24 w-full items-center justify-between px-5 pt-9 rounded-t-lg bg-cover bg-center bg-no-repeat relative"
                     :style="{ backgroundImage: `url(${lista.image_url})` }">
                     <div
-                        class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent rounded-t-lg">
+                        class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent rounded-t-2xl">
                             <div class="flex text-white justify-end p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                 <Link :href="route('listas.edit', lista.id)">
                                     <PencilIcon class="size-5" />
