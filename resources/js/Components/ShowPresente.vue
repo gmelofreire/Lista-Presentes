@@ -52,6 +52,17 @@
                           {{ presente.descricao }}
                         </div>
 
+                        <div v-if="presente.categorias && presente.categorias.length > 0" class="mt-2 flex flex-wrap gap-1 justify-center">
+                            <span v-for="categoria in presente.categorias" :key="categoria.id"
+                                class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                                :style="{
+                                    backgroundColor: categoria.hex_cor || '#6B7280',
+                                    color: isDarkColor(categoria.hex_cor) ? '#FFFFFF' : '#000000'
+                                }">
+                                {{ categoria.nome }}
+                            </span>
+                        </div>
+
                         <!-- Avaliação -->
                         <div class="flex justify-center mt-4">
                           <span v-for="n in 5" :key="n" class="cursor-pointer">
@@ -112,6 +123,17 @@ const props = defineProps({
     default: () => []
   }
 })
+
+const isDarkColor = (hexColor) => {
+    if (!hexColor) return false
+    const hex = hexColor.replace('#', '')
+    const r = parseInt(hex.substr(0, 2), 16)
+    const g = parseInt(hex.substr(2, 2), 16)
+    const b = parseInt(hex.substr(4, 2), 16)
+    const brightness = ((r * 299) + (g * 587) + (b * 114)) / 1000
+    return brightness < 128
+}
+
 
 const avaliacao = {
   1: 'Não quero',

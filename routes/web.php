@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\ListaController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\PresenteController;
@@ -29,6 +30,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('/presentes', PresenteController::class)->except(['update', 'create']);
     Route::get('/presentes/create/{lista_id}', [PresenteController::class, 'create'])->name('presentes.create');
     Route::post('/presentes/update/{id}', [PresenteController::class, 'update'])->name('presentes.update');
+    
+    Route::resource('/categorias', CategoriaController::class);
 });
 
 require __DIR__.'/auth.php';

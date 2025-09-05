@@ -27,6 +27,7 @@ class PresenteUpdateValidator extends FormRequest
             'link' => 'nullable|string',
             'image_url' => 'nullable',
             'anotacoes' => 'nullable|string|max:255',
+            'categoria_ids' => 'nullable|array',
             'avaliacao' => 'nullable|integer',
         ];
     }

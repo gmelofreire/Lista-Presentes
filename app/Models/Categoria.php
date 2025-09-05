@@ -5,25 +5,16 @@ namespace App\Models;
 use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 
-class Presente extends Model
+class Categoria extends Model
 {
     use HasUuid;
-    protected $table = "presentes";
+    protected $table = "categorias";
     protected $primaryKey = "id";
-    protected $keyType = "string";
-    public $incrementing = false;
     protected $fillable = [
-        "id",
         "nome",
+        "hex_cor",
         "descricao",
-        "preco",
-        "link",
-        "image_url",
-        "anotacoes",
         "cadastrado_por",
-        "comprado",
-        "avaliacao",
-        "lista_id",
     ];
 
     public function cadastradoPor()
@@ -31,18 +22,13 @@ class Presente extends Model
         return $this->belongsTo(User::class, "cadastrado_por");
     }
 
-    public function lista()
-    {
-        return $this->belongsTo(Lista::class, 'lista_id', 'id');
-    }
-
-    public function categorias()
+    public function presentes()
     {
         return $this->belongsToMany(
-            Categoria::class,
+            Presente::class,
             'categoria_presente',
-            'presente_id',
             'categoria_id',
+            'presente_id',
             'id',
             'id'
         );

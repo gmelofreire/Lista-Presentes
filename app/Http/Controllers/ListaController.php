@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ListaStoreValidator;
 use App\Http\Requests\ListaUpdateValidator;
+use App\Models\Categoria;
 use App\Models\Lista;
 use App\Services\FileUploadService;
 use Illuminate\Http\Request;
@@ -43,11 +44,13 @@ class ListaController extends Controller
 
     public function show($id)
     {
-        $lista = Lista::with('presentes')->find($id);
+        $lista = Lista::with(['presentes.categorias'])->find($id);
+        $categorias = Categoria::where("cadastrado_por", auth()->user()->id)->get();
 
         return Inertia::render('Lista/Show', [
             'title' => $this->title,
             'lista' => $lista,
+            'categorias' => $categorias,
         ]);
     }
 
