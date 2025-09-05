@@ -30,6 +30,7 @@ class PresenteValidator extends FormRequest
             'lista_id' => 'required|string',
             'anotacoes' => 'nullable|string|max:255',
             'avaliacao' => 'nullable|integer',
+            'categoria_ids' => 'nullable|array',
             'cadastrado_por' => 'required|string',
         ];
     }

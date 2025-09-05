@@ -5,7 +5,7 @@ import TextInput from '@/Components/TextInput.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
 import Alert from '@/Components/Alert.vue';
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { StarIcon } from '@heroicons/vue/20/solid';
 import { Link } from '@inertiajs/vue3';
 import ConfirmDeleteModal from '@/Components/ConfirmDeleteModal.vue';
@@ -15,7 +15,10 @@ const props = defineProps({
         type: String,
     },
     presente: {
-        type: Object,
+        type: [Array, Object],
+    },
+    categorias: {
+        type: [Array, Object],
     }
 })
 
@@ -27,6 +30,7 @@ const form = useForm({
     image_url: props.presente.image_url,
     anotacoes: props.presente.anotacoes,
     avaliacao: props.presente.avaliacao,
+    categoria_ids: props.presente.categoria_ids || [],
 })
 
 const intensidadesDesejo = [
@@ -40,6 +44,7 @@ const intensidadesDesejo = [
 const imagePreview = ref(props.presente.image_url || null);
 const hoverRating = ref(0);
 const showDeleteModal = ref(false);
+const showCategorias = ref(false);
 
 const hasErrorMessage = computed(() => {
     return Object.keys(form.errors).length > 0;
@@ -134,6 +139,46 @@ const openDeleteModal = () => {
 const closeDeleteModal = () => {
     showDeleteModal.value = false;
 };
+
+
+const toggleCategoria = (categoriaId) => {
+    const index = form.categoria_ids.indexOf(categoriaId);
+    if (index > -1) {
+        form.categoria_ids.splice(index, 1);
+    } else {
+        form.categoria_ids.push(categoriaId);
+    }
+};
+
+const isCategoriaSelected = (categoriaId) => {
+    return form.categoria_ids.includes(categoriaId);
+};
+
+const isDarkColor = (hexColor) => {
+    if (!hexColor || hexColor.length < 6) return false;
+    const hex = hexColor.replace('#', '');
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return luminance < 0.5;
+};
+
+// Fechar dropdown ao clicar fora
+const handleClickOutside = (event) => {
+    const dropdown = document.querySelector('.categoria-dropdown');
+    if (dropdown && !dropdown.contains(event.target)) {
+        showCategorias.value = false;
+    }
+};
+
+onMounted(() => {
+    document.addEventListener('click', handleClickOutside);
+});
+
+onUnmounted(() => {
+    document.removeEventListener('click', handleClickOutside);
+});
 </script>
 
 <template>
@@ -216,6 +261,96 @@ const closeDeleteModal = () => {
                                         <TextInput id="link" type="text" class="mt-1 block w-full" v-model="form.link"
                                             autofocus autocomplete="link" />
                                         <InputError class="mt-2" :message="form.errors.link" />
+                                    </div>
+                                    <div class="col-span-full">
+                                        <InputLabel for="categoria_ids" value="Categorias" />
+
+                                        <div class="mt-2 relative categoria-dropdown">
+                                            <button type="button" @click="showCategorias = !showCategorias"
+                                                class="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-left shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                                                <div class="flex items-center justify-between">
+                                                    <div class="flex items-center space-x-2 flex-wrap">
+                                                        <span v-if="form.categoria_ids.length === 0"
+                                                            class="text-gray-500">
+                                                            Selecione as categorias
+                                                        </span>
+                                                        <div v-else class="flex items-center space-x-1 flex-wrap">
+                                                            <div v-for="categoriaId in form.categoria_ids"
+                                                                :key="categoriaId"
+                                                                class="inline-flex items-center space-x-1 bg-gray-100 rounded-full px-2 py-1 text-xs">
+                                                                <div class="w-3 h-3 rounded-full border border-white shadow-sm"
+                                                                    :style="{ backgroundColor: categorias.find(c => c.id === categoriaId)?.hex_cor || '#6B7280' }">
+                                                                </div>
+                                                                <span class="text-gray-700">
+                                                                    {{categorias.find(c => c.id === categoriaId)?.nome
+                                                                    }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <svg class="w-5 h-5 text-gray-400 transition-transform duration-200"
+                                                        :class="{ 'rotate-180': showCategorias }" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                    </svg>
+                                                </div>
+                                            </button>
+
+                                            <!-- Dropdown de opções -->
+                                            <div v-show="showCategorias"
+                                                class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto"
+                                                @click.stop>
+                                                <div v-if="!categorias || categorias.length === 0"
+                                                    class="px-3 py-2 text-gray-500 text-sm">
+                                                    Nenhuma categoria disponível
+                                                </div>
+                                                <div v-else class="py-1">
+                                                    <div v-for="categoria in categorias" :key="categoria.id"
+                                                        @click="toggleCategoria(categoria.id)"
+                                                        class="flex items-center space-x-3 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors duration-150"
+                                                        :class="{ 'bg-indigo-50': isCategoriaSelected(categoria.id) }">
+                                                        <!-- Checkbox visual -->
+                                                        <div class="flex-shrink-0">
+                                                            <div class="w-4 h-4 border-2 rounded flex items-center justify-center transition-all duration-150"
+                                                                :class="isCategoriaSelected(categoria.id) ? 'bg-indigo-600 border-indigo-600' : 'border-gray-300'">
+                                                                <svg v-if="isCategoriaSelected(categoria.id)"
+                                                                    class="w-3 h-3 text-white" fill="currentColor"
+                                                                    viewBox="0 0 20 20">
+                                                                    <path fill-rule="evenodd"
+                                                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                                        clip-rule="evenodd"></path>
+                                                                </svg>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="w-6 h-6 rounded-full border-2 border-white shadow-sm flex items-center justify-center"
+                                                            :style="{ backgroundColor: categoria.hex_cor || '#6B7280' }">
+                                                            <span class="text-xs font-semibold"
+                                                                :class="isDarkColor(categoria.hex_cor) ? 'text-white' : 'text-gray-800'">
+                                                                {{ categoria.nome?.charAt(0)?.toUpperCase() }}
+                                                            </span>
+                                                        </div>
+
+                                                        <div class="flex-1">
+                                                            <div class="text-sm font-medium text-gray-900">
+                                                                {{ categoria.nome }}
+                                                            </div>
+                                                            <div v-if="categoria.descricao"
+                                                                class="text-xs text-gray-500 truncate">
+                                                                {{ categoria.descricao }}
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="text-xs text-gray-400 font-mono">
+                                                            {{ categoria.hex_cor }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <InputError class="mt-2" :message="form.errors.categoria_ids" />
                                     </div>
                                     <div class="col-span-full">
                                         <InputLabel for="anotacoes" value="Anotações" />

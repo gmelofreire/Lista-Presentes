@@ -6,16 +6,27 @@ import GridPresentes from '@/Layouts/GridPresentes.vue'
 import BotaoVoltar from '@/Components/BotaoVoltar.vue'
 import PencilIcon from '@heroicons/vue/24/outline/PencilIcon'
 
+interface Lista {
+    id: string
+    nome: string
+    descricao: string
+    image_url: string
+    presentes: any[]
+}
+
+interface Categoria {
+    id: string
+    nome: string
+    hex_cor: string
+}
+
 const page = usePage()
 
-defineProps({
-    title: {
-        type: String,
-    },
-    lista: {
-        type: [Array, Object],
-    }
-})
+defineProps<{
+    title?: string
+    lista: Lista
+    categorias?: Categoria[]
+}>()
 </script>
 <template>
 
@@ -67,7 +78,7 @@ defineProps({
                             </Link>
                         </div>
 
-                        <GridPresentes :presentes="lista.presentes" />
+                        <GridPresentes :presentes="lista.presentes" :categorias="categorias" />
 
                     </div>
                 </div>
