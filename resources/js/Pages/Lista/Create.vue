@@ -1,5 +1,5 @@
 <script setup>
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import TextInput from '@/Components/TextInput.vue';
 import InputLabel from '@/Components/InputLabel.vue';
@@ -32,18 +32,18 @@ const handleFileChange = async (event) => {
     if (file) {
         if (file.type.startsWith('image/')) {
             console.log('Arquivo original:', (file.size / 1024 / 1024).toFixed(2), 'MB');
-            
+
             let processedFile = file;
-            
+
             // Comprimir se for maior que 5MB
             if (file.size > 5 * 1024 * 1024) {
                 console.log('Comprimindo imagem...');
                 processedFile = await compressImage(file, 5, 0.8);
                 console.log('Arquivo comprimido:', (processedFile.size / 1024 / 1024).toFixed(2), 'MB');
             }
-            
+
             form.image_url = processedFile;
-            
+
             // Criar URL para preview
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -81,12 +81,12 @@ const compressImage = (file, maxSizeMB = 5, quality = 0.8) => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         const img = new Image();
-        
+
         img.onload = () => {
             // Calcular novo tamanho mantendo proporção
             let { width, height } = img;
             const maxDimension = 1200; // pixels
-            
+
             if (width > height && width > maxDimension) {
                 height = (height * maxDimension) / width;
                 width = maxDimension;
@@ -94,23 +94,24 @@ const compressImage = (file, maxSizeMB = 5, quality = 0.8) => {
                 width = (width * maxDimension) / height;
                 height = maxDimension;
             }
-            
+
             canvas.width = width;
             canvas.height = height;
-            
+
             // Desenhar imagem redimensionada
             ctx.drawImage(img, 0, 0, width, height);
-            
+
             // Converter para blob com qualidade especificada
             canvas.toBlob(resolve, 'image/jpeg', quality);
         };
-        
+
         img.src = URL.createObjectURL(file);
     });
 };
 </script>
 
 <template>
+
     <Head :title="title" />
     <AppLayout :title="title">
         <div>
@@ -129,7 +130,9 @@ const compressImage = (file, maxSizeMB = 5, quality = 0.8) => {
                                         <InputLabel for="image_url" value="Foto do Presente" />
 
                                         <!-- Área de Upload -->
-                                        <div v-if="!imagePreview" class=" mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-lg cursor-pointer border-gray-300 hover:border-indigo-500 hover:bg-indigo-50 transition" @click="$refs.fileInput.click()">
+                                        <div v-if="!imagePreview"
+                                            class=" mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-lg cursor-pointer border-gray-300 hover:border-indigo-500 hover:bg-indigo-50 transition"
+                                            @click="$refs.fileInput.click()">
                                             <div class="space-y-1 text-center">
                                                 <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor"
                                                     fill="none" viewBox="0 0 48 48">
@@ -168,9 +171,10 @@ const compressImage = (file, maxSizeMB = 5, quality = 0.8) => {
                                     </div>
                                     <div class="col-span-full">
                                         <InputLabel for="descricao" value="Descrição" />
-                                        <textarea id="descricao" name="descricao" rows="3" 
+                                        <textarea id="descricao" name="descricao" rows="3"
                                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                            v-model="form.descricao" placeholder="Descreva sua lista de presentes..."></textarea>
+                                            v-model="form.descricao"
+                                            placeholder="Descreva sua lista de presentes..."></textarea>
                                         <InputError class="mt-2" :message="form.errors.descricao" />
                                     </div>
                                     <div class="sm:col-span-1">
@@ -192,8 +196,15 @@ const compressImage = (file, maxSizeMB = 5, quality = 0.8) => {
                                         <InputError class="mt-2" :message="form.errors.data_evento" />
                                     </div>
                                     <div class="col-span-full">
-                                        <div class="flex justify-end">
-                                            <button @click="submit" type="button" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                        <div class="flex justify-between">
+                                            <Link :href="route('listas.index')">
+                                            <button
+                                                class="border bg-white text-black px-4 py-2 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                                                Cancelar
+                                            </button>
+                                            </Link>
+                                            <button @click="submit" type="button"
+                                                class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                                                 Salvar
                                             </button>
                                         </div>

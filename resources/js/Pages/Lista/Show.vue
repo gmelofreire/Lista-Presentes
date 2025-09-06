@@ -5,6 +5,7 @@ import { usePage, Link } from '@inertiajs/vue3'
 import GridPresentes from '@/Layouts/GridPresentes.vue'
 import BotaoVoltar from '@/Components/BotaoVoltar.vue'
 import PencilIcon from '@heroicons/vue/24/outline/PencilIcon'
+import { ArrowLeftIcon } from '@heroicons/vue/20/solid';
 
 interface Lista {
     id: string
@@ -37,27 +38,27 @@ defineProps<{
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
-
-                        <!-- <div class="mb-4">
-                            <BotaoVoltar :rota="route('listas.index')" />
-                        </div> -->
-
                         <div class="flex w-full h-64 items-center justify-between space-x-6 py-9 rounded-xl bg-cover bg-center bg-no-repeat relative"
                             :style="{ backgroundImage: `url(${lista.image_url})` }">
 
-                            <div
-                                class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent rounded-xl flex flex-col justify-end px-8 pb-8">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent rounded-xl flex flex-col justify-end px-8 pb-8">
 
-                                <!-- Botão Editar -->
+                                <Link :href="route('listas.index')">
+                                <span class=" absolute top-6 left-6 flex items-center justify-center size-10 rounded-full shadow-lg 
+                                     bg-indigo-500
+                                     text-white hover:scale-110 hover:shadow-xl transition-all duration-300">
+                                    <ArrowLeftIcon class="w-5 h-5" />
+                                </span>
+                                </Link>
+
                                 <Link :href="route('listas.edit', lista.id)">
-                                <span class="absolute top-6 right-6 flex items-center justify-center size-10 rounded-full shadow-lg 
-                                     bg-[radial-gradient(circle_at_center,theme(colors.indigo.500),theme(colors.indigo.400))]
+                                    <span class="absolute top-6 right-6 flex items-center justify-center size-10 rounded-full shadow-lg 
+                                     bg-indigo-500
                                      text-white hover:scale-110 hover:shadow-xl transition-all duration-300">
                                     <PencilIcon class="size-5" />
                                 </span>
                                 </Link>
 
-                                <!-- Nome da Lista -->
                                 <div class="text-white">
                                     <h2 class="text-4xl font-bold">{{ lista.nome }}</h2>
                                 </div>

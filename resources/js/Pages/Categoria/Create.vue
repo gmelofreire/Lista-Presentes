@@ -1,5 +1,5 @@
 <script setup>
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import TextInput from '@/Components/TextInput.vue';
 import InputLabel from '@/Components/InputLabel.vue';
@@ -167,7 +167,13 @@ const submit = () => {
                                     </div>
 
                                     <div class="col-span-full">
-                                        <div class="flex justify-end">
+                                        <div class="flex justify-between">
+                                            <Link :href="route('categorias.index')">
+                                            <button
+                                                class="border bg-white text-black px-4 py-2 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                                                Cancelar
+                                            </button>
+                                            </Link>
                                             <button @click="submit" type="button"
                                                 class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                                                 Salvar

@@ -5,6 +5,7 @@ import TextInput from '@/Components/TextInput.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
 import Alert from '@/Components/Alert.vue';
+import { Link } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 
 const props = defineProps({
@@ -124,8 +125,9 @@ const compressImage = (file, maxSizeMB = 5, quality = 0.8) => {
                                     <div class="col-span-full">
                                         <InputLabel for="image_url" value="Foto do Presente" />
 
-                                        <!-- Área de Upload -->
-                                        <div v-if="!imagePreview" class=" mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-lg cursor-pointer border-gray-300 hover:border-indigo-500 hover:bg-indigo-50 transition" @click="$refs.fileInput.click()">
+                                        <div v-if="!imagePreview"
+                                            class=" mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-lg cursor-pointer border-gray-300 hover:border-indigo-500 hover:bg-indigo-50 transition"
+                                            @click="$refs.fileInput.click()">
                                             <div class="space-y-1 text-center">
                                                 <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor"
                                                     fill="none" viewBox="0 0 48 48">
@@ -189,7 +191,13 @@ const compressImage = (file, maxSizeMB = 5, quality = 0.8) => {
                                         <InputError class="mt-2" :message="form.errors.data_evento" />
                                     </div>
                                     <div class="col-span-full">
-                                        <div class="flex justify-end">
+                                        <div class="flex justify-between">
+                                            <Link :href="route('listas.show', lista.id)">
+                                            <button
+                                                class="border bg-white text-black px-4 py-2 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                                                Cancelar
+                                            </button>
+                                            </Link>
                                             <button type="submit"
                                                 class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                                                 Salvar
