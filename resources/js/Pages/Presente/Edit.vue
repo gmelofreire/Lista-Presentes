@@ -83,11 +83,11 @@ const compressImage = (file, maxSizeMB = 5, quality = 0.8) => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         const img = new Image();
-        
+
         img.onload = () => {
             let { width, height } = img;
             const maxDimension = 1200;
-            
+
             if (width > height && width > maxDimension) {
                 height = (height * maxDimension) / width;
                 width = maxDimension;
@@ -95,15 +95,15 @@ const compressImage = (file, maxSizeMB = 5, quality = 0.8) => {
                 width = (width * maxDimension) / height;
                 height = maxDimension;
             }
-            
+
             canvas.width = width;
             canvas.height = height;
-            
+
             ctx.drawImage(img, 0, 0, width, height);
-            
+
             canvas.toBlob(resolve, 'image/jpeg', quality);
         };
-        
+
         img.src = URL.createObjectURL(file);
     });
 };
@@ -193,7 +193,8 @@ onUnmounted(() => {
                             message="Por favor, corrija os erros abaixo e tente novamente." class="mb-6" />
                         <div class="flex items-center justify-between">
                             <h2 class="text-2xl font-bold text-gray-900">Editar Presente</h2>
-                            <button @click="openDeleteModal" class="text-white bg-red-600 hover:bg-red-800 font-medium px-4 py-2 rounded-md">
+                            <button @click="openDeleteModal"
+                                class="text-white bg-red-600 hover:bg-red-800 font-medium px-4 py-2 rounded-md">
                                 apagar
                             </button>
                         </div>
@@ -204,7 +205,9 @@ onUnmounted(() => {
                                         <InputLabel for="image_url" value="Foto do Presente" />
 
                                         <!-- Área de Upload -->
-                                        <div v-if="!imagePreview" class=" mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-lg cursor-pointer border-gray-300 hover:border-indigo-500 hover:bg-indigo-50 transition" @click="$refs.fileInput.click()">
+                                        <div v-if="!imagePreview"
+                                            class=" mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-lg cursor-pointer border-gray-300 hover:border-indigo-500 hover:bg-indigo-50 transition"
+                                            @click="$refs.fileInput.click()">
                                             <div class="space-y-1 text-center">
                                                 <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor"
                                                     fill="none" viewBox="0 0 48 48">
@@ -243,7 +246,7 @@ onUnmounted(() => {
                                         <InputError class="mt-2" :message="form.errors.nome" />
                                     </div>
                                     <div class="sm:col-span-1">
-                                        <InputLabel for="preco" value="Preço"/>
+                                        <InputLabel for="preco" value="Preço" />
                                         <TextInput id="preco" type="number" class="mt-1 block w-full"
                                             v-model="form.preco" autofocus autocomplete="preco" />
                                         <InputError class="mt-2" :message="form.errors.preco" />
@@ -364,8 +367,7 @@ onUnmounted(() => {
                                         <InputLabel for="anotacoes" value="Avaliação" />
                                         <div class="flex justify-center">
                                             <span v-for="n in 5" :key="n" class="cursor-pointer"
-                                                @click="form.avaliacao = n" 
-                                                @mouseenter="hoverRating = n"
+                                                @click="form.avaliacao = n" @mouseenter="hoverRating = n"
                                                 @mouseleave="hoverRating = 0">
                                                 <StarIcon :class="[
                                                     'size-7 transition-colors duration-200',
@@ -377,10 +379,15 @@ onUnmounted(() => {
                                             {{ intensidadesDesejo[(hoverRating || form.avaliacao) - 1] || 'Selecione uma avaliação' }}
                                         </div>
                                         <InputError class="mt-2" :message="form.errors.anotacoes" />
-                                    </div>                                    
+                                    </div>
                                     <div class="col-span-full">
-                                        <div class="flex justify-end">
-                                            <button @click="submit" type="button"
+                                        <div class="flex justify-between">
+                                            <Link :href="route('listas.show', presente.lista_id)">
+                                            <button
+                                                class="border bg-white text-black px-4 py-2 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                                                Cancelar
+                                            </button>
+                                            </Link> <button @click="submit" type="button"
                                                 class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                                                 Salvar
                                             </button>
@@ -393,11 +400,8 @@ onUnmounted(() => {
                 </div>
             </div>
         </div>
-        <ConfirmDeleteModal 
-             :open="showDeleteModal" 
-             @close="closeDeleteModal"
-             :delete-url="route('presentes.destroy', props.presente.id)"
-         />
+        <ConfirmDeleteModal :open="showDeleteModal" @close="closeDeleteModal"
+            :delete-url="route('presentes.destroy', props.presente.id)" />
     </AppLayout>
 
 </template>

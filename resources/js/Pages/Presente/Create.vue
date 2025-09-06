@@ -7,6 +7,7 @@ import InputError from '@/Components/InputError.vue';
 import Alert from '@/Components/Alert.vue';
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { StarIcon } from '@heroicons/vue/20/solid';
+import { Link } from '@inertiajs/vue3';
 
 const props = defineProps({
     title: {
@@ -373,7 +374,13 @@ onUnmounted(() => {
                                         <InputError class="mt-2" :message="form.errors.anotacoes" />
                                     </div>
                                     <div class="col-span-full">
-                                        <div class="flex justify-end">
+                                        <div class="flex justify-between">
+                                            <Link :href="route('listas.show', lista_id)">
+                                            <button
+                                                class="border bg-white text-black px-4 py-2 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                                                Cancelar
+                                            </button>
+                                            </Link>
                                             <button @click="submit" type="button"
                                                 class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                                                 Salvar
