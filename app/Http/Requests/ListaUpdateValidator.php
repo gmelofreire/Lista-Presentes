@@ -14,11 +14,6 @@ class ListaUpdateValidator extends FormRequest
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
@@ -26,6 +21,7 @@ class ListaUpdateValidator extends FormRequest
             'descricao' => 'nullable|string',
             'visibilidade' => 'required|in:privada,publica',
             'data_evento' => 'nullable|date',
+            'grupo_id' => 'nullable|exists:grupos,id',
             'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
     }

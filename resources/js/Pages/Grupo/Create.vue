@@ -5,36 +5,42 @@ import TextInput from '@/Components/TextInput.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
 import Alert from '@/Components/Alert.vue';
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
+
+const form = useForm({
+    nome: '',
+    descricao: '',
+    image_url: null,
+    integrante_ids: []
+})
 
 const props = defineProps({
     title: {
         type: String,
     },
-    listas: {
-        type: Array,
-    },
-    grupos: {
-        type: Array,
-    },
-    grupo_id: {
-        type: String,
-        default: ''
+    amizades: {
+        type: [Array, Object],
+        default: () => []
     }
 })
 
-const form = useForm({
-    nome: '',
-    descricao: '',
-    visibilidade: '',
-    data_evento: '',
-    grupo_id: props.grupo_id || '',
-    image_url: null
-})
-
+// Filtrar amizades baseado no termo de busca
+const filteredAmizades = computed(() => {
+    if (!searchTerm.value) {
+        return props.amizades;
+    }
+    return props.amizades.filter(amizade => {
+        const nome = amizade.nome || amizade.name || '';
+        const email = amizade.email || '';
+        return nome.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+               email.toLowerCase().includes(searchTerm.value.toLowerCase());
+    });
+});
 
 const hasErrorMessage = computed(() => Object.keys(form.errors).length > 0);
 const imagePreview = ref(null);
+const searchTerm = ref('');
+
 
 const handleFileChange = async (event) => {
     const file = event.target.files[0];
@@ -73,25 +79,16 @@ const removeImage = () => {
 };
 
 const submit = () => {
-    form.post(route('listas.store'), {
+    form.post(route('grupos.store'), {
         forceFormData: true,
         preserveScroll: true,
         onSuccess: () => {
-            console.log('Lista salva com sucesso!');
-            if (props.grupo_id) {
-                window.location.href = route('grupos.show', props.grupo_id);
-            } else {
-                window.location.href = route('listas.index');
-            }
+            console.log('Grupo salvo com sucesso!');
         },
         onError: (errors) => {
-            console.log('Erro ao salvar lista:', errors);
+            console.log('Erro ao salvar grupo:', errors);
         }
     });
-};
-
-const getCancelRoute = () => {
-    return props.grupo_id ? route('grupos.show', props.grupo_id) : route('listas.index');
 };
 
 const compressImage = (file, maxSizeMB = 5, quality = 0.8) => {
@@ -126,6 +123,50 @@ const compressImage = (file, maxSizeMB = 5, quality = 0.8) => {
         img.src = URL.createObjectURL(file);
     });
 };
+
+
+const getStarColor = (starNumber) => {
+    const activeRating = hoverRating.value || form.avaliacao;
+    return starNumber <= activeRating ? 'text-yellow-400' : 'text-gray-300';
+};
+
+const toggleIntegrante = (integranteId) => {
+    const index = form.integrante_ids.indexOf(integranteId);
+    if (index > -1) {
+        form.integrante_ids.splice(index, 1);
+    } else {
+        form.integrante_ids.push(integranteId);
+    }
+};
+
+const isIntegranteSelected = (integranteId) => {
+    return form.integrante_ids.includes(integranteId);
+};
+
+const getInitials = (nome) => {
+    if (!nome) return '?';
+    const words = nome.split(' ');
+    if (words.length >= 2) {
+        return (words[0].charAt(0) + words[1].charAt(0)).toUpperCase();
+    }
+    return nome.charAt(0).toUpperCase();
+};
+
+// Fechar dropdown ao clicar fora
+const handleClickOutside = (event) => {
+    const dropdown = document.querySelector('.integrante-dropdown');
+    if (dropdown && !dropdown.contains(event.target)) {
+        showIntegrantes.value = false;
+    }
+};
+
+onMounted(() => {
+    document.addEventListener('click', handleClickOutside);
+});
+
+onUnmounted(() => {
+    document.removeEventListener('click', handleClickOutside);
+});
 </script>
 
 <template>
@@ -139,13 +180,13 @@ const compressImage = (file, maxSizeMB = 5, quality = 0.8) => {
                         <Alert v-if="hasErrorMessage" type="danger" title="Erro ao salvar perfil"
                             message="Por favor, corrija os erros abaixo e tente novamente." class="mb-6" />
                         <div>
-                            <h2 class="text-2xl font-bold text-gray-900">Nova Lista de Presente</h2>
+                            <h2 class="text-2xl font-bold text-gray-900">Novo Grupo</h2>
                         </div>
                         <div class="mt-6">
                             <form>
                                 <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                                     <div class="col-span-full">
-                                        <InputLabel for="image_url" value="Foto da lista" />
+                                        <InputLabel for="image_url" value="Foto do grupo" />
 
                                         <!-- Área de Upload -->
                                         <div v-if="!imagePreview"
@@ -182,52 +223,92 @@ const compressImage = (file, maxSizeMB = 5, quality = 0.8) => {
                                         <InputError class="mt-2" :message="form.errors.image_url" />
                                     </div>
                                     <div class="sm:col-span-1">
-                                        <InputLabel for="nome" value="Nome da Lista" :required="true" />
+                                        <InputLabel for="nome" value="Nome do Grupo" :required="true" />
                                         <TextInput id="nome" type="text" class="mt-1 block w-full" v-model="form.nome"
                                             required autofocus autocomplete="nome" />
                                         <InputError class="mt-2" :message="form.errors.nome" />
-                                    </div>
-                                    <div class="sm:col-span-1">
-                                        <InputLabel for="grupo_id" value="Grupo" />
-                                        <select id="grupo_id" type="text"
-                                            class="rounded-md mt-1 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 w-full"
-                                            v-model="form.grupo_id" required>
-                                            <option value="">Selecione</option>
-                                            <option v-for="grupo in grupos" :key="grupo.id" :value="grupo.id">
-                                                {{ grupo.nome }}
-                                            </option>
-                                        </select>
-                                        <InputError class="mt-2" :message="form.errors.grupo_id" />
                                     </div>
                                     <div class="col-span-full">
                                         <InputLabel for="descricao" value="Descrição" />
                                         <textarea id="descricao" name="descricao" rows="3"
                                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                            v-model="form.descricao"
-                                            placeholder="Descreva sua lista de presentes..."></textarea>
+                                            v-model="form.descricao" placeholder="Descreva seu grupo..."></textarea>
                                         <InputError class="mt-2" :message="form.errors.descricao" />
                                     </div>
-                                    <div class="sm:col-span-1">
-                                        <InputLabel for="visibilidade" value="Visibilidade" :required="true" />
-                                        <select id="visibilidade" name="visibilidade"
-                                            class="rounded-md mt-1 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 w-full"
-                                            v-model="form.visibilidade">
-                                            <option value="">Selecione</option>
-                                            <option value="publica">Pública</option>
-                                            <option value="privada">Privada</option>
-                                        </select>
-                                        <InputError class="mt-2" :message="form.errors.visibilidade" />
-                                    </div>
-                                    <div class="sm:col-span-1">
-                                        <InputLabel for="data_evento" value="Data do Evento"
-                                            hint="Caso seja para um evento" />
-                                        <TextInput id="data_evento" type="date" class="mt-1 block w-full"
-                                            v-model="form.data_evento" autofocus autocomplete="data_evento" />
-                                        <InputError class="mt-2" :message="form.errors.data_evento" />
+
+                                    <div class="col-span-full">
+                                        <InputLabel for="integrantes" value="Integrantes" />
+                                        <div class="mt-1">
+                                            <!-- Barra de busca -->
+                                            <div class="mb-3">
+                                                <TextInput
+                                                    v-model="searchTerm"
+                                                    type="text"
+                                                    placeholder="Buscar amigos..."
+                                                    class="w-full"
+                                                />
+                                            </div>
+                                            
+                                            <div class="bg-white border border-gray-300 rounded-md shadow-sm max-h-60 overflow-auto">
+                                                <div v-if="!props.amizades || props.amizades.length === 0"
+                                                    class="px-3 py-4 text-gray-500 text-sm text-center">
+                                                    Nenhum amigo disponível para adicionar ao grupo
+                                                </div>
+                                                <div v-else-if="filteredAmizades.length === 0"
+                                                    class="px-3 py-4 text-gray-500 text-sm text-center">
+                                                    Nenhum amigo encontrado com "{{ searchTerm }}"
+                                                </div>
+                                                <div v-else class="py-2">
+                                                    <div v-for="amizade in filteredAmizades" :key="amizade.id"
+                                                    @click="toggleIntegrante(amizade.id)"
+                                                    class="flex items-center space-x-3 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors duration-150"
+                                                    :class="{ 'bg-indigo-50': isIntegranteSelected(amizade.id) }">
+                                                        <div class="flex-shrink-0">
+                                                            <div class="w-4 h-4 border-2 rounded flex items-center justify-center transition-all duration-150"
+                                                                :class="isIntegranteSelected(amizade.id) ? 'bg-indigo-600 border-indigo-600' : 'border-gray-300'">
+                                                                <svg v-if="isIntegranteSelected(amizade.id)"
+                                                                    class="w-3 h-3 text-white" fill="currentColor"
+                                                                    viewBox="0 0 20 20">
+                                                                    <path fill-rule="evenodd"
+                                                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                                        clip-rule="evenodd"></path>
+                                                                </svg>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Avatar do integrante -->
+                                                        <div v-if="amizade.perfil?.image_url"
+                                                            class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white text-sm font-semibold">
+                                                            <img :src="amizade.perfil.image_url" alt="Avatar"
+                                                                class="w-full h-full rounded-full">
+                                                        </div>
+                                                        <div v-else
+                                                            class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white text-sm font-semibold">
+                                                            {{ getInitials(amizade.nome || amizade.name) }}
+                                                        </div>
+
+                                                        <!-- Nome do integrante -->
+                                                        <div class="flex-1">
+                                                            <div class="text-sm font-medium text-gray-900">
+                                                                {{ amizade.nome || amizade.name }}
+                                                            </div>
+                                                            <div v-if="amizade.email"
+                                                                class="text-xs text-gray-500 truncate">
+                                                                {{ amizade.username }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div v-if="form.integrante_ids.length > 0" class="mt-2 text-sm text-gray-600">
+                                                {{ form.integrante_ids.length }} integrante(s) selecionado(s)
+                                            </div>
+                                        </div>
+                                        <InputError class="mt-2" :message="form.errors.integrante_ids" />
                                     </div>
                                     <div class="col-span-full">
                                         <div class="flex justify-between">
-                                            <Link :href="getCancelRoute()">
+                                            <Link :href="route('listas.index')">
                                             <button
                                                 class="border bg-white text-black px-4 py-2 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
                                                 Cancelar

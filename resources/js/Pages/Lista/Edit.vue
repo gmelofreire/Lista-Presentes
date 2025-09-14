@@ -14,7 +14,10 @@ const props = defineProps({
     },
     lista: {
         type: [Object, Array],
-    }
+    },
+    grupos: {
+        type: Array,
+    },
 })
 
 const form = useForm({
@@ -22,6 +25,7 @@ const form = useForm({
     descricao: props.lista.descricao || '',
     visibilidade: props.lista.visibilidade || '',
     data_evento: props.lista.data_evento || '',
+    grupo_id: props.lista.grupo_id || '',
     image_url: props.lista.image_url || null,
 })
 
@@ -163,6 +167,18 @@ const compressImage = (file, maxSizeMB = 5, quality = 0.8) => {
                                         <TextInput id="nome" type="text" class="mt-1 block w-full" v-model="form.nome"
                                             required autofocus autocomplete="nome" />
                                         <InputError class="mt-2" :message="form.errors.nome" />
+                                    </div>
+                                    <div class="sm:col-span-1">
+                                        <InputLabel for="grupo_id" value="Grupo" />
+                                        <select id="grupo_id" type="text"
+                                            class="rounded-md mt-1 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 w-full"
+                                            v-model="form.grupo_id">
+                                            <option value="">Selecione</option>
+                                            <option v-for="grupo in grupos" :key="grupo.id" :value="grupo.id">
+                                                {{ grupo.nome }}
+                                            </option>
+                                        </select>
+                                        <InputError class="mt-2" :message="form.errors.grupo_id" />
                                     </div>
                                     <div class="col-span-full">
                                         <InputLabel for="descricao" value="Descrição" />

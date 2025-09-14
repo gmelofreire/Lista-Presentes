@@ -54,10 +54,13 @@ class ListaController extends Controller
         ]);
     }
 
-    public function create()
+    public function create(Request $request)
     {
+        $grupos = auth()->user()->grupos;
         return Inertia::render('Lista/Create', [
             'title' => $this->title,
+            'grupos' => $grupos,
+            'grupo_id' => $request->get('grupo_id', ''),
         ]);
     }
 
@@ -65,10 +68,10 @@ class ListaController extends Controller
     {
         try {
             $dados = $request->validated();
+
             if (isset($dados['image_url']) && $dados['image_url'] instanceof UploadedFile) {
                 $dados['image_url'] = $uploader->upload($dados['image_url'], "listas", $uploader->extensoesImagem);
-            }
-            else{
+            } else {
                 $dados['image_url'] = "/img/default_cover.png";
             }
             $lista = Lista::create($dados);
@@ -83,8 +86,10 @@ class ListaController extends Controller
     public function edit($id)
     {
         $lista = Lista::find($id);
+        $grupos = auth()->user()->grupos;
         return Inertia::render('Lista/Edit', [
             'title' => $this->title,
+            'grupos' => $grupos,
             'lista' => $lista
         ]);
     }
@@ -95,8 +100,7 @@ class ListaController extends Controller
             $dados = $request->all();
             if ($dados['image_url'] instanceof UploadedFile) {
                 $dados['image_url'] = $uploader->upload($dados['image_url'], 'listas', $uploader->extensoesImagem);
-            }
-            else{
+            } elseif (($dados['image_url']) == null || $dados['image_url'] == "") {
                 $dados['image_url'] = "/img/default_cover.png";
             }
             Lista::find($id)->update($dados);

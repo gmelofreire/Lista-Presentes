@@ -18,6 +18,7 @@ class Lista extends Model
         'status',
         'visibilidade',
         'data_evento',
+        'grupo_id',
         'image_url',
     ];
 
@@ -41,5 +42,10 @@ class Lista extends Model
     public function presentes()
     {
         return $this->hasMany(Presente::class, 'lista_id', 'id');
+    }
+
+    public function grupo()
+    {
+        return $this->belongsTo(Grupo::class);
     }
 }

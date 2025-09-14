@@ -203,7 +203,7 @@ const sidebarOpen = ref(false)
 const navigation = [
   { name: 'Página inicial', href: route('dashboard'), icon: HomeIcon, current: true },
   { name: 'Listas de presentes', href: route('listas.index'), icon: GiftTopIcon, current: false },
-  { name: 'Grupos', href: "#", icon: UserGroupIcon, current: false },
+  { name: 'Grupos', href: route('grupos.index'), icon: UserGroupIcon, current: false },
   { name: 'Categorias', href: route('categorias.index'), icon: TagIcon, current: false },
   { name: 'Amigo Secreto', href: '#', icon: UsersIcon, current: false },
 ]
