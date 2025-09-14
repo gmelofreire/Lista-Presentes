@@ -61,11 +61,30 @@ class User extends Authenticatable
 
     public function presentes()
     {
-        return $this->hasMany(Presente::class);
+        return $this->hasMany(Presente::class, 'cadastrado_por');
     }
 
     public function categorias()
     {
-        return $this->hasMany(Categoria::class);
+        return $this->hasMany(Categoria::class, 'cadastrado_por');
     }
+
+    public function grupos()
+    {
+        return $this->belongsToMany(
+            Grupo::class,
+            'grupo_usuario',
+            'user_id',
+            'grupo_id',
+            'id',
+            'id'
+        );
+    }
+
+    public function amizades()
+    {
+        return $this->hasMany(Amizade::class, 'usuario_id')
+            ->orWhere('amigo_id', $this->id);
+    }
+
 }

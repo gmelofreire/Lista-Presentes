@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\GrupoController;
 use App\Http\Controllers\ListaController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\PresenteController;
@@ -32,6 +33,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/presentes/update/{id}', [PresenteController::class, 'update'])->name('presentes.update');
     
     Route::resource('/categorias', CategoriaController::class);
+    
+    Route::resource('/grupos', GrupoController::class)->except(['update']);
+    Route::post('/grupos/{id}', [GrupoController::class, 'update'])->name('grupos.update');
 });
 
 require __DIR__.'/auth.php';

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignUuid('lista_id')->references('id')->on("listas");
             $table->string("nome");
             $table->longText('descricao');
-            $table->float("preco", 2);
+            $table->float("preco", 2)->nullable();
             $table->longText('link')->nullable();
             $table->longText('image_url')->nullable();
             $table->longText('anotacoes')->nullable();
