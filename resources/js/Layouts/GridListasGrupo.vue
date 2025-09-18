@@ -80,17 +80,22 @@
                         <div class="-mt-px flex divide-x divide-gray-200">
                             <Link :href="route('listas.show', lista.id)" class="w-full">
                             <button
-                                class="text-center w-full h-12 bg-indigo-400 text-white rounded-b-lg hover:bg-indigo-500 transition-colors">
+                                class="text-center w-full h-12 bg-indigo-500 text-white rounded-b-lg hover:bg-indigo-600 transition-colors">
                                 Acessar
                             </button>
                             </Link>
                         </div>
                     </div>
                 </div>
-                <div class="text-center my-3">
+                <div class="flex justify-center">
+                    <div class="inline-block text-white text-center my-3 font-medium bg-indigo-500 py-1 px-4 rounded-full hover:bg-indigo-600 transition-colors" >
+                    {{ lista.cadastrado_por.name }}
+                    </div>
+                </div>
+                <!-- <div class="text-center my-3">
                     Lista de: 
                     {{ lista.cadastrado_por.name }}
-                </div>
+                </div> -->
             </li>
         </ul>
 

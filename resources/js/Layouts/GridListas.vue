@@ -56,33 +56,52 @@
 
         <ul role="list" class="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <li v-for="lista in listas.data" :key="lista.id"
-                class="col-span-1 divide-y divide-gray-200 rounded-2xl bg-blue-50 shadow-sm group hover:shadow-md transition-shadow duration-200">
-                <div class="flex h-24 w-full items-center justify-between px-5 pt-9 rounded-t-lg bg-cover bg-center bg-no-repeat relative"
-                    :style="{ backgroundImage: `url(${lista.image_url})` }">
-                    <div
-                        class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent rounded-t-2xl">
-                            <div class="flex text-white justify-end p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                class="col-span-1 rounded-2xl duration-200">
+                <div class="shadow-sm group hover:shadow-md transition-shadow ">
+                    <div class="flex h-24 w-full items-center justify-between px-5 pt-9 rounded-t-lg bg-cover bg-center bg-no-repeat relative"
+                        :style="{ backgroundImage: `url(${lista.image_url})` }">
+                        <div
+                            class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent rounded-t-2xl">
+                            <div
+                                class="flex text-white justify-end p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                 <Link :href="route('listas.edit', lista.id)">
-                                    <PencilIcon class="size-5" />
+                                <PencilIcon class="size-5" />
                                 </Link>
                             </div>
-                    </div>
-                    <div class="flex-1 truncate rounded-lg py-3 relative z-10">
-                        <div class="flex items-center space-x-3">
-                            <h3 class="truncate text-sm font-bold text-white">{{ lista.nome }}</h3>
                         </div>
-                        <p class="mt-1 truncate text-sm text-white">{{ lista.descricao }}</p>
+                        <div class="flex-1 truncate rounded-lg py-3 relative z-10">
+                            <div class="flex items-center space-x-3">
+                                <h3 class="truncate text-sm font-bold text-white">{{ lista.nome }}</h3>
+                            </div>
+                            <p class="mt-1 truncate text-sm text-white">{{ lista.descricao }}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="-mt-px flex divide-x divide-gray-200">
+                            <Link :href="route('listas.show', lista.id)" class="w-full">
+                            <button
+                                class="text-center w-full h-12 bg-indigo-500 text-white rounded-b-lg hover:bg-indigo-600 transition-colors">
+                                Acessar
+                            </button>
+                            </Link>
+                        </div>
                     </div>
                 </div>
-                <div>
-                    <div class="-mt-px flex divide-x divide-gray-200">
-                        <Link :href="route('listas.show', lista.id)" class="w-full">
-                        <button
-                            class="text-center w-full h-12 bg-indigo-400 text-white rounded-b-lg hover:bg-indigo-500 transition-colors">
-                            Acessar
-                        </button>
-                        </Link>
+                <!-- <div v-if="lista.grupo">
+                    <Link :href="route('grupos.show', lista.grupo.id)">
+
+                    <div class="text-center my-3 font-medium" >
+                        Grupo:
+                        {{ lista.grupo?.nome }}
                     </div>
+                    </Link>
+                </div> -->
+                <div class="flex justify-center" v-if="lista.grupo">
+                    <Link :href="route('grupos.show', lista.grupo.id)">
+                    <div class="inline-block text-white text-center my-3 font-medium bg-indigo-500 py-1 px-4 rounded-full hover:bg-indigo-600 transition-colors" >
+                        {{ lista.grupo?.nome }}
+                    </div>
+                    </Link>
                 </div>
             </li>
         </ul>
