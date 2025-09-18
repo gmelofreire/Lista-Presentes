@@ -18,7 +18,7 @@ class ListaController extends Controller
 
     public function index(Request $request)
     {
-        $query = Lista::whereHas('usuarios', function ($q) {
+        $query = Lista::with('grupo')->whereHas('usuarios', function ($q) {
             $q->where('usuario_id', auth()->user()->id);
         });
 

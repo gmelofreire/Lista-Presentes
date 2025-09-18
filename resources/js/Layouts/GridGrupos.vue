@@ -78,7 +78,7 @@
                     <div class="-mt-px flex divide-x divide-gray-200">
                         <Link :href="route('grupos.show', grupo.id)" class="w-full">
                         <button
-                            class="text-center w-full h-12 bg-indigo-400 text-white rounded-b-lg hover:bg-indigo-500 transition-colors">
+                            class="text-center w-full h-12 bg-indigo-500 text-white rounded-b-lg hover:bg-indigo-600 transition-colors">
                             Acessar
                         </button>
                         </Link>
