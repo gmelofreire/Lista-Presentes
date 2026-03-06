@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Perfil do Amigo | Rede Social de Desejos</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#7f13ec",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#191022",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: "Plus Jakarta Sans", sans-serif;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#141118] dark:text-white min-h-screen">
+<div class="flex h-screen overflow-hidden">
+<!-- Persistent SideNavBar -->
+<aside class="w-64 flex flex-col justify-between bg-white dark:bg-background-dark border-r border-[#e0dbe6] dark:border-white/10 p-4 shrink-0 h-full">
+<div class="flex flex-col gap-6">
+<!-- Brand/User Profile -->
+<div class="flex gap-3 items-center">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border border-[#e0dbe6] dark:border-white/10" data-alt="Logo of the social network platform" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBNmq-NPlD3-HOP7cPvfA1mhapd3V1NR7GQqrrgFMX5cQToN3Nkj5bSfiLGkm3k5XXZIok7zm3h4uPgrldLTTRnYxdL5OLJJTewho1txJelv7U72Z8ldYS2WrUpzc3bQ6DkPPOEzGzyAzITVZp7Wv2v46jAPAOMU_1YkLjDUQofwoY8Vtaea92t2PeyYblqGLkU_rHAB1471PPSI3DNUNkUouSl6OAal5WibbB_cojSt3_znOL0v7ca3Q21EvD8ivcZx-lmLiz1gzG4");'></div>
+<div class="flex flex-col">
+<h1 class="text-[#141118] dark:text-white text-base font-bold leading-normal">WishList</h1>
+<p class="text-[#756189] dark:text-gray-400 text-xs font-normal leading-normal">Desejos e Amigos</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-[#756189] dark:text-gray-400 hover:bg-primary/10 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">home</span>
+<p class="text-sm font-medium leading-normal">Início</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">group</span>
+<p class="text-sm font-medium leading-normal">Amigos</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-[#756189] dark:text-gray-400 hover:bg-primary/10 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">featured_play_list</span>
+<p class="text-sm font-medium leading-normal">Minha Lista</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-[#756189] dark:text-gray-400 hover:bg-primary/10 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">groups_3</span>
+<p class="text-sm font-medium leading-normal">Grupos</p>
+</a>
+</nav>
+</div>
+<!-- Create Group CTA -->
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/90 transition-all">
+<span class="truncate">Criar Grupo</span>
+</button>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark">
+<div class="max-w-[1024px] mx-auto px-6 py-8">
+<!-- Breadcrumbs/Header -->
+<div class="mb-6 flex items-center gap-2 text-sm text-[#756189] dark:text-gray-400">
+<a class="hover:text-primary" href="#">Amigos</a>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+<span class="text-[#141118] dark:text-white font-medium">Perfil do Amigo</span>
+</div>
+<!-- Profile Header Card -->
+<div class="bg-white dark:bg-background-dark border border-[#e0dbe6] dark:border-white/10 rounded-xl p-8 mb-8">
+<div class="flex flex-col md:flex-row gap-8 items-center md:items-start text-center md:text-left">
+<!-- Large Profile Avatar -->
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full h-32 w-32 border-4 border-primary/20 shadow-lg" data-alt="Profile picture of Lucas Silva" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBseN_SNYCeNcHnAqhMEr3V--SHCpZSIgJCpL97PIXGD5YZGh1ZyQ-jeBu9sCkQjK8SXU07Y88zw5HGonOWNBkGxo7mWGcdGy7tCAJdJPxFdc1mRRQNgIQwI-ELsktAx4yanhgvrlknGkDyIseNWlXSOfboaZ8lTxTLkZysuxW8G5GDUklMrm7vh-Gq0zD-H-IB64x2LFjpgPZn7jGYdkYrR9yL8VLKhXm5QF-6Tx1V5XtBU3QGUvPYHpExITvzY693vpq6iX_4gmXW");'></div>
+<!-- Profile Info -->
+<div class="flex-1 flex flex-col justify-center">
+<div class="flex flex-col gap-1 mb-4">
+<h1 class="text-[#141118] dark:text-white text-3xl font-bold leading-tight tracking-[-0.015em]">Lucas Silva</h1>
+<p class="text-primary font-medium text-lg">@lucas_silva</p>
+</div>
+<p class="text-[#756189] dark:text-gray-400 text-base font-normal leading-relaxed max-w-xl">
+                                Apaixonado por jogos de tabuleiro e café. Sempre em busca da próxima aventura e do presente perfeito para os amigos!
+                            </p>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-row md:flex-col gap-3 w-full md:w-auto">
+<button class="flex flex-1 md:min-w-[160px] cursor-pointer items-center justify-center rounded-lg h-11 px-6 bg-primary text-white text-sm font-bold tracking-[0.015em] hover:bg-primary/90 transition-all shadow-md">
+<span class="material-symbols-outlined mr-2 text-[20px]">person_add</span>
+<span class="truncate">Seguir</span>
+</button>
+<button class="flex flex-1 md:min-w-[160px] cursor-pointer items-center justify-center rounded-lg h-11 px-6 bg-[#f2f0f4] dark:bg-white/5 text-[#141118] dark:text-white text-sm font-bold tracking-[0.015em] hover:bg-gray-200 dark:hover:bg-white/10 transition-all border border-[#e0dbe6] dark:border-white/10">
+<span class="material-symbols-outlined mr-2 text-[20px]">chat_bubble</span>
+<span class="truncate">Mensagem</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Action Panel / Privacy Notice -->
+<div class="mb-8">
+<div class="flex flex-1 flex-col items-start justify-between gap-4 rounded-xl border border-dashed border-[#e0dbe6] dark:border-white/20 bg-white/50 dark:bg-white/5 p-6 md:flex-row md:items-center">
+<div class="flex flex-col gap-1">
+<p class="text-[#141118] dark:text-white text-base font-bold leading-tight">Quer ver a lista de desejos?</p>
+<p class="text-[#756189] dark:text-gray-400 text-sm font-normal leading-normal">Lucas compartilha seus desejos apenas com amigos próximos. Envie uma solicitação!</p>
+</div>
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-9 px-5 bg-primary/10 text-primary text-sm font-bold hover:bg-primary/20 transition-all">
+<span class="truncate">Solicitar Amizade</span>
+</button>
+</div>
+</div>
+<!-- Section: Grupos em Comum -->
+<div class="mb-12">
+<div class="flex justify-between items-center px-2 mb-4">
+<h2 class="text-[#141118] dark:text-white text-[20px] font-bold leading-tight tracking-[-0.015em]">Grupos em Comum</h2>
+<a class="text-primary text-sm font-bold hover:underline" href="#">Ver todos</a>
+</div>
+<!-- Horizontal Carousel -->
+<div class="overflow-x-auto hide-scrollbar">
+<div class="flex items-stretch gap-6 pb-4">
+<!-- Group Card 1 -->
+<div class="flex h-auto w-44 flex-col gap-4 text-center rounded-xl bg-white dark:bg-background-dark border border-[#e0dbe6] dark:border-white/10 p-5 shrink-0 hover:shadow-lg transition-shadow">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col self-center w-full border border-gray-100 dark:border-white/5" data-alt="Group icon for Game Night" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBBhzo5Luf5NgfyBs-BD3ticrKef3hofI6z6ccviC9WnhnCt1i-KUDjGFIyV7oGaEWvecChAI4e2ucykrRTVH32LR_fDgFIiL2PH0CMm-cCw2_2xE_qNZGeUok0KMJ94s6zOWi_TlcA_bArUcdg2AlvXzplFx21f1njDfD-6yu_vb9DnZuG2sjbPVpEoic0jQx49ZEm-15vzsoEkoV5-er-u6aEI-gpV398q8iIHGmQM-dPNUPndqhg213F9CuHDJsvqjg8Ip7mDYs6");'></div>
+<div>
+<p class="text-[#141118] dark:text-white text-sm font-bold leading-normal truncate">Noite de Jogos</p>
+<p class="text-[#756189] dark:text-gray-400 text-xs font-normal leading-normal">12 membros</p>
+</div>
+</div>
+<!-- Group Card 2 -->
+<div class="flex h-auto w-44 flex-col gap-4 text-center rounded-xl bg-white dark:bg-background-dark border border-[#e0dbe6] dark:border-white/10 p-5 shrink-0 hover:shadow-lg transition-shadow">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col self-center w-full border border-gray-100 dark:border-white/5" data-alt="Group icon for Family 2024" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDM29swlkl7oGjXVgDedJv65e1TGP5RcskqsxlPWpLZr4ohCNPk5jdXcnUOpqVNSf6CNP_cloom8jeWWN3TV9dB92bp063BT47_eb3Dqmu1eH0TMeIX_3LL1uLUdD0b3wGQ23LQWT0DGmattV5fZaMFESqeJ0UwlKtF-zQizkcTXX6sngdA2jfaT_2uy8yFkiUgpXuEaw4vP8MOgjwiRtW6lC41ZzNs9yzh8Xf8x50gIAO0qcdtqlFr12hHiIPfKO1jsI0xwg0mGLqI");'></div>
+<div>
+<p class="text-[#141118] dark:text-white text-sm font-bold leading-normal truncate">Família 2024</p>
+<p class="text-[#756189] dark:text-gray-400 text-xs font-normal leading-normal">8 membros</p>
+</div>
+</div>
+<!-- Group Card 3 -->
+<div class="flex h-auto w-44 flex-col gap-4 text-center rounded-xl bg-white dark:bg-background-dark border border-[#e0dbe6] dark:border-white/10 p-5 shrink-0 hover:shadow-lg transition-shadow">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col self-center w-full border border-gray-100 dark:border-white/5" data-alt="Group icon for Office Secret Santa" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBMq0RhIkDA8YH6KlXwFOCRZBd_UTmvjpnA6ci_PWHCbediBYGNsrNqJgzpdgJy3qqR4-Wpm99g2-JpHf2h9r4sFKJaMUpgh-FoMzY1pYYsT_wa3kqB24NF6UuD7u3_K6l1cqNfNi0xtHkTZct6dFkoYkKK4StoikGQC2EkEt9XzYNKBsXiE5gLZQwB4-Zw5lYJzi_91DH1rgjBGPhqFzFCc1B_OuE3a22h6h384THeUqH6Hz9NuFj5gxSs-IH341DBulo1jCHxRRP2");'></div>
+<div>
+<p class="text-[#141118] dark:text-white text-sm font-bold leading-normal truncate">Amigo Secreto Escritório</p>
+<p class="text-[#756189] dark:text-gray-400 text-xs font-normal leading-normal">25 membros</p>
+</div>
+</div>
+<!-- Group Card 4 -->
+<div class="flex h-auto w-44 flex-col gap-4 text-center rounded-xl bg-white dark:bg-background-dark border border-[#e0dbe6] dark:border-white/10 p-5 shrink-0 hover:shadow-lg transition-shadow">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col self-center w-full border border-gray-100 dark:border-white/5" data-alt="Group icon for Hiking Club" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuACGmiDMS_fSKLsUaObgMeHfwiwP9cHZIOgdTkBuwXC6P_IgmIWQCSpdWj-8XwoVHAnAjv8OX4wN5qnUH9inx-Rs-AX3D2cDzLivlHrbtI75mYFww3I5vfiUxmWV0KoJoKcV2T4yEnqSk96iEThJBljGNxM0Exnve_irdTbrNIYSijKk9iwh4wXwpm9zz4e8ogapX1YCJtkjZQLUFUGzTml8g9WQ6ApwEPRt9NPWe7SKyzWmGPcMrYkFSQOy4JY8cBgrf-_qnDQGBi4");'></div>
+<div>
+<p class="text-[#141118] dark:text-white text-sm font-bold leading-normal truncate">Trilhas de Domingo</p>
+<p class="text-[#756189] dark:text-gray-400 text-xs font-normal leading-normal">15 membros</p>
+</div>
+</div>
+<!-- Group Card 5 -->
+<div class="flex h-auto w-44 flex-col gap-4 text-center rounded-xl bg-white dark:bg-background-dark border border-[#e0dbe6] dark:border-white/10 p-5 shrink-0 hover:shadow-lg transition-shadow">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col self-center w-full border border-gray-100 dark:border-white/5" data-alt="Group icon for Book Club" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDN1xlIrrJp-rXPlmVqk2WCCIAL1nIXJ8znRB4tbOxUA7-n4PR9HU9nfHxQgu7s6bJNRorlmvL-23kPgdfUWNsmaGfBtcr7LgFin6FWF8YZfwWJx88ZjlgjuRKXW42K8mqvUYijImR35MBV4wZ4APfjqM9ULxHK1mwU5qB0anyKesqtUGL3ebAOQ_3RB1gJEIKb7W6enDySf8engnojTH3UoeGIrK3FfEGlNSTshj6qRm3WUb9E1qT3p49EiPelOIpR5jqrdcm_eLz8");'></div>
+<div>
+<p class="text-[#141118] dark:text-white text-sm font-bold leading-normal truncate">Clube do Livro</p>
+<p class="text-[#756189] dark:text-gray-400 text-xs font-normal leading-normal">32 membros</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Section Info -->
+<div class="border-t border-[#e0dbe6] dark:border-white/10 pt-8 pb-12 flex flex-col items-center gap-4 text-center">
+<span class="material-symbols-outlined text-[#756189] text-4xl">celebration</span>
+<p class="text-[#756189] dark:text-gray-400 text-sm italic">
+                        "O melhor presente é aquele que é compartilhado."
+                    </p>
+</div>
+</div>
+</main>
+</div>
+</body></html>

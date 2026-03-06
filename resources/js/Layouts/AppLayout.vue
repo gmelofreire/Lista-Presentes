@@ -139,7 +139,7 @@
                   </a>
                   </MenuItem>
                   <MenuItem v-slot="{ active }">
-                    <Link :href="route('logout')" method="post">
+                    <Link :href="route('logout')" method="post" class="block w-full">
                     <button
                       :class="[active ? 'bg-gray-50 outline-hidden' : '', 'block w-full text-left px-3 py-1 text-sm/6 text-gray-900']">
                       Sair
@@ -185,6 +185,7 @@ import {
   UserGroupIcon,
   UsersIcon,
   XMarkIcon,
+  LockClosedIcon,
 } from '@heroicons/vue/24/outline'
 import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/vue/20/solid'
 import { usePage } from '@inertiajs/vue3';
@@ -196,15 +197,16 @@ defineProps({
   },
 })
 
-const user = usePage().props.user;
+const user = usePage().props.auth.user;
 
 const sidebarOpen = ref(false)
 
 const navigation = [
-  { name: 'Página inicial', href: route('dashboard'), icon: HomeIcon, current: true },
-  { name: 'Listas de presentes', href: route('listas.index'), icon: GiftTopIcon, current: false },
-  { name: 'Grupos', href: route('grupos.index'), icon: UserGroupIcon, current: false },
-  { name: 'Categorias', href: route('categorias.index'), icon: TagIcon, current: false },
-  { name: 'Amigo Secreto', href: '#', icon: UsersIcon, current: false },
+  { name: 'Página inicial', href: route('dashboard'), icon: HomeIcon, current: route().current('dashboard') },
+  { name: 'Amizades', href: route('amizades.index'), icon: UsersIcon, current: route().current('amizades.*') },
+  { name: 'Listas de presentes', href: route('listas.index'), icon: GiftTopIcon, current: route().current('listas.*') },
+  { name: 'Grupos', href: route('grupos.index'), icon: UserGroupIcon, current: route().current('grupos.*') },
+  { name: 'Categorias', href: route('categorias.index'), icon: TagIcon, current: route().current('categorias.*') },
+  { name: 'Amigo Secreto', href: '#', icon: LockClosedIcon, current: false },
 ]
 </script>

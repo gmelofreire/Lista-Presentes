@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html class="h-full" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Desejário - Amizades</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#6366f1",
+                        "background-light": "#f9fafb",
+                        "background-dark": "#111827",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.5rem",
+                    },
+                },
+            },
+        };
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="h-full bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100">
+<div class="flex h-full">
+<aside class="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col fixed h-full z-10">
+<div class="p-6 flex items-center gap-3">
+<span class="material-icons text-primary text-3xl">card_giftcard</span>
+<h1 class="text-xl font-bold tracking-tight text-slate-800 dark:text-white">Desejário</h1>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg group transition-colors" href="#">
+<span class="material-icons text-xl group-hover:text-primary">home</span>
+<span class="font-medium">Página inicial</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-indigo-50 dark:bg-indigo-900/20 text-primary rounded-lg group transition-colors" href="#">
+<span class="material-icons text-xl">group</span>
+<span class="font-medium">Amizades</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg group transition-colors" href="#">
+<span class="material-icons text-xl group-hover:text-primary">featured_play_list</span>
+<span class="font-medium">Listas de presentes</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg group transition-colors" href="#">
+<span class="material-icons text-xl group-hover:text-primary">groups</span>
+<span class="font-medium">Grupos</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg group transition-colors" href="#">
+<span class="material-icons text-xl group-hover:text-primary">local_offer</span>
+<span class="font-medium">Categorias</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg group transition-colors" href="#">
+<span class="material-icons text-xl group-hover:text-primary">card_giftcard</span>
+<span class="font-medium">Amigo Secreto</span>
+</a>
+</nav>
+<div class="p-4 mt-auto border-t border-slate-200 dark:border-slate-800">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg group transition-colors" href="#">
+<span class="material-icons text-xl group-hover:text-primary">settings</span>
+<span class="font-medium">Settings</span>
+</a>
+</div>
+</aside>
+<main class="flex-1 ml-64 min-h-screen">
+<header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-8 py-4 flex items-center justify-between sticky top-0 z-20">
+<h2 class="text-xl font-semibold text-slate-800 dark:text-white">Amizades</h2>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full">
+<span class="material-icons">notifications</span>
+</button>
+<div class="flex items-center gap-3 pl-4 border-l border-slate-200 dark:border-slate-800">
+<span class="text-sm font-medium text-slate-700 dark:text-slate-300">g_mfreire</span>
+<img alt="Avatar do usuário" class="w-8 h-8 rounded-full border border-slate-200 dark:border-slate-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHaeSAv18gdHY0KNt9SDZ1wwyNdlx3vR2fFX7-jN48yFoZnMVkUHtEUkRAXb9C8BZ5GIO1hUrgxVNF9hYCTtG3uqARYzPJ7ymfKpiN-BQ7hRz7to4GGbHJPWPzUpsBZVUEXRh-NOBZZmLqbMn7OjWCC30br8AfJOunJ3bXbO265GmlFaeIPpHWAUWsoNljJeiFj8_lCmDo8YulTQOcyjtEHAKi_0AoamJ7V-Y0u56SUAJWi-h08ctz5tJKBP9ImBfzfq617IXLlOFi"/>
+<span class="material-icons text-slate-400 text-sm">expand_more</span>
+</div>
+</div>
+</header>
+<div class="p-8">
+<div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 mb-8">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+<div>
+<h3 class="text-2xl font-bold text-slate-800 dark:text-white">Gerenciar Amigos</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400">Encontre amigos e gerencie suas solicitações de amizade.</p>
+</div>
+<div class="flex gap-3">
+<button class="bg-primary hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2">
+<span class="material-icons text-sm">person_add</span>
+                                Solicitações (3)
+                            </button>
+</div>
+</div>
+<div class="flex flex-wrap gap-3">
+<div class="relative flex-1 min-w-[300px]">
+<span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="w-full pl-10 pr-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-slate-800 dark:text-slate-100" placeholder="Buscar usuários por nome ou @username..." type="text"/>
+</div>
+<button class="bg-primary hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-medium transition-all shadow-sm">
+                            Buscar
+                        </button>
+<button class="border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 px-6 py-2 rounded-lg font-medium transition-all">
+                            Limpar
+                        </button>
+</div>
+<p class="mt-4 text-sm text-slate-500 dark:text-slate-400">Mostrando 12 de 156 amigos</p>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
+<div class="p-6 text-center">
+<img alt="Jane Cooper" class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-slate-50 dark:border-slate-800 group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8Mi9RsUvmfCCWn_Nqwm1t51xHQyT34HE7LQEWHg4Y6N_OUUodHpcaK6m7znZf09wvMHx7ikScOp-Fgb9W-pMiyd-8-dJ4svlO_YCNrf-gc_hxihRe7L-OsxpFg5qzcseGZ-a78mitCkhUdnrg6pzp5vP4C9CepJoQbxMyGSpiUxHg3155gbrEsnuz7ItHtN1FiKeibITrslbtAC0TpQbCvqlG_4bBYjz-7IQq1vSdD8rRERXb_WRxfgBYNh0Gp0ILOA75Zna9l7IA"/>
+<h4 class="font-bold text-slate-800 dark:text-white text-lg">Jane Cooper</h4>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Designer Gráfico</p>
+<span class="inline-block px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-green-700 bg-green-100 dark:text-green-300 dark:bg-green-900/30 rounded-full">Online</span>
+</div>
+<div class="grid grid-cols-2 border-t border-slate-200 dark:border-slate-800">
+<button class="flex items-center justify-center gap-2 py-3 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 border-r border-slate-200 dark:border-slate-800">
+<span class="material-icons text-sm">visibility</span>
+                                Perfil
+                            </button>
+<button class="flex items-center justify-center gap-2 py-3 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10">
+<span class="material-icons text-sm">person_remove</span>
+                                Remover
+                            </button>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
+<div class="p-6 text-center">
+<img alt="Cody Fisher" class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-slate-50 dark:border-slate-800 group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKBzIgNbGvF__G_JPxsYkTmYfoTfDrmIOiRFzYJecl-uNu6q9Dw9XvrBKE7OjH_Ne_HSU1oML1S5oECMi_XChNAvdqYoyJONj0Jk7wXTrM6Ow7JEcUEzaVoTexkOkRvJMCR0tQe42ta1OBFfGstMu5dDh8c1lQxht00N-nn6oannlWANyJBt-aq4QL6-jUVd7q7KdlgorqHEPPl243vTcHggG3zmjl7duYCWJoN514sbCZ7V0umzbz4FIWzUpWqouZuf8yM_VngKcD"/>
+<h4 class="font-bold text-slate-800 dark:text-white text-lg">Cody Fisher</h4>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Desenvolvedor Frontend</p>
+<span class="inline-block px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-100 dark:text-slate-500 dark:bg-slate-800 rounded-full">Offline</span>
+</div>
+<div class="grid grid-cols-2 border-t border-slate-200 dark:border-slate-800">
+<button class="flex items-center justify-center gap-2 py-3 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 border-r border-slate-200 dark:border-slate-800">
+<span class="material-icons text-sm">visibility</span>
+                                Perfil
+                            </button>
+<button class="flex items-center justify-center gap-2 py-3 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10">
+<span class="material-icons text-sm">person_remove</span>
+                                Remover
+                            </button>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
+<div class="p-6 text-center">
+<img alt="Esther Howard" class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-slate-50 dark:border-slate-800 group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbf3_09GljLsO4vfuJYlTdbwigQzHf4FSThg9GbgfDlNAJpmzfNP4wuKraKl_r8_m9_2Lq32Pbzx5oB-joZsSqICwZiFmNagspYxxiGQIRZ_yJV4lcJUl9cEaSnYJcsXfczU-6W8BzkNOAXdoP7cGby631D7lVDG6gBnDI6vUH4QMTFiqFYxDtZyOJV3zFNRFXuOp8WMOmwW4qogFmjNKw0MmXv0OL-VLDH0UrfH8mNi1dn6HKpPrFeZ5IpAZK6nSuo4dFZksh_KmU"/>
+<h4 class="font-bold text-slate-800 dark:text-white text-lg">Esther Howard</h4>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Administradora</p>
+<span class="inline-block px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-green-700 bg-green-100 dark:text-green-300 dark:bg-green-900/30 rounded-full">Online</span>
+</div>
+<div class="grid grid-cols-2 border-t border-slate-200 dark:border-slate-800">
+<button class="flex items-center justify-center gap-2 py-3 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 border-r border-slate-200 dark:border-slate-800">
+<span class="material-icons text-sm">visibility</span>
+                                Perfil
+                            </button>
+<button class="flex items-center justify-center gap-2 py-3 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10">
+<span class="material-icons text-sm">person_remove</span>
+                                Remover
+                            </button>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
+<div class="p-6 text-center">
+<img alt="Jenny Wilson" class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-slate-50 dark:border-slate-800 group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpGWJYkHZVR5zfNU90Oq8CQ7dBIq_4tGHBr_wqkxVaCRtF0l4Wn0gf8ok-e3QllkYVkA27cc3jf1X6zJruKG2VkX1NmP39qBLdFkrumh3yApkbTUVUKceRT0j5-O2M1vc6KVg-I2Xohto2bK-jIqsYx9Z-7qR9gsXN-81d-RDXUGsIuvxOue-8DRNDAh6Lkq6psYPdoumibbimZ240HXPZ3nNVFqfQtlqwse6usprcNhPCZ1lNayZ3QhpNlf7P-1LwGGM4N_tgu14e"/>
+<h4 class="font-bold text-slate-800 dark:text-white text-lg">Jenny Wilson</h4>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Analista de Dados</p>
+<span class="inline-block px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-100 dark:text-slate-500 dark:bg-slate-800 rounded-full">Ausente</span>
+</div>
+<div class="grid grid-cols-2 border-t border-slate-200 dark:border-slate-800">
+<button class="flex items-center justify-center gap-2 py-3 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 border-r border-slate-200 dark:border-slate-800">
+<span class="material-icons text-sm">visibility</span>
+                                Perfil
+                            </button>
+<button class="flex items-center justify-center gap-2 py-3 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10">
+<span class="material-icons text-sm">person_remove</span>
+                                Remover
+                            </button>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
+<div class="p-6 text-center">
+<img alt="Cameron Williamson" class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-slate-50 dark:border-slate-800 group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLjPL8gj9o0MB8NsQk6Xd80QoKyUtgjS_AIRADXC0r4gByBjopwJdMucq9xXdjbTmAy2OpNs_zexzr345DrLpA15zZcTOaXCf8YVnAgFvGPgPh4qYncnwRDQvce4-M9sVyifz8Uzcvd8rO58XMAPBw9tlMfVKu_efxXSWhC8GjUpTOpeTvieXTGh1AEJnUSP-FC6JDSZguoJadcmdx2rvaQBs4DKqrfuONXBmaDc3yC04D0IuMa1lIJrseZxPqzse_YrlV-Ku_PhbH"/>
+<h4 class="font-bold text-slate-800 dark:text-white text-lg">Cameron Williamson</h4>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Executivo de Infraestrutura</p>
+<span class="inline-block px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-green-700 bg-green-100 dark:text-green-300 dark:bg-green-900/30 rounded-full">Online</span>
+</div>
+<div class="grid grid-cols-2 border-t border-slate-200 dark:border-slate-800">
+<button class="flex items-center justify-center gap-2 py-3 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 border-r border-slate-200 dark:border-slate-800">
+<span class="material-icons text-sm">visibility</span>
+                                Perfil
+                            </button>
+<button class="flex items-center justify-center gap-2 py-3 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10">
+<span class="material-icons text-sm">person_remove</span>
+                                Remover
+                            </button>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
+<div class="p-6 text-center">
+<img alt="Courtney Henry" class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-slate-50 dark:border-slate-800 group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSGnI-Jv1GKlWpn1VNjh5xmxygXC7w-fG1d7J-OpigFo2bPq3KFnBsF8NNM-oZT6LCFuHruhu5bsjv-8yusccZJ9wAKA3Ud3fjeWHtNSZg64XnRjogemSuVNVbg7DH3uUln0b3Wk3NiRnDgwF4sU9Gm0qTCU82ujYLf-k2vF1NAIpB8tn99DnG_Q7wrUv2WFZNmm4ZdYHXIGKSTeapm7IF7q9FAZ2unaNSvqRWxHMBCJqRIB9svQdqdd2T3oWZ36559J2qJAzxXP6p"/>
+<h4 class="font-bold text-slate-800 dark:text-white text-lg">Courtney Henry</h4>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Associada de Vendas</p>
+<span class="inline-block px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-100 dark:text-slate-500 dark:bg-slate-800 rounded-full">Offline</span>
+</div>
+<div class="grid grid-cols-2 border-t border-slate-200 dark:border-slate-800">
+<button class="flex items-center justify-center gap-2 py-3 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 border-r border-slate-200 dark:border-slate-800">
+<span class="material-icons text-sm">visibility</span>
+                                Perfil
+                            </button>
+<button class="flex items-center justify-center gap-2 py-3 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10">
+<span class="material-icons text-sm">person_remove</span>
+                                Remover
+                            </button>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
+<div class="p-6 text-center">
+<img alt="Kristin Watson" class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-slate-50 dark:border-slate-800 group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9KtJUDAsWQ-9yPa8AMlYK_TGqOxJ5y0beNQt3AT-1nDMnYDjjTgx5J-Dv-SnfISeounn-BZgaEb64VFJPMjaZk1pac_nCECv2EfYp9Sjausu7Y8MKMhlnyZnx4yXSR0P-BrLutV9JLtbHcjNVOFrHY_yhqwQEMGzC-VCYzBUseugcN3_ETMc8brbmo0OBsXx3xr5Dcy8I11YCtSmCT0q29QjmUV1jO1Ne3UcKGRq9wR5ZIP4ghgcAlWn05KQDQr3M94K0ZnLkzmUH"/>
+<h4 class="font-bold text-slate-800 dark:text-white text-lg">Kristin Watson</h4>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Orquestradora de Dados</p>
+<span class="inline-block px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-green-700 bg-green-100 dark:text-green-300 dark:bg-green-900/30 rounded-full">Online</span>
+</div>
+<div class="grid grid-cols-2 border-t border-slate-200 dark:border-slate-800">
+<button class="flex items-center justify-center gap-2 py-3 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 border-r border-slate-200 dark:border-slate-800">
+<span class="material-icons text-sm">visibility</span>
+                                Perfil
+                            </button>
+<button class="flex items-center justify-center gap-2 py-3 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10">
+<span class="material-icons text-sm">person_remove</span>
+                                Remover
+                            </button>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
+<div class="p-6 text-center">
+<img alt="Theresa Webb" class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-slate-50 dark:border-slate-800 group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbsvGNTO3ox5Ki-qSlzztCBfBNEO4rAffFx74jvGq2MpFBOYrgljHfP44ay2xBrycR2LM5fIXm-vuNyCuZZS8BO5tAc8gdHH_n2NTyb_XeSphK219jKCs0P51xvSw03yYonxUdWlGF3BIQ2j6yvjzg2-2lc76SwenLzb9La-eq8nPfMJdrHjfa3rdzD-TXui7YxkQ99lliWwY5dzHtFQ6nT2kOWIH2-W5sVCv1lidY9nMAZaqI29BEgM8KKtQ1rLyL4pL2N-uuq834"/>
+<h4 class="font-bold text-slate-800 dark:text-white text-lg">Theresa Webb</h4>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Diretora de Divisão</p>
+<span class="inline-block px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-100 dark:text-slate-500 dark:bg-slate-800 rounded-full">Offline</span>
+</div>
+<div class="grid grid-cols-2 border-t border-slate-200 dark:border-slate-800">
+<button class="flex items-center justify-center gap-2 py-3 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 border-r border-slate-200 dark:border-slate-800">
+<span class="material-icons text-sm">visibility</span>
+                                Perfil
+                            </button>
+<button class="flex items-center justify-center gap-2 py-3 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10">
+<span class="material-icons text-sm">person_remove</span>
+                                Remover
+                            </button>
+</div>
+</div>
+</div>
+<div class="mt-12 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-6">
+<h3 class="text-xl font-bold text-slate-800 dark:text-white mb-6">Sugestões de amizade</h3>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-4 border border-slate-100 dark:border-slate-800 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<div class="flex items-center gap-4">
+<img alt="Michael Foster" class="w-12 h-12 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtrTusLh_ssi536D3t_Kv66Z5am38f7Pm3Ik0awAmmYjiSabPt4ApwwN6XfM2pSycoHkf95kLqQvLHeB_5CRLSpOcpzFwbDZDFp8hqVeKf4R9o8WnN2VEgl2p7EQDMAvPjMnT2eGAVMViWR6Gh4Pk6Ec_b3AkJGLFXuMosmMOzO3PQgCw6X2Y4HHqu-Om7xBop3mMFXorysLCR4kuuooPD9q8FZuJIozs7MY9GFSCNbQOTTb7mhkov1ns4x_pu3wK_QxGdz64oDEHn"/>
+<div>
+<h4 class="font-semibold text-slate-800 dark:text-white">Michael Foster</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400">Amigo em comum com Jane Cooper</p>
+</div>
+</div>
+<button class="bg-indigo-50 dark:bg-indigo-900/30 text-primary px-4 py-2 rounded-lg text-sm font-bold hover:bg-primary hover:text-white transition-all flex items-center gap-2">
+<span class="material-icons text-sm">add</span>
+                                Adicionar
+                            </button>
+</div>
+<div class="flex items-center justify-between p-4 border border-slate-100 dark:border-slate-800 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<div class="flex items-center gap-4">
+<img alt="Dries Vincent" class="w-12 h-12 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6alakgci57E1vsOR_faPLm0_MVqm8WEA8-vURFwKXPqxEpuV95vatBzGx0Q0uq9tGVfVfzIef81GJ20sAJc7LFSTfTK62xotWadQOzKskX1fF61jSysr8AeMAdnSwjZ3zIaE_9FzhAdaPwBhfIwLV1lchX77EvIqCYChJC8V3wVvvdOOkDW7vz8eq9rGhgANQYFQYNCyVLAxNz3--1m-G_0H3pn1zYUlEWHTKGhaqpjfTg8aUj_h79hgoyrJHHa8GA0ZUV6BrBuT3"/>
+<div>
+<h4 class="font-semibold text-slate-800 dark:text-white">Dries Vincent</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400">Relacionamento de Negócios</p>
+</div>
+</div>
+<button class="bg-indigo-50 dark:bg-indigo-900/30 text-primary px-4 py-2 rounded-lg text-sm font-bold hover:bg-primary hover:text-white transition-all flex items-center gap-2">
+<span class="material-icons text-sm">add</span>
+                                Adicionar
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<script>
+        // Simple dark mode toggle helper if needed in future
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            // document.documentElement.classList.add('dark');
+        }
+    </script>
+
+</body></html>

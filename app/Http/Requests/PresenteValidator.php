@@ -23,12 +23,12 @@ class PresenteValidator extends FormRequest
     {
         return [
             'nome' => 'required|string|max:255',
-            'descricao' => 'nullable|string|max:255',
+            'descricao' => 'nullable|string',
             'preco' => 'nullable|numeric',
             'link' => 'nullable|string',
             'image_url' => 'nullable',
             'lista_id' => 'required|string',
-            'anotacoes' => 'nullable|string|max:255',
+            'anotacoes' => 'nullable|string',
             'avaliacao' => 'nullable|integer',
             'categoria_ids' => 'nullable|array',
             'cadastrado_por' => 'required|string',

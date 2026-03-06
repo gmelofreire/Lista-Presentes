@@ -38,9 +38,10 @@ class GrupoValidator extends FormRequest
     {
         return [
             'nome' => 'required|string|max:255',
-            'descricao' => 'required|string|max:255',
+            'descricao' => 'nullable|string',
             'integrante_ids' => 'required|array',
             'image_url' => 'nullable',
+            'cadastrado_por' => 'required|exists:users,id',
         ];
     }
 

@@ -58,7 +58,7 @@
             <li v-for="lista in (listas?.data || [])" :key="lista.id"
                 class="col-span-1  rounded-2xl duration-200">
                 <div class="shadow-sm group hover:shadow-md transition-shadow ">
-                    <div class="flex h-24 w-full items-center justify-between px-5 pt-9 rounded-t-lg bg-cover bg-center bg-no-repeat relative"
+                    <div class="flex w-full items-center justify-between px-5 pt-16 rounded-t-lg bg-cover bg-center bg-no-repeat relative"
                         :style="{ backgroundImage: `url(${lista.image_url})` }">
                         <div
                             class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent rounded-t-2xl">

@@ -11,7 +11,7 @@ import PhoneInput from '@/Components/PhoneInput.vue';
 import Alert from '@/Components/Alert.vue';
 
 const page = usePage();
-const user = page.props.user;
+const user = page.props.auth.user;
 const fileInput = ref(null);
 const selectedFile = ref(null);
 const previewUrl = ref(user.perfil.image_url);

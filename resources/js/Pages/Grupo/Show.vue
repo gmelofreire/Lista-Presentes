@@ -15,7 +15,7 @@ defineProps({
 })
 
 const page = usePage();
-const user = page.props.user;
+const user = page.props.auth.user;
 
 const hasSuccessMessage = computed(() => {
     return page.props.flash?.status || page.props.status;

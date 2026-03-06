@@ -86,5 +86,19 @@ class User extends Authenticatable
         return $this->hasMany(Amizade::class, 'usuario_id')
             ->orWhere('amigo_id', $this->id);
     }
+    public function amizadesAtivas()
+    {
+        return $this->hasMany(Amizade::class, 'usuario_id')
+            ->where('status', 'aceito')
+            ->orWhere(function ($query) {
+                $query->where('amigo_id', $this->id)
+                    ->where('status', 'aceito');
+            });
+    }
+    public function amizadesPendentes()
+    {
+        return $this->hasMany(Amizade::class, 'amigo_id')
+            ->where('status', 'pendente');
+    }
 
 }
