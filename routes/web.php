@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AmizadeController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\GrupoController;
 use App\Http\Controllers\ListaController;
@@ -24,6 +25,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/perfil', [PerfilController::class, 'edit'])->name('perfil.edit');
     Route::post('/perfil', [PerfilController::class, 'update'])->name('perfil.update');
     Route::delete('/perfil', [PerfilController::class, 'destroy'])->name('perfil.destroy');
+    
+    Route::resource('/amizades', AmizadeController::class)->except(['store']);
+    Route::post('/amizades/{id}', [AmizadeController::class, 'store'])->name('amizade.store');
+
+    Route::get('/api/usuarios/buscar', [AmizadeController::class, 'buscarUsuarios'])->name('usuarios.buscar');
 
     Route::resource('/listas', ListaController::class)->except(['update']);
     Route::post('/listas/{id}', [ListaController::class, 'update'])->name('listas.update');

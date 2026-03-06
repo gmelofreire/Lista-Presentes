@@ -31,8 +31,10 @@ class PresenteController extends Controller
             $dados['image_url'] = $uploader->upload($dados['image_url'], 'presente', $uploader->extensoesImagem);
         }
         $presente = Presente::create($dados);
-
-        $presente->categorias()->sync($dados['categoria_ids']);
+        
+        if (isset($dados['categoria_ids'])) {
+            $presente->categorias()->sync($dados['categoria_ids']);
+        }
 
         return redirect()->route('listas.show', $dados['lista_id']);
     }

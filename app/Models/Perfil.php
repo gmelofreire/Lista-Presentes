@@ -16,6 +16,7 @@ class Perfil extends Model
         "genero",
         "telefone",
         "image_url",
+        "biografia",
         "user_id",
     ];
 

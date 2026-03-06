@@ -12,18 +12,12 @@ class Amizade extends Model
         "status",
     ];
 
+    protected $primaryKey = null;
+    public $incrementing = false;
+
     protected static function boot()
     {
         parent::boot();
-
-        static::creating(function ($amizade) {
-            if ($amizade->usuario_id > $amizade->amigo_id) {
-                [$amizade->usuario_id, $amizade->amigo_id] = [
-                    $amizade->amigo_id,
-                    $amizade->usuario_id,
-                ];
-            }
-        });
     }
 
     public function scopeEntre($query, $user1, $user2)
@@ -37,5 +31,13 @@ class Amizade extends Model
         });
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'usuario_id');
+    }
 
+    public function amigo()
+    {
+        return $this->belongsTo(User::class, 'amigo_id');
+    }
 }

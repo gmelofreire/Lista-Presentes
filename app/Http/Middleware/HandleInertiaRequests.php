@@ -31,14 +31,15 @@ class HandleInertiaRequests extends Middleware
     {
         return [
             ...parent::share($request),
-            'user' => $request->user() ? [
-                ...$request->user()->toArray(),
-                'perfil' => $request->user()->perfil,
-                'amizades' => $request->user()->amizades,
-                'grupos' => $request->user()->grupos,
-                'categorias' => $request->user()->categorias,
-                'presentes' => $request->user()->presentes,
-            ] : null,
+            'auth' => [
+                'user' => $request->user() ? array_merge($request->user()->toArray(), [
+                    'perfil' => $request->user()->perfil,
+                    'amizades' => $request->user()->amizades,
+                    'grupos' => $request->user()->grupos,
+                    'categorias' => $request->user()->categorias,
+                    'presentes' => $request->user()->presentes,
+                ]) : null,
+            ],
         ];
     }
 }

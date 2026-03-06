@@ -38,7 +38,7 @@ defineProps<{
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
-                        <div class="flex w-full h-64 items-center justify-between space-x-6 py-9 rounded-xl bg-cover bg-center bg-no-repeat relative"
+                        <div class="flex w-full h-96 items-center justify-between space-x-6 py-9 rounded-xl bg-cover bg-center bg-no-repeat relative"
                             :style="{ backgroundImage: `url(${lista.image_url})` }">
 
                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent rounded-xl flex flex-col justify-end px-8 pb-8">

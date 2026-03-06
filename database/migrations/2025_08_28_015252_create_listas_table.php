@@ -17,7 +17,6 @@ return new class extends Migration {
             $table->date("data_evento")->nullable();
             $table->longText("image_url")->nullable();
             $table->uuid('grupo_id')->nullable();
-            $table->foreign('grupo_id')->references('id')->on('grupos')->onDelete('cascade');
             $table->timestamps();
         });
     }

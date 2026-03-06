@@ -57,15 +57,16 @@
         <ul role="list" class="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <li v-for="grupo in (grupos?.data || [])" :key="grupo.id"
                 class="col-span-1 divide-y divide-gray-200 rounded-2xl bg-blue-50 shadow-sm group hover:shadow-md transition-shadow duration-200">
-                <div class="flex h-24 w-full items-center justify-between px-5 pt-9 rounded-t-lg bg-cover bg-center bg-no-repeat relative"
+                <div class="flex  w-full items-center justify-between px-5 pt-16 rounded-t-lg bg-cover bg-center bg-no-repeat relative"
                     :style="{ backgroundImage: `url(${grupo.image_url})` }">
                     <div
                         class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent rounded-t-2xl">
-                            <div class="flex text-white justify-end p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                <Link :href="route('grupos.edit', grupo.id)">
-                                    <PencilIcon class="size-5" />
-                                </Link>
-                            </div>
+                        <div
+                            class="flex text-white justify-end p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            <Link :href="route('grupos.edit', grupo.id)">
+                            <PencilIcon class="size-5" />
+                            </Link>
+                        </div>
                     </div>
                     <div class="flex-1 truncate rounded-lg py-3 relative z-10">
                         <div class="flex items-center space-x-3">
@@ -104,7 +105,8 @@
                     class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
                     Anterior
                 </button>
-                <button @click="goToPage((grupos?.current_page || 1) + 1)" :disabled="(grupos?.current_page || 1) === (grupos?.last_page || 1)"
+                <button @click="goToPage((grupos?.current_page || 1) + 1)"
+                    :disabled="(grupos?.current_page || 1) === (grupos?.last_page || 1)"
                     class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
                     Próxima
                 </button>
@@ -124,7 +126,8 @@
                 </div>
                 <div>
                     <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                        <button @click="goToPage((grupos?.current_page || 1) - 1)" :disabled="(grupos?.current_page || 1) === 1"
+                        <button @click="goToPage((grupos?.current_page || 1) - 1)"
+                            :disabled="(grupos?.current_page || 1) === 1"
                             class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
                             <span class="sr-only">Anterior</span>
                             <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
@@ -138,8 +141,7 @@
                             page === (grupos?.current_page || 1)
                                 ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
                                 : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50',
-                            'relative inline-flex items-center px-4 py-2 border text-sm font-medium'
-                        ]">
+                            'relative inline-flex items-center px-4 py-2 border text-sm font-medium']">
                             {{ page }}
                         </button>
 
