@@ -153,7 +153,7 @@ const submit = () => {
                     </header>
 
                     <div class="mt-6 sm:mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-                        <div class="flex lg:justify-start">
+                        <div class="flex lg:justify-center">
                             <div class="flex flex-col items-center lg:items-start">
                                 <div class="relative inline-block mx-auto">
                                     <input ref="fileInput" type="file" accept="image/*" class="hidden"

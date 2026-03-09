@@ -87,11 +87,18 @@
                         </div>
                     </div>
                 </div>
-                <div class="flex justify-center">
-                    <div class="inline-block text-white text-center my-3 font-medium bg-indigo-500 py-1 px-4 rounded-full hover:bg-indigo-600 transition-colors" >
-                    {{ lista.cadastrado_por.name }}
+                <Link :href="route('amizades.show', lista.cadastrado_por.id)" class="w-full">
+                    <div class="flex justify-center">
+                        <div class="inline-flex items-center gap-2 text-black my-3 font-bold text-lg py-1 pl-1 pr-4 rounded-full" >
+                            <img 
+                                :src="lista.cadastrado_por.perfil?.image_url || '/img/default_profile.png'" 
+                                :alt="lista.cadastrado_por.name"
+                                class="size-8 rounded-full object-cover bg-white"
+                            >
+                            <span>{{ lista.cadastrado_por.name }}</span>
+                        </div>
                     </div>
-                </div>
+                </Link>
                 <!-- <div class="text-center my-3">
                     Lista de: 
                     {{ lista.cadastrado_por.name }}
