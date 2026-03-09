@@ -98,8 +98,8 @@
                 </div> -->
                 <div class="flex justify-center" v-if="lista.grupo">
                     <Link :href="route('grupos.show', lista.grupo.id)">
-                    <div class="inline-block text-white text-center my-3 font-medium bg-indigo-500 py-1 px-4 rounded-full hover:bg-indigo-600 transition-colors" >
-                        {{ lista.grupo?.nome }}
+                    <div class="inline-block text-black text-center my-3 font-medium py-1 px-4 rounded-full transition-colors" >
+                       Grupo da lista: {{ lista.grupo?.nome }}
                     </div>
                     </Link>
                 </div>

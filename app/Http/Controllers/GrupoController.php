@@ -41,7 +41,7 @@ class GrupoController extends Controller
 
     public function show($id)
     {
-        $grupo = Grupo::with("integrantes", "listas.cadastradoPor")->find($id);
+        $grupo = Grupo::with("integrantes", "listas.cadastradoPor.perfil")->find($id);
         return Inertia::render(
             'Grupo/Show',
             [

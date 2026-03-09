@@ -106,7 +106,7 @@ const breakpoints = computed(() => ({
                         </div>
 
                         <!-- Action Buttons -->
-                        <div class="flex flex-row md:flex-col gap-3 w-full md:w-auto mt-4 md:mt-0">
+                        <div class="flex flex-row md:flex-col gap-3 w-full md:w-auto mt-4 md:mt-0" v-if="amigo.id !== currentUser.id">
                             <!-- Caso 1: Sem amizade (Botão Seguir) -->
                             <Link :href="route('amizade.store', amigo?.id)" method="post" as="button"
                                 v-if="!amizade"
