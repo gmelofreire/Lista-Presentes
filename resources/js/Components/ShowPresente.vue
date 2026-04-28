@@ -77,13 +77,39 @@
                         </div>
 
                         <!-- Botão -->
-                        <div class="mb-6 mt-6 w-full flex justify-center">
-                          <a :href="presente.link"
+                        <div class="mb-6 mt-6 w-full flex justify-center gap-3">
+                          <a v-if="presente.link" :href="presente.link"
                             class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 px-5 py-3 rounded-xl text-white font-semibold shadow-md transition"
                             target="_blank" rel="noopener noreferrer">
                             <ArrowRightIcon class="w-5 h-5" />
                             Ver presente na loja
                           </a>
+                          <button v-if="presente.link" @click="showQRCode = true"
+                            class="flex items-center gap-2 bg-gray-600 hover:bg-gray-700 px-5 py-3 rounded-xl text-white font-semibold shadow-md transition">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h2M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                            </svg>
+                            QR Code
+                          </button>
+                        </div>
+
+                        <!-- QR Code Modal -->
+                        <div v-if="showQRCode" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" @click.self="showQRCode = false">
+                          <div class="bg-white p-6 rounded-xl shadow-xl max-w-sm w-full">
+                            <div class="flex justify-between items-center mb-4">
+                              <h3 class="text-lg font-bold">QR Code do Link</h3>
+                              <button @click="showQRCode = false" class="text-gray-500 hover:text-gray-700">
+                                <XMarkIcon class="w-5 h-5" />
+                              </button>
+                            </div>
+                            <div class="flex justify-center mb-4">
+                              <img :src="`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(presente.link)}`" alt="QR Code" class="rounded-lg shadow-md" />
+                            </div>
+                            <p class="text-xs text-gray-500 text-center mb-4">Escaneie o código com seu celular</p>
+                            <a :href="presente.link" target="_blank" class="block text-center text-indigo-600 hover:text-indigo-800 text-sm">
+                              Abrir link →
+                            </a>
+                          </div>
                         </div>
 
                         <!-- Anotações -->
@@ -116,6 +142,7 @@ import { StarIcon, ArrowRightIcon } from '@heroicons/vue/20/solid'
 import { Link } from '@inertiajs/vue3';
 
 const open = ref(true)
+const showQRCode = ref(false)
 
 const props = defineProps({
   presente: {

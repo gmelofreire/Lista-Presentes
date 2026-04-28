@@ -69,10 +69,9 @@ defineProps({
                         </div>
                     </div>
                 </div>
-
+                <!--
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     
-                    <!-- Recent Lists -->
                     <div class="space-y-4">
                         <div class="flex justify-between items-center px-1">
                             <h3 class="text-lg font-medium text-gray-900 flex items-center gap-2">
@@ -107,7 +106,6 @@ defineProps({
                         </div>
                     </div>
 
-                    <!-- Recent Groups -->
                     <div class="space-y-4">
                         <div class="flex justify-between items-center px-1">
                             <h3 class="text-lg font-medium text-gray-900 flex items-center gap-2">
@@ -139,6 +137,7 @@ defineProps({
                         </div>
                     </div>
                 </div>
+                -->
             </div>
         </div>
     </AppLayout>

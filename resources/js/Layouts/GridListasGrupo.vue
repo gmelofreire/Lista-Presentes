@@ -56,9 +56,9 @@
 
         <ul role="list" class="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <li v-for="lista in (listas?.data || [])" :key="lista.id"
-                class="col-span-1  rounded-2xl duration-200">
-                <div class="shadow-sm group hover:shadow-md transition-shadow ">
-                    <div class="flex w-full items-center justify-between px-5 pt-16 rounded-t-lg bg-cover bg-center bg-no-repeat relative"
+                class="col-span-1 rounded-2xl duration-200">
+                <div class="shadow-sm group hover:shadow-md rounded-2xl transition-shadow ">
+                    <div class="flex w-full items-center justify-between px-5 pt-16 rounded-t-lg bg-cover bg-center bg-no-repeat h-32 relative"
                         :style="{ backgroundImage: `url(${lista.image_url})` }">
                         <div
                             class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent rounded-t-2xl">
@@ -87,22 +87,17 @@
                         </div>
                     </div>
                 </div>
-                <Link :href="route('amizades.show', lista.cadastrado_por.id)" class="w-full">
-                    <div class="flex justify-center">
-                        <div class="inline-flex items-center gap-2 text-black my-3 font-bold text-lg py-1 pl-1 pr-4 rounded-full" >
-                            <img 
-                                :src="lista.cadastrado_por.perfil?.image_url || '/img/default_profile.png'" 
-                                :alt="lista.cadastrado_por.name"
-                                class="size-8 rounded-full object-cover bg-white"
-                            >
-                            <span>{{ lista.cadastrado_por.name }}</span>
-                        </div>
-                    </div>
-                </Link>
-                <!-- <div class="text-center my-3">
-                    Lista de: 
-                    {{ lista.cadastrado_por.name }}
-                </div> -->
+                <div class="flex justify-center mt-5">
+                    <Link :href="route('amizades.show', lista.cadastrado_por.id)" 
+                        class="flex items-center gap-2">
+                        <img 
+                            :src="lista.cadastrado_por.perfil?.image_url || '/img/default_profile.png'" 
+                            :alt="lista.cadastrado_por.name"
+                            class="size-8 rounded-full object-cover bg-gray-200"
+                        >
+                        <span class="text-sm font-medium text-gray-900">{{ lista.cadastrado_por.name }}</span>
+                    </Link>
+                </div>
             </li>
         </ul>
 

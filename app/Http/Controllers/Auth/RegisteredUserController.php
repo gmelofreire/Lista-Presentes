@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\Perfil;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -34,7 +33,9 @@ class RegisteredUserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'username' => 'required|string|min:3|max:30|unique:'.User::class.'|regex:/^[a-zA-Z0-9_]+$/',
+            'password' => ['required', 'confirmed', Rules\Password::defaults()->mixedCase()->numbers()->symbols()],
+            'termos' => 'required|accepted',
         ]);
 
         $user = User::create([
@@ -46,8 +47,9 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        Auth::login($user);
+        // Não faz login automático - precisa verificar email primeiro
+        // Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect(route('verification.pending'));
     }
 }

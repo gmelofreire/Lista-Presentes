@@ -11,8 +11,16 @@ const form = useForm({
     nome: '',
     descricao: '',
     image_url: null,
+    banner_url: null,
+    visibilidade: 'publica',
     integrante_ids: []
 })
+
+const visibilidadeOptions = [
+    { value: 'publica', label: 'Público', description: 'Qualquer pessoa pode ver e solicitar entrada' },
+    { value: 'privada', label: 'Privada', description: 'Apenas membros podem ver' },
+    { value: 'compartilhada', label: 'Compartilhada', description: 'Por convite apenas' },
+]
 
 const props = defineProps({
     title: {
@@ -39,6 +47,7 @@ const filteredAmizades = computed(() => {
 
 const hasErrorMessage = computed(() => Object.keys(form.errors).length > 0);
 const imagePreview = ref(null);
+const bannerPreview = ref(null);
 const searchTerm = ref('');
 
 
@@ -76,6 +85,28 @@ const removeImage = () => {
     imagePreview.value = null;
     form.image_url = null;
     document.getElementById('image_url').value = '';
+};
+
+const handleBannerChange = async (event) => {
+    const file = event.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+        let processedFile = file;
+        if (file.size > 5 * 1024 * 1024) {
+            processedFile = await compressImage(file, 5, 0.8);
+        }
+        form.banner_url = processedFile;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            bannerPreview.value = e.target.result;
+        };
+        reader.readAsDataURL(processedFile);
+    }
+};
+
+const removeBanner = () => {
+    bannerPreview.value = null;
+    form.banner_url = '';
+    document.getElementById('banner_url').value = '';
 };
 
 const submit = () => {
@@ -222,6 +253,31 @@ onUnmounted(() => {
                                         </div>
                                         <InputError class="mt-2" :message="form.errors.image_url" />
                                     </div>
+                                    
+                                    <!-- Banner Upload -->
+                                    <div class="col-span-full">
+                                        <InputLabel for="banner_url" value="Banner do Grupo (opcional)" />
+                                        <div v-if="!bannerPreview"
+                                            class="mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-lg cursor-pointer border-gray-300 hover:border-indigo-500 hover:bg-indigo-50 transition"
+                                            @click="$refs.bannerInput.click()">
+                                            <div class="space-y-1 text-center">
+                                                <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                                <div class="flex text-sm text-gray-600 justify-center">
+                                                    <span class="relative font-medium text-indigo-600 hover:text-indigo-500">Clique para enviar banner</span>
+                                                </div>
+                                                <p class="text-xs text-gray-500">PNG, JPG até 5MB</p>
+                                            </div>
+                                        </div>
+                                        <input type="file" ref="bannerInput" id="banner_url" name="banner_url" accept="image/*" class="hidden" @change="handleBannerChange" />
+                                        <div v-if="bannerPreview" class="mt-4 relative">
+                                            <img :src="bannerPreview" alt="Preview do banner" class="w-full h-32 object-cover rounded-lg border shadow-sm" />
+                                            <button type="button" @click="removeBanner"
+                                                class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600">×</button>
+                                        </div>
+                                    </div>
+                                    
                                     <div class="sm:col-span-1">
                                         <InputLabel for="nome" value="Nome do Grupo" :required="true" />
                                         <TextInput id="nome" type="text" class="mt-1 block w-full" v-model="form.nome"
@@ -234,6 +290,19 @@ onUnmounted(() => {
                                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                             v-model="form.descricao" placeholder="Descreva seu grupo..."></textarea>
                                         <InputError class="mt-2" :message="form.errors.descricao" />
+                                    </div>
+                                    
+                                    <div class="col-span-full">
+                                        <InputLabel for="visibilidade" value="Visibilidade" />
+                                        <div class="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                            <div v-for="option in visibilidadeOptions" :key="option.value"
+                                                @click="form.visibilidade = option.value"
+                                                class="cursor-pointer rounded-lg border p-4 transition-all"
+                                                :class="form.visibilidade === option.value ? 'border-indigo-600 bg-indigo-50' : 'border-gray-300 hover:border-gray-400'">
+                                                <div class="text-sm font-medium text-gray-900">{{ option.label }}</div>
+                                                <div class="text-xs text-gray-500">{{ option.description }}</div>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <div class="col-span-full">

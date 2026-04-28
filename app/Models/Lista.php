@@ -8,9 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Lista extends Model
 {
     use HasUuid;
-    protected $table = "listas";
-    protected $primaryKey = "id";
-    protected $keyType = "string";
+
+    protected $table = 'listas';
+
+    protected $primaryKey = 'id';
+
+    protected $keyType = 'string';
+
     protected $fillable = [
         'nome',
         'descricao',
@@ -20,6 +24,7 @@ class Lista extends Model
         'data_evento',
         'grupo_id',
         'image_url',
+        'token_convite',
     ];
 
     public function cadastradoPor()
@@ -47,5 +52,10 @@ class Lista extends Model
     public function grupo()
     {
         return $this->belongsTo(Grupo::class);
+    }
+
+    public function participantes()
+    {
+        return $this->hasMany(ListaParticipante::class, 'lista_id');
     }
 }

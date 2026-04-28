@@ -17,7 +17,6 @@ defineProps({
 const form = useForm({
     email: '',
     password: '',
-    remember: false,
 });
 
 const submit = () => {
@@ -50,10 +49,10 @@ const submit = () => {
             <form class="mt-8 space-y-6" @submit.prevent="submit">
                 <div class="space-y-4">
                     <div>
-                        <InputLabel for="email" value="Email" />
+                        <InputLabel for="email" value="Email ou Username" />
                         <TextInput 
                             id="email" 
-                            type="email" 
+                            type="text" 
                             class="mt-1 block w-full" 
                             v-model="form.email" 
                             required 
@@ -78,7 +77,6 @@ const submit = () => {
                 </div>
 
                 <div class="flex items-center justify-between">
-
                     <div class="text-sm">
                         <Link 
                             v-if="canResetPassword" 

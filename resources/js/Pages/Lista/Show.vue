@@ -65,13 +65,11 @@ defineProps<{
                             </div>
                         </div>
 
-                        <!-- Descrição -->
                         <div class="m-6">
                             <div class="text-2xl font-bold">Descrição</div>
                             <div class="mt-2">{{ lista.descricao }}</div>
                         </div>
 
-                        <!-- Presentes -->
                         <div class="flex justify-between mx-6">
                             <div class="text-2xl font-bold">Presentes</div>
                             <Link :href="route('presentes.create', { lista_id: lista.id })">

@@ -55,11 +55,13 @@ const filteredCategorias = computed(() => {
                                 <h1 class="text-2xl font-semibold text-gray-900">Categorias</h1>
                                 <p class="mt-2 text-sm text-gray-700">Uma lista de todas as categorias da sua conta incluindo nome, descrição, cor e ações.</p>
                             </div>
-                            <Link :href="route('categorias.create')">
-                                <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                    Adicionar categoria
-                                </button>
-                            </Link>
+                            <div class="flex gap-2">
+                                <Link :href="route('categorias.create')">
+                                    <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                        Adicionar categoria
+                                    </button>
+                                </Link>
+                            </div>
                         </div>
 
                         <!-- Filtros -->
@@ -110,7 +112,7 @@ const filteredCategorias = computed(() => {
                                                 
                                                 <!-- Mensagem quando não há categorias -->
                                                 <tr v-if="filteredCategorias.length === 0">
-                                                    <td colspan="4" class="px-6 py-14 text-center text-sm text-gray-500">
+                                                    <td colspan="3" class="px-6 py-14 text-center text-sm text-gray-500">
                                                         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                                                         </svg>

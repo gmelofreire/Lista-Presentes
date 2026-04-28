@@ -72,7 +72,7 @@
                         <div class="flex items-center space-x-3">
                             <h3 class="truncate text-sm font-bold text-white">{{ grupo.nome }}</h3>
                         </div>
-                        <p class="mt-1 truncate text-sm text-white">{{ grupo.descricao }}</p>
+                        <p class="mt-1 truncate text-sm text-white">{{ grupo.descricao }} &ensp; </p>
                     </div>
                 </div>
                 <div>
