@@ -19,7 +19,7 @@ Route::get('/', function () {
 Route::get('/home', [EmailVerifiedCheckController::class, '__invoke'])->middleware('auth')->name('home');
 
 // Rotas autenticadas e verificadas
-Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('auth')->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/perfil', [PerfilController::class, 'edit'])->name('perfil.edit');
