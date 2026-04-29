@@ -8,12 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Grupo extends Model
 {
     use HasUuid;
+
     protected $fillable = [
-        "nome",
-        "descricao",
-        "image_url",
-        "cadastrado_por",
-        "user_id",
+        'nome',
+        'descricao',
+        'image_url',
+        'cadastrado_por',
+        'user_id',
     ];
 
     public function usuarios()
@@ -42,12 +43,11 @@ class Grupo extends Model
             'user_id',
             'id',
             'id'
-        );
+        )->withPivot('role');
     }
 
     public function listas()
     {
         return $this->hasMany(Lista::class);
     }
-
 }

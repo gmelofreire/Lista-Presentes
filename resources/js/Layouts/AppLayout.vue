@@ -106,10 +106,35 @@
         <span class="text-black text-xl font-bold">{{ title }}</span>
         <div class="flex flex-1 justify-end gap-x-4 self-stretch lg:gap-x-6">
           <div class="flex items-center gap-x-4 lg:gap-x-6">
-            <button type="button" class="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500">
+            <button type="button" class="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500 relative" @click="showNotifications = !showNotifications">
               <span class="sr-only">View notifications</span>
               <BellIcon class="size-6" aria-hidden="true" />
+              <span v-if="unreadCount > 0" class="absolute -top-1 -right-1 size-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                {{ unreadCount > 9 ? '9+' : unreadCount }}
+              </span>
             </button>
+
+            <!-- Notifications Dropdown -->
+            <div v-if="showNotifications" class="absolute right-0 top-12 z-50 w-96 bg-white rounded-lg shadow-lg border border-gray-200 p-4">
+              <div class="flex justify-between items-center mb-3">
+                <h3 class="text-sm font-semibold text-gray-900">Notificações</h3>
+                <button @click="showNotifications = false" class="text-gray-400 hover:text-gray-600">
+                  <XMarkIcon class="size-4" />
+                </button>
+              </div>
+              <div v-if="notificationsList.length === 0" class="text-sm text-gray-500 text-center py-4">
+                Nenhuma notificação
+              </div>
+              <div v-else class="space-y-2 max-h-64 overflow-y-auto">
+                <div v-for="notif in notificationsList" :key="notif.id" 
+                  class="p-2 rounded-lg cursor-pointer hover:bg-gray-50" :class="!notif.lido ? 'bg-indigo-50' : ''"
+                  @click="marcarLidaENavegar(notif)">
+                  <p class="text-sm font-medium text-gray-900">{{ notif.titulo }}</p>
+                  <p class="text-xs text-gray-500">{{ notif.mensagem }}</p>
+                  <p class="text-xs text-gray-400 mt-1">{{ new Date(notif.created_at).toLocaleDateString('pt-BR') }}</p>
+                </div>
+              </div>
+            </div>
 
             <!-- Separator -->
             <div class="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200" aria-hidden="true" />
@@ -164,6 +189,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import axios from 'axios'
 import {
   Dialog,
   DialogPanel,
@@ -200,6 +226,36 @@ defineProps({
 const user = usePage().props.auth.user;
 
 const sidebarOpen = ref(false)
+const showNotifications = ref(false)
+const unreadCount = ref(0)
+const notificationsList = ref([])
+
+const loadNotifications = async () => {
+  try {
+    const [naoLidas, recentes] = await Promise.all([
+      axios.get('/notificacoes/nao-lidas'),
+      axios.get('/notificacoes/recentes')
+    ]);
+    unreadCount.value = naoLidas.data.count;
+    notificationsList.value = recentes.data.notificacoes || [];
+  } catch (error) {
+    console.error('Erro ao carregar notificações', error);
+  }
+};
+
+const marcarLidaENavegar = async (notif) => {
+  try {
+    if (!notif.lido) {
+      await axios.post(`/notificacoes/${notif.id}/marcar-lido`);
+    }
+    showNotifications.value = false;
+    window.location.href = notif.link;
+  } catch (error) {
+    console.error('Erro ao marcar notificação', error);
+  }
+};
+
+loadNotifications();
 
 const navigation = [
   { name: 'Página inicial', href: route('dashboard'), icon: HomeIcon, current: route().current('dashboard') },

@@ -32,17 +32,22 @@ class GrupoValidator extends FormRequest
         $this->merge($data);
     }
 
-
-
     public function rules(): array
     {
-        return [
+        $rules = [
             'nome' => 'required|string|max:255',
             'descricao' => 'nullable|string',
             'integrante_ids' => 'required|array',
             'image_url' => 'nullable',
-            'cadastrado_por' => 'required|exists:users,id',
+            'banner_url' => 'nullable',
+            'visibilidade' => 'nullable|string',
         ];
+
+        if ($this->routeIs('grupos.store')) {
+            $rules['cadastrado_por'] = 'required|exists:users,id';
+        }
+
+        return $rules;
     }
 
     public function messages(): array

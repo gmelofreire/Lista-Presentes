@@ -220,7 +220,7 @@ const nextPage = () => {
 
         <ul role="list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             <li v-for="presente in paginatedPresentes" :key="presente.id"
-                class="flex flex-col text-center w-full max-w-sm mx-auto sm:mx-0">
+                class="flex flex-col text-center w-full max-w-sm mx-auto sm:mx-0 h-72">
                 <div class="group relative cursor-pointer" @click="openPresenteModal(presente)">
                     <div class="flex aspect-square w-full items-end justify-between space-x-6 pt-9 rounded-xl bg-cover bg-center bg-no-repeat relative group-hover:opacity-75 transition-opacity duration-200"
                         :style="{ backgroundImage: `url(${presente.image_url})` }">
@@ -240,8 +240,9 @@ const nextPage = () => {
                                 {{ presente.nome }}
                             </span>
                         </h3>
-                        <p class="mt-1 text-gray-900 font-medium text-sm sm:text-base">R$ {{ presente.preco.toFixed(2)
-                            }}</p>
+                        <p class="mt-1 text-gray-900 font-medium text-sm sm:text-base">
+                            {{ presente.preco ? 'R$ ' + Number(presente.preco).toFixed(2) : 'Sem preço' }}
+                        </p>
                         <div v-if="presente.comprado" class="mt-2">
                             <span
                                 class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
