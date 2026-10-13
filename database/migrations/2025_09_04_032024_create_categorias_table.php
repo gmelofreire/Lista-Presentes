@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('categorias', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string("nome");
-            $table->string("hex_cor");
-            $table->longText("descricao");
-            $table->foreignUuid('cadastrado_por')->references('id')->on("users");
+            $table->string('nome');
+            $table->string('hex_cor');
+            $table->longText('descricao');
+            $table->foreignUuid('cadastrado_por')->references('id')->on('users');
             $table->timestamps();
         });
     }

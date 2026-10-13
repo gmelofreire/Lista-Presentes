@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->after('email', function (Blueprint $table) {
-                $table->string("username")->unique();
+                $table->string('username')->unique();
                 $table->foreignUuid('perfil_id')->nullable()->references('id')->on('perfis')->onDelete('set null');
             });
         });

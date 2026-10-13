@@ -13,16 +13,16 @@ return new class extends Migration
     {
         Schema::create('presentes', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('lista_id')->references('id')->on("listas");
-            $table->string("nome");
+            $table->foreignUuid('lista_id')->references('id')->on('listas');
+            $table->string('nome');
             $table->longText('descricao');
-            $table->float("preco", 2)->nullable();
+            $table->float('preco', 2)->nullable();
             $table->longText('link')->nullable();
             $table->longText('image_url')->nullable();
             $table->longText('anotacoes')->nullable();
-            $table->foreignUuid('cadastrado_por')->references('id')->on("users");
+            $table->foreignUuid('cadastrado_por')->references('id')->on('users');
             $table->boolean('comprado')->default(false);
-            $table->integer("avaliacao")->nullable();
+            $table->integer('avaliacao')->nullable();
             $table->timestamps();
         });
     }

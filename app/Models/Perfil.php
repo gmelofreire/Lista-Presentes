@@ -8,16 +8,18 @@ use Illuminate\Database\Eloquent\Model;
 class Perfil extends Model
 {
     use HasUuid;
-    protected $table = "perfis";
-    protected $primaryKey = "id";
+
+    protected $table = 'perfis';
+
+    protected $primaryKey = 'id';
 
     protected $fillable = [
-        "data_nascimento",
-        "genero",
-        "telefone",
-        "image_url",
-        "biografia",
-        "user_id",
+        'data_nascimento',
+        'genero',
+        'telefone',
+        'image_url',
+        'biografia',
+        'user_id',
     ];
 
     public function user()
