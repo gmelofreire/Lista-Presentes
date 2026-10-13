@@ -7,10 +7,11 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasFactory, HasUuid, Notifiable;
+    use HasApiTokens, HasFactory, HasUuid, Notifiable;
 
     protected $fillable = [
         'name',
@@ -42,6 +43,11 @@ class User extends Authenticatable implements MustVerifyEmail
         });
     }
 
+    public function dispositivos()
+    {
+        return $this->hasMany(Dispositivo::class);
+    }
+
     public function perfil()
     {
         return $this->hasOne(Perfil::class);
@@ -49,14 +55,8 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function listas()
     {
-        return $this->belongsToMany(
-            Lista::class,
-            'lista_usuarios',
-            'usuario_id',
-            'lista_id',
-            'id',
-            'id'
-        );
+        return $this->belongsToMany(Lista::class, 'lista_participantes', 'usuario_id', 'lista_id')
+            ->withPivot('papel');
     }
 
     public function presentes()
@@ -85,6 +85,16 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Amizade::class, 'usuario_id')
             ->orWhere('amigo_id', $this->id);
+    }
+
+    /** Ids dos amigos com amizade aceita, em qualquer sentido da relação. */
+    public function amigoIds(): \Illuminate\Support\Collection
+    {
+        return Amizade::where('status', 'aceito')
+            ->where(fn ($q) => $q->where('usuario_id', $this->id)->orWhere('amigo_id', $this->id))
+            ->get(['usuario_id', 'amigo_id'])
+            ->map(fn ($a) => $a->usuario_id === $this->id ? $a->amigo_id : $a->usuario_id)
+            ->values();
     }
 
     public function amizadesAtivas()
