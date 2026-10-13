@@ -15,7 +15,7 @@ Aplicação web em português (pt-BR) para criar e compartilhar **listas de pres
 | Banco | SQLite por padrão (`.env.example`); o `.env` local aponta para outro driver (`DB_HOST` etc.) |
 | Sessão/cache/fila | driver `database` |
 | E-mail | `MAIL_MAILER=log` por padrão |
-| Deploy | Heroku-like (`Procfile`: `heroku-php-apache2 public/`) |
+| Execução | Apenas local (XAMPP / `php artisan serve`); sem deploy em nuvem |
 | Libs front extras | `vue3-carousel`, `vue-the-mask`, `lodash`, `axios` |
 
 Não há SPA separada: o Laravel serve `resources/views/app.blade.php` e o Inertia injeta a página Vue. Controllers retornam `Inertia::render('Pasta/Pagina', [...props])`.

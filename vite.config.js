@@ -1,15 +1,18 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => {
+    const env = loadEnv(mode, process.cwd(), '');
+    // Defina VITE_HMR_HOST (ex.: dominio do ngrok) para expor o dev server via https.
+    const tunnelHost = env.VITE_HMR_HOST;
+
+    return {
     server: {
-        host: true,
-        https: true,
-        hmr: {
-            protocol: 'wss',
-            host: 'thrivingly-dehiscent-judith.ngrok-free.dev',
-        },
+        host: tunnelHost ? true : '127.0.0.1',
+        ...(tunnelHost
+            ? { https: true, hmr: { protocol: 'wss', host: tunnelHost } }
+            : {}),
     },
     plugins: [
         laravel({
@@ -25,4 +28,5 @@ export default defineConfig({
             },
         }),
     ],
+};
 });
