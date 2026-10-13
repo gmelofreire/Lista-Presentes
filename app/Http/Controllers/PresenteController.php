@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\PresenteUpdateValidator;
 use App\Http\Requests\PresenteValidator;
 use App\Models\Categoria;
+use App\Models\Lista;
 use App\Models\Presente;
-use App\Services\FileUploadService;
+use App\Services\PresenteService;
+use App\Services\ProdutoUrlScraper;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -14,8 +16,11 @@ class PresenteController extends Controller
 {
     protected $title = 'Presentes';
 
+    public function __construct(private PresenteService $presentes) {}
+
     public function create($lista_id)
     {
+        $this->authorize('update', Lista::findOrFail($lista_id));
         $categorias = Categoria::where('cadastrado_por', auth()->user()->id)->get();
 
         return Inertia::render('Presente/Create', [
@@ -25,215 +30,85 @@ class PresenteController extends Controller
         ]);
     }
 
-    public function store(PresenteValidator $request, FileUploadService $uploader)
+    public function store(PresenteValidator $request)
     {
-        $dados = $request->validated();
+        $this->authorize('update', Lista::findOrFail($request->input('lista_id')));
 
-        // Convert empty strings to null for nullable fields
-        $nullableFields = ['descricao', 'preco', 'link', 'image_url', 'anotacoes'];
-        foreach ($nullableFields as $field) {
-            if (isset($dados[$field]) && $dados[$field] === '') {
-                $dados[$field] = null;
-            }
-        }
+        $presente = $this->presentes->criar($request->user(), $request->validated());
 
-        if (isset($dados['image_url'])) {
-            if ($dados['image_url'] instanceof \Illuminate\Http\UploadedFile) {
-                $dados['image_url'] = $uploader->upload($dados['image_url'], 'presente', $uploader->extensoesImagem);
-            } elseif (is_string($dados['image_url']) && filter_var($dados['image_url'], FILTER_VALIDATE_URL)) {
-                // Keep the URL as-is (from URL scraping)
-            } else {
-                // Otherwise, remove the field to keep existing value
-                unset($dados['image_url']);
-            }
-        }
-        $presente = Presente::create($dados);
-
-        if (isset($dados['categoria_ids'])) {
-            $presente->categorias()->sync($dados['categoria_ids']);
-        }
-
-        return redirect()->route('listas.show', $dados['lista_id'])->with('status', 'Presente adicionado à lista.');
+        return redirect()->route('listas.show', $presente->lista_id)->with('status', 'Presente adicionado à lista.');
     }
 
     public function edit($id)
     {
-        $presente = Presente::with('categorias')->find($id);
-        $categorias = Categoria::where('cadastrado_por', auth()->user()->id)->get();
+        $presente = Presente::with('categorias')->findOrFail($id);
+        $this->authorize('update', $presente);
         $presente->categoria_ids = $presente->categorias->pluck('id')->toArray();
 
         return Inertia::render('Presente/Edit', [
             'title' => $this->title,
             'presente' => $presente,
-            'categorias' => $categorias,
+            'categorias' => Categoria::where('cadastrado_por', auth()->user()->id)->get(),
         ]);
     }
 
-    public function update(PresenteUpdateValidator $request, FileUploadService $uploader, $id)
+    public function update(PresenteUpdateValidator $request, $id)
     {
-        $dados = $request->validated();
+        $presente = Presente::findOrFail($id);
+        $this->authorize('update', $presente);
 
-        // Convert empty strings to null for nullable fields
-        $nullableFields = ['descricao', 'preco', 'link', 'image_url', 'anotacoes'];
-        foreach ($nullableFields as $field) {
-            if (isset($dados[$field]) && $dados[$field] === '') {
-                $dados[$field] = null;
-            }
-        }
-
-        if (isset($dados['image_url'])) {
-            if ($dados['image_url'] instanceof \Illuminate\Http\UploadedFile) {
-                $dados['image_url'] = $uploader->upload($dados['image_url'], 'presente', $uploader->extensoesImagem);
-            } elseif (is_string($dados['image_url']) && filter_var($dados['image_url'], FILTER_VALIDATE_URL)) {
-                // Keep the URL as-is (from URL scraping)
-            } else {
-                unset($dados['image_url']);
-            }
-        }
-        $presente = Presente::find($id);
-        $presente->update($dados);
-
-        if (isset($dados['categoria_ids'])) {
-            $presente->categorias()->sync($dados['categoria_ids']);
-        }
+        $this->presentes->atualizar($presente, $request->validated());
 
         return redirect()->route('listas.show', $presente->lista_id)->with('status', 'Presente atualizado.');
     }
 
     public function destroy($id)
     {
-        $presente = Presente::find($id);
-        $lista_id = $presente->lista_id;
+        $presente = Presente::findOrFail($id);
+        $this->authorize('delete', $presente);
         $presente->delete();
 
-        return redirect()->route('listas.show', $lista_id)->with('status', 'Presente removido da lista.');
+        return redirect()->route('listas.show', $presente->lista_id)->with('status', 'Presente removido da lista.');
     }
 
-    public function buscarDadosUrl(Request $request)
+    public function reservar($id)
     {
-        $url = $request->get('url');
+        $presente = Presente::findOrFail($id);
+        $this->authorize('reservar', $presente);
 
-        if (! $url || ! filter_var($url, FILTER_VALIDATE_URL)) {
-            return response()->json(['error' => 'URL inválida'], 400);
-        }
+        $this->presentes->reservar($presente, auth()->user());
+
+        return redirect()->back()->with('status', 'Presente reservado!');
+    }
+
+    public function liberar($id)
+    {
+        $presente = Presente::findOrFail($id);
+        $this->authorize('reservar', $presente);
+
+        $this->presentes->liberar($presente, auth()->user());
+
+        return redirect()->back()->with('status', 'Reserva cancelada.');
+    }
+
+    public function buscarDadosUrl(Request $request, ProdutoUrlScraper $scraper)
+    {
+        $url = (string) $request->get('url');
 
         try {
-            $client = new \GuzzleHttp\Client([
-                'timeout' => 10,
-                'headers' => [
-                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                    'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-                    'Accept-Language' => 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
-                ],
-            ]);
+            $resultado = $scraper->buscar($url);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['error' => 'URL inválida'], 422);
+        } catch (\Throwable $e) {
+            report($e);
 
-            $response = $client->get($url);
-            $html = (string) $response->getBody();
-
-            $result = [
-                'nome' => '',
-                'descricao' => '',
-                'preco' => '',
-                'imagem' => '',
-            ];
-
-            libxml_use_internal_errors(true);
-            $doc = new \DOMDocument;
-            $doc->loadHTML($html, LIBXML_NOERROR | LIBXML_NOWARNING);
-
-            $xpath = new \DOMXPath($doc);
-
-            $titleSelectors = [
-                '//meta[@property="og:title"]/@content',
-                '//meta[@name="title"]/@content',
-                '//title',
-                '//h1[@class="product-title"]',
-                '//h1[@class="product-name"]',
-                '//h1[contains(@class, "title")]',
-                '//div[contains(@class, "product-name")]/h1',
-            ];
-            foreach ($titleSelectors as $selector) {
-                $nodes = $xpath->query($selector);
-                if ($nodes && $nodes->length > 0) {
-                    $result['nome'] = trim($nodes->item(0)->nodeValue);
-                    break;
-                }
-            }
-
-            $descSelectors = [
-                '//meta[@property="og:description"]/@content',
-                '//meta[@name="description"]/@content',
-                '//div[contains(@class, "product-description")]',
-                '//div[contains(@class, "description")]',
-            ];
-            foreach ($descSelectors as $selector) {
-                $nodes = $xpath->query($selector);
-                if ($nodes && $nodes->length > 0) {
-                    $result['descricao'] = trim($nodes->item(0)->nodeValue);
-                    break;
-                }
-            }
-
-            $priceSelectors = [
-                '//meta[@property="product:price:amount"]/@content',
-                '//meta[@itemprop="price"]/@content',
-                '//span[@itemprop="price"]',
-                '//span[contains(@class, "price")]',
-                '//div[contains(@class, "price")]',
-                '//span[contains(@class, "product-price")]',
-                // Amazon
-                '//span[@id="priceblock_ourprice"]',
-                '//span[@id="priceblock_dealprice"]',
-                '//span[@class="a-price-whole"]',
-                '//div[@id="apex_desktop_ingressprice"]',
-                // AliExpress
-                '//span[contains(@class, "price-default--current")]',
-                '//span[contains(@class, "price-value")]',
-                '//div[contains(@class, "price-sale")]',
-                '//div[contains(@class, "price-default--defaultPriceWrap")]',
-                // Magazine Luiza
-                '//p[contains(@data-testid, "price-value")]',
-                // Generic
-                '//span[contains(@data-testid, "price-value-integer")]',
-            ];
-            foreach ($priceSelectors as $selector) {
-                $nodes = $xpath->query($selector);
-                if ($nodes && $nodes->length > 0) {
-                    $priceText = $nodes->item(0)->nodeValue;
-                    // Remove currency symbols and spaces
-                    $priceText = preg_replace('/[^0-9,.]/', '', str_replace(',', '.', $priceText));
-                    $priceText = trim($priceText, '.');
-                    if (is_numeric($priceText) && (float) $priceText > 0) {
-                        $result['preco'] = number_format((float) $priceText, 2, '.', '');
-                        break;
-                    }
-                }
-            }
-
-            $imageSelectors = [
-                '//meta[@property="og:image"]/@content',
-                '//meta[@itemprop="image"]/@content',
-                '//img[@itemprop="image"]/@src',
-                '//img[contains(@class, "product-image")]/@src',
-                '//img[contains(@class, "gallery")]/@src',
-                '//div[contains(@class, "product-image")]/img/@src',
-            ];
-            foreach ($imageSelectors as $selector) {
-                $nodes = $xpath->query($selector);
-                if ($nodes && $nodes->length > 0) {
-                    $result['imagem'] = $nodes->item(0)->nodeValue;
-                    break;
-                }
-            }
-
-            if (empty($result['nome'])) {
-                return response()->json(['error' => 'Não foi possível extrair informações do produto'], 422);
-            }
-
-            return response()->json($result);
-
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Erro ao buscar dados: '.$e->getMessage()], 500);
+            return response()->json(['error' => 'Não foi possível buscar os dados desta URL.'], 502);
         }
+
+        if (! $resultado) {
+            return response()->json(['error' => 'Não foi possível extrair informações do produto'], 422);
+        }
+
+        return response()->json($resultado);
     }
 }

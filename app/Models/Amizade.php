@@ -7,12 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class Amizade extends Model
 {
     protected $fillable = [
-        "usuario_id",
-        "amigo_id",
-        "status",
+        'usuario_id',
+        'amigo_id',
+        'status',
     ];
 
     protected $primaryKey = null;
+
     public $incrementing = false;
 
     protected static function boot()
@@ -22,12 +23,9 @@ class Amizade extends Model
 
     public function scopeEntre($query, $user1, $user2)
     {
-        return $query->where(function ($q) use ($user1, $user2) {
-            $q->where('usuario_id', $user1)
-                ->where('amigo_id', $user2);
-        })->orWhere(function ($q) use ($user1, $user2) {
-            $q->where('usuario_id', $user2)
-                ->where('amigo_id', $user1);
+        return $query->where(function ($grupo) use ($user1, $user2) {
+            $grupo->where(fn ($q) => $q->where('usuario_id', $user1)->where('amigo_id', $user2))
+                ->orWhere(fn ($q) => $q->where('usuario_id', $user2)->where('amigo_id', $user1));
         });
     }
 

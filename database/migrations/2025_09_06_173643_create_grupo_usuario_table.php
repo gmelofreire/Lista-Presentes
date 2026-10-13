@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('grupo_usuario', function (Blueprint $table) {
-            $table->uuid("grupo_id");
-            $table->uuid("user_id");
+            $table->uuid('grupo_id');
+            $table->uuid('user_id');
             $table->timestamps();
 
             $table->primary(['grupo_id', 'user_id']);

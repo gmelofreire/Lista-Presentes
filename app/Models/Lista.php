@@ -25,7 +25,15 @@ class Lista extends Model
         'grupo_id',
         'image_url',
         'token_convite',
+        'token_expira_em',
     ];
+
+    protected $hidden = ['token_convite'];
+
+    protected function casts(): array
+    {
+        return ['token_expira_em' => 'datetime'];
+    }
 
     public function cadastradoPor()
     {
@@ -34,14 +42,9 @@ class Lista extends Model
 
     public function usuarios()
     {
-        return $this->belongsToMany(
-            User::class,
-            'lista_usuarios',
-            'lista_id',
-            'usuario_id',
-            'id',
-            'id'
-        );
+        return $this->belongsToMany(User::class, 'lista_participantes', 'lista_id', 'usuario_id')
+            ->withPivot('papel')
+            ->withTimestamps();
     }
 
     public function presentes()
@@ -57,5 +60,15 @@ class Lista extends Model
     public function participantes()
     {
         return $this->hasMany(ListaParticipante::class, 'lista_id');
+    }
+
+    public function adicionarParticipante(string $usuarioId, string $papel = 'visualizador'): void
+    {
+        $this->participantes()->firstOrCreate(['usuario_id' => $usuarioId], ['papel' => $papel]);
+    }
+
+    public function pertenceA(User|string $user): bool
+    {
+        return $this->cadastrado_por_id === ($user instanceof User ? $user->id : $user);
     }
 }

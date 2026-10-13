@@ -12,11 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('grupos', function (Blueprint $table) {
-            $table->uuid("id")->primary();
+            $table->uuid('id')->primary();
             $table->string('nome');
             $table->longText('descricao')->nullable();
             $table->longText('image_url')->nullable();
-            $table->foreignUuid('cadastrado_por')->references("id")->on("users");
+            $table->foreignUuid('cadastrado_por')->references('id')->on('users');
             $table->timestamps();
         });
     }

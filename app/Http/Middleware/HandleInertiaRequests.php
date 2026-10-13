@@ -37,13 +37,11 @@ class HandleInertiaRequests extends Middleware
                 'error' => $request->session()->get('error'),
             ],
             'auth' => [
-                'user' => $request->user() ? array_merge($request->user()->toArray(), [
-                    'perfil' => $request->user()->perfil,
-                    'amizades' => $request->user()->amizades,
-                    'grupos' => $request->user()->grupos,
-                    'categorias' => $request->user()->categorias,
-                    'presentes' => $request->user()->presentes,
-                ]) : null,
+                // Só o essencial; relações pesadas (grupos, categorias, presentes, amizades) vêm por página.
+                'user' => $request->user() ? array_merge(
+                    $request->user()->only(['id', 'name', 'email', 'username', 'email_verified_at']),
+                    ['perfil' => $request->user()->perfil]
+                ) : null,
             ],
         ];
     }

@@ -3,19 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ListaStoreValidator;
+use App\Http\Requests\ListaUpdateValidator;
 use App\Models\Categoria;
 use App\Models\Lista;
-use App\Models\ListaParticipante;
 use App\Models\User;
-use App\Services\FileUploadService;
+use App\Services\ListaService;
 use Illuminate\Http\Request;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
 class ListaController extends Controller
 {
     protected $title = 'Listas de Presentes';
+
+    public function __construct(private ListaService $listas) {}
 
     public function index(Request $request)
     {
@@ -40,14 +41,14 @@ class ListaController extends Controller
         }
 
         $sortBy = $request->get('sort', 'created_at');
-        $sortDir = $request->get('direction', 'desc');
+        $sortDir = $request->get('direction') === 'asc' ? 'asc' : 'desc';
 
         $allowedSorts = ['nome', 'data_evento', 'created_at'];
         if (in_array($sortBy, $allowedSorts)) {
             $query->orderBy($sortBy, $sortDir);
         }
 
-        $perPage = $request->get('per_page', 15);
+        $perPage = min(max((int) $request->get('per_page', 15), 1), 50);
         $listas = $query->paginate($perPage);
 
         $grupos = auth()->user()->grupos;
@@ -68,7 +69,8 @@ class ListaController extends Controller
 
     public function show($id)
     {
-        $lista = Lista::with(['presentes.categorias', 'participantes.usuario.perfil'])->find($id);
+        $lista = Lista::with(['presentes.categorias', 'participantes.usuario.perfil'])->findOrFail($id);
+        $this->authorize('view', $lista);
         $categorias = Categoria::where('cadastrado_por', auth()->user()->id)->get();
 
         return Inertia::render('Lista/Show', [
@@ -89,147 +91,95 @@ class ListaController extends Controller
         ]);
     }
 
-    public function store(ListaStoreValidator $request, FileUploadService $uploader)
+    public function store(ListaStoreValidator $request)
     {
-        try {
-            $dados = $request->validated();
+        $this->listas->criar($request->user(), $request->validated());
 
-            if (isset($dados['image_url']) && $dados['image_url'] instanceof UploadedFile) {
-                $dados['image_url'] = $uploader->upload($dados['image_url'], 'listas', $uploader->extensoesImagem);
-            } else {
-                $dados['image_url'] = '/img/default_cover.png';
-            }
-            $lista = Lista::create($dados);
-            $lista->usuarios()->attach(auth()->user()->id);
-
-            ListaParticipante::create([
-                'lista_id' => $lista->id,
-                'usuario_id' => auth()->user()->id,
-                'papel' => 'admin',
-            ]);
-
-            // Dispara notificação aos membros do grupo
-            if ($lista->grupo_id) {
-                $grupo = \App\Models\Grupo::find($lista->grupo_id);
-                if ($grupo) {
-                    event(new \App\Events\NovaListaNoGrupo($lista, $grupo, auth()->user()));
-                }
-            }
-
-            return Redirect::route('listas.index')->with('status', 'Lista criada com sucesso!');
-        } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
-        }
-
+        return Redirect::route('listas.index')->with('status', 'Lista criada com sucesso!');
     }
 
     public function edit($id)
     {
-        $lista = Lista::find($id);
-        $grupos = auth()->user()->grupos;
+        $lista = Lista::findOrFail($id);
+        $this->authorize('update', $lista);
 
         return Inertia::render('Lista/Edit', [
             'title' => $this->title,
-            'grupos' => $grupos,
+            'grupos' => auth()->user()->grupos,
             'lista' => $lista,
         ]);
     }
 
-    public function update($id, Request $request, FileUploadService $uploader)
+    public function update($id, ListaUpdateValidator $request)
     {
-        try {
-            $dados = $request->all();
-            if ($dados['image_url'] instanceof UploadedFile) {
-                $dados['image_url'] = $uploader->upload($dados['image_url'], 'listas', $uploader->extensoesImagem);
-            } elseif (($dados['image_url']) == null || $dados['image_url'] == '') {
-                $dados['image_url'] = '/img/default_cover.png';
-            }
-            Lista::find($id)->update($dados);
+        $lista = Lista::findOrFail($id);
+        $this->authorize('update', $lista);
 
-            return Redirect::route('listas.index')->with('status', 'Lista atualizada com sucesso!');
-        } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
-        }
+        $this->listas->atualizar($lista, $request->user(), $request->validated());
+
+        return Redirect::route('listas.index')->with('status', 'Lista atualizada com sucesso!');
     }
 
-    public function buscarParticipantes(Request $request)
+    public function destroy($id)
     {
-        $termo = $request->get('termo', '');
+        $lista = Lista::findOrFail($id);
+        $this->authorize('delete', $lista);
 
-        $usuarios = User::where(function ($query) use ($termo) {
-            $query->where('name', 'LIKE', "%{$termo}%")
-                ->orWhere('email', 'LIKE', "%{$termo}%")
-                ->orWhere('username', 'LIKE', "%{$termo}%");
-        })
-            ->where('id', '!=', auth()->user()->id)
-            ->limit(10)
-            ->get(['id', 'name', 'username', 'email']);
+        $this->listas->excluir($lista);
 
-        return response()->json($usuarios);
+        return Redirect::route('listas.index')->with('status', 'Lista excluída.');
+    }
+
+    public function buscarParticipantes(Request $request, $listaId)
+    {
+        $this->authorize('manage', Lista::findOrFail($listaId));
+
+        $termo = (string) $request->get('termo', '');
+        if (mb_strlen($termo) < 2) {
+            return response()->json([]);
+        }
+
+        return response()->json(
+            User::where(fn ($q) => $q->where('name', 'LIKE', "%{$termo}%")->orWhere('username', 'LIKE', "%{$termo}%"))
+                ->where('id', '!=', auth()->id())
+                ->limit(10)
+                ->get(['id', 'name', 'username'])
+        );
     }
 
     public function adicionarParticipante(Request $request, $listaId)
     {
-        $request->validate([
+        $lista = Lista::findOrFail($listaId);
+        $this->authorize('manage', $lista);
+
+        $dados = $request->validate([
             'usuario_id' => 'required|exists:users,id',
             'papel' => 'required|in:admin,editor,visualizador',
         ]);
 
-        $lista = Lista::findOrFail($listaId);
-
-        $existe = ListaParticipante::where('lista_id', $listaId)
-            ->where('usuario_id', $request->usuario_id)
-            ->first();
-
-        if ($existe) {
-            return redirect()->back()->withErrors(['error' => 'Usuário já é participante desta lista.']);
-        }
-
-        ListaParticipante::create([
-            'lista_id' => $listaId,
-            'usuario_id' => $request->usuario_id,
-            'papel' => $request->papel,
-        ]);
-
-        $lista->usuarios()->attach($request->usuario_id);
+        $this->listas->adicionarParticipante($lista, $dados['usuario_id'], $dados['papel'], $request->user());
 
         return redirect()->back()->with('status', 'Participante adicionado com sucesso!');
     }
 
     public function removerParticipante($listaId, $participanteId)
     {
-        $participante = ListaParticipante::findOrFail($participanteId);
+        $lista = Lista::findOrFail($listaId);
+        $this->authorize('manage', $lista);
 
-        if ($participante->papel === 'admin' && ListaParticipante::where('lista_id', $listaId)->where('papel', 'admin')->count() === 1) {
-            return redirect()->back()->withErrors(['error' => 'Não é possível remover o último administrador.']);
-        }
-
-        $participante->delete();
-        $participante->lista->usuarios()->detach($participante->usuario_id);
+        $this->listas->removerParticipante($lista, $participanteId);
 
         return redirect()->back()->with('status', 'Participante removido com sucesso!');
     }
 
-    public function atualizarPapel(Request $request, $participanteId)
+    public function atualizarPapel(Request $request, $listaId, $participanteId)
     {
-        $request->validate([
-            'papel' => 'required|in:admin,editor,visualizador',
-        ]);
+        $lista = Lista::findOrFail($listaId);
+        $this->authorize('manage', $lista);
 
-        $participante = ListaParticipante::findOrFail($participanteId);
+        $dados = $request->validate(['papel' => 'required|in:admin,editor,visualizador']);
 
-        if ($participante->papel === 'admin' && $request->papel !== 'admin') {
-            $outrosAdmins = ListaParticipante::where('lista_id', $participante->lista_id)
-                ->where('papel', 'admin')
-                ->where('id', '!=', $participanteId)
-                ->count();
-
-            if ($outrosAdmins === 0) {
-                return redirect()->back()->withErrors(['error' => 'A lista deve ter pelo menos um administrador.']);
-            }
-        }
-
-        $participante->update(['papel' => $request->papel]);
+        $this->listas->alterarPapel($lista, $participanteId, $dados['papel']);
 
         return redirect()->back()->with('status', 'Permissão atualizada com sucesso!');
     }
@@ -237,9 +187,9 @@ class ListaController extends Controller
     public function gerarLinkConvite($listaId)
     {
         $lista = Lista::findOrFail($listaId);
-        $token = \Illuminate\Support\Str::random(32);
+        $this->authorize('manage', $lista);
 
-        $lista->update(['token_convite' => $token]);
+        $token = $this->listas->gerarConvite($lista)['token'];
 
         return response()->json([
             'link' => route('listas.participar', ['listaId' => $listaId, 'token' => $token]),
@@ -249,23 +199,9 @@ class ListaController extends Controller
 
     public function participar(Request $request, $listaId)
     {
-        $lista = Lista::where('id', $listaId)->firstOrFail();
+        $lista = Lista::findOrFail($listaId);
 
-        if ($lista->token_convite && $lista->token_convite !== $request->token) {
-            abort(403, 'Link de convite inválido.');
-        }
-
-        if (! $lista->usuarios()->where('usuario_id', auth()->user()->id)->exists()) {
-            $papel = $request->get('papel', 'visualizador');
-
-            ListaParticipante::create([
-                'lista_id' => $listaId,
-                'usuario_id' => auth()->user()->id,
-                'papel' => $papel,
-            ]);
-
-            $lista->usuarios()->attach(auth()->user()->id);
-        }
+        $this->listas->entrarPorConvite($lista, $request->user(), (string) $request->query('token', ''));
 
         return Redirect::route('listas.show', $listaId);
     }

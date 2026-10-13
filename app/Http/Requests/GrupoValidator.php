@@ -38,9 +38,18 @@ class GrupoValidator extends FormRequest
             'nome' => 'required|string|max:255',
             'descricao' => 'nullable|string',
             'integrante_ids' => 'required|array',
-            'image_url' => 'nullable',
-            'banner_url' => 'nullable',
-            'visibilidade' => 'nullable|string',
+            'integrante_ids.*' => 'exists:users,id',
+            'image_url' => ['nullable', function ($attr, $valor, $fail) {
+                if ($valor instanceof \Illuminate\Http\UploadedFile && ! in_array($valor->getMimeType(), ['image/jpeg', 'image/png', 'image/gif', 'image/webp'], true)) {
+                    $fail('A imagem deve ser jpeg, png, gif ou webp.');
+                }
+            }],
+            'banner_url' => ['nullable', function ($attr, $valor, $fail) {
+                if ($valor instanceof \Illuminate\Http\UploadedFile && ! in_array($valor->getMimeType(), ['image/jpeg', 'image/png', 'image/gif', 'image/webp'], true)) {
+                    $fail('O banner deve ser jpeg, png, gif ou webp.');
+                }
+            }],
+            'visibilidade' => 'nullable|in:publica,privada',
         ];
 
         if ($this->routeIs('grupos.store')) {

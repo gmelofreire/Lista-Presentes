@@ -71,7 +71,7 @@ class PerfilValidator extends FormRequest
             'perfil.genero.in' => 'O gênero deve ser: masculino, feminino ou outro.',
 
             'imagem.image' => 'O arquivo deve ser uma imagem.',
-            'imagem.mimes' => 'A imagem deve ser do tipo: jpeg, png, jpg, gif ou svg.',
+            'imagem.mimes' => 'A imagem deve ser do tipo: jpeg, png, jpg, gif ou webp.',
             'imagem.max' => 'A imagem não pode ser maior que 10MB.',
         ];
     }

@@ -2,23 +2,16 @@
 
 namespace App\Events;
 
+use App\Models\Grupo;
+use App\Models\Lista;
+use App\Models\User;
+use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class NovaListaNoGrupo
+class NovaListaNoGrupo implements ShouldDispatchAfterCommit
 {
     use Dispatchable, SerializesModels;
 
-    public $lista;
-
-    public $grupo;
-
-    public $criador;
-
-    public function __construct($lista, $grupo, $criador)
-    {
-        $this->lista = $lista;
-        $this->grupo = $grupo;
-        $this->criador = $criador;
-    }
+    public function __construct(public Lista $lista, public Grupo $grupo, public User $criador) {}
 }

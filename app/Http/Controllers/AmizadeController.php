@@ -4,14 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Amizade;
 use App\Models\Grupo;
-use App\Models\Notificacao;
 use App\Models\User;
+use App\Services\AmizadeService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class AmizadeController extends Controller
 {
     protected $title = 'Amizades';
+
+    public function __construct(private AmizadeService $amizades) {}
 
     public function index()
     {
@@ -27,26 +29,14 @@ class AmizadeController extends Controller
 
     public function update(Request $request, $id)
     {
-        $userName = auth()->user()->name;
-
-        Amizade::where('usuario_id', $id)
-            ->where('amigo_id', auth()->user()->id)
-            ->update(['status' => 'aceito']);
-
-        Notificacao::create([
-            'user_id' => $id,
-            'tipo' => 'amizade_aceita',
-            'titulo' => 'Amizade aceita',
-            'mensagem' => $userName.' aceitou sua solicitação de amizade',
-            'link' => route('amizades.show', auth()->user()->id),
-        ]);
+        $this->amizades->aceitar($request->user(), $id);
 
         return redirect()->back()->with('success', 'Amizade aceita com sucesso!');
     }
 
     public function show($id)
     {
-        $amigo = User::with('perfil', 'grupos', 'listas')->find($id);
+        $amigo = User::with('perfil', 'grupos', 'listas')->findOrFail($id);
         $amizade = Amizade::entre($id, auth()->user()->id)->first();
 
         $grupos_comum = $this->gruposEmComum($amigo);
@@ -61,98 +51,42 @@ class AmizadeController extends Controller
 
     public function store($id)
     {
-        $amizade = Amizade::create([
-            'usuario_id' => auth()->user()->id,
-            'amigo_id' => $id,
-            'status' => 'pendente',
-        ]);
-
-        Notificacao::create([
-            'user_id' => $id,
-            'tipo' => 'solicitacao_amizade',
-            'titulo' => 'Nova solicitação de amizade',
-            'mensagem' => auth()->user()->name.' enviou uma solicitação de amizade',
-            'link' => route('amizades.index'),
-        ]);
+        $this->amizades->solicitar(auth()->user(), User::findOrFail($id));
 
         return redirect()->route('amizades.show', $id)->with('status', 'Solicitação de amizade enviada.');
     }
 
     public function destroy($id)
     {
-        $amizade = Amizade::entre($id, auth()->user()->id)->first();
-
-        if (! $amizade) {
-            return redirect()->route('amizades.index')->with('error', 'Amizade não encontrada');
-        }
-
-        Amizade::entre($id, auth()->user()->id)->delete();
+        $this->amizades->desfazer(auth()->user(), $id);
 
         return redirect()->route('amizades.show', $id)->with('status', 'Amizade desfeita.');
     }
 
     public function reject($id)
     {
-        $amizade = Amizade::where('usuario_id', $id)
-            ->where('amigo_id', auth()->user()->id)
-            ->where('status', 'pendente')
-            ->first();
-
-        if (! $amizade) {
-            return response()->json(['success' => false, 'message' => 'Solicitação não encontrada']);
-        }
-
-        $amizade->delete();
+        $this->amizades->recusar(auth()->user(), $id);
 
         return response()->json(['success' => true, 'message' => 'Solicitação rejeitada']);
     }
 
     public function cancel($id)
     {
-        $amizade = Amizade::where('usuario_id', auth()->user()->id)
-            ->where('amigo_id', $id)
-            ->where('status', 'pendente')
-            ->first();
-
-        if (! $amizade) {
-            return response()->json(['success' => false, 'message' => 'Solicitação não encontrada']);
-        }
-
-        $amizade->delete();
+        $this->amizades->cancelar(auth()->user(), $id);
 
         return response()->json(['success' => true, 'message' => 'Solicitação cancelada']);
     }
 
     public function block($id)
     {
-        $amizade = Amizade::entre($id, auth()->user()->id)->first();
-
-        if ($amizade) {
-            $amizade->update(['status' => 'bloqueado']);
-        } else {
-            Amizade::create([
-                'usuario_id' => auth()->user()->id,
-                'amigo_id' => $id,
-                'status' => 'bloqueado',
-            ]);
-        }
+        $this->amizades->bloquear(auth()->user(), $id);
 
         return response()->json(['success' => true, 'message' => 'Usuário bloqueado']);
     }
 
     public function unblock($id)
     {
-        $amizade = Amizade::entre($id, auth()->user()->id)->first();
-
-        if (! $amizade) {
-            return response()->json(['success' => false, 'message' => 'Bloqueio não encontrado']);
-        }
-
-        if ($amizade->status !== 'bloqueado') {
-            return response()->json(['success' => false, 'message' => 'Usuário não está bloqueado']);
-        }
-
-        $amizade->delete();
+        $this->amizades->desbloquear(auth()->user(), $id);
 
         return response()->json(['success' => true, 'message' => 'Usuário desbloqueado']);
     }
