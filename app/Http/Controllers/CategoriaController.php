@@ -35,16 +35,18 @@ class CategoriaController extends Controller
             Categoria::create($dados);
 
             return redirect()->route('categorias.index')->with('status', 'Categoria criada com sucesso!');
+        } catch (\Illuminate\Auth\Access\AuthorizationException|\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            throw $e;
         } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
+            report($e);
+
+            return redirect()->back()->withErrors(['error' => 'Não foi possível concluir a operação.']);
         }
     }
 
     public function edit(Categoria $categoria)
     {
-        if ($categoria->cadastrado_por != auth()->user()->id) {
-            return redirect()->back()->withErrors(['error' => 'Categoria não encontrada']);
-        }
+        $this->authorize('update', $categoria);
 
         return Inertia::render('Categoria/Edit', [
             'title' => $this->title,
@@ -57,11 +59,17 @@ class CategoriaController extends Controller
         try {
             $dados = $request->validated();
             $categoria = Categoria::findOrFail($id);
+            $this->authorize('update', $categoria);
+            unset($dados['cadastrado_por']);
             $categoria->update($dados);
 
             return redirect()->route('categorias.index')->with('status', 'Categoria atualizada com sucesso!');
+        } catch (\Illuminate\Auth\Access\AuthorizationException|\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            throw $e;
         } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
+            report($e);
+
+            return redirect()->back()->withErrors(['error' => 'Não foi possível concluir a operação.']);
         }
     }
 
@@ -74,8 +82,12 @@ class CategoriaController extends Controller
             $categoria->delete();
 
             return redirect()->route('categorias.index')->with('status', 'Categoria excluída com sucesso!');
+        } catch (\Illuminate\Auth\Access\AuthorizationException|\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            throw $e;
         } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
+            report($e);
+
+            return redirect()->back()->withErrors(['error' => 'Não foi possível concluir a operação.']);
         }
     }
 
@@ -91,7 +103,9 @@ class CategoriaController extends Controller
 
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            report($e);
+
+            return response()->json(['error' => 'Não foi possível reordenar.'], 500);
         }
     }
 }

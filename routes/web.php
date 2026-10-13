@@ -51,11 +51,19 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('/listas', ListaController::class)->except(['update']);
     Route::post('/listas/{id}', [ListaController::class, 'update'])->name('listas.update');
+    Route::get('/listas/{listaId}/participar', [ListaController::class, 'participar'])->name('listas.participar');
+    Route::post('/listas/{listaId}/convite', [ListaController::class, 'gerarLinkConvite'])->name('listas.convite');
+    Route::get('/listas/{listaId}/participantes/buscar', [ListaController::class, 'buscarParticipantes'])->name('listas.participantes.buscar');
+    Route::post('/listas/{listaId}/participantes', [ListaController::class, 'adicionarParticipante'])->name('listas.participantes.store');
+    Route::post('/listas/{listaId}/participantes/{participanteId}/papel', [ListaController::class, 'atualizarPapel'])->name('listas.participantes.papel');
+    Route::delete('/listas/{listaId}/participantes/{participanteId}', [ListaController::class, 'removerParticipante'])->name('listas.participantes.destroy');
 
     Route::resource('/presentes', PresenteController::class)->except(['update', 'create']);
     Route::get('/presentes/create/{lista_id}', [PresenteController::class, 'create'])->name('presentes.create');
     Route::post('/presentes/update/{id}', [PresenteController::class, 'update'])->name('presentes.update');
-    Route::post('/presentes/buscar-dados-url', [PresenteController::class, 'buscarDadosUrl'])->name('presentes.buscar-dados-url');
+    Route::post('/presentes/{id}/reservar', [PresenteController::class, 'reservar'])->name('presentes.reservar');
+    Route::delete('/presentes/{id}/reservar', [PresenteController::class, 'liberar'])->name('presentes.liberar');
+    Route::post('/presentes/buscar-dados-url', [PresenteController::class, 'buscarDadosUrl'])->middleware('throttle:20,1')->name('presentes.buscar-dados-url');
 
     Route::resource('/categorias', CategoriaController::class);
     Route::post('/categorias/reorder', [CategoriaController::class, 'reorder'])->name('categorias.reorder');
@@ -66,6 +74,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/grupos/{id}/leave', [GrupoController::class, 'leave'])->name('grupos.leave');
     Route::post('/grupos/{id}/remove-member', [GrupoController::class, 'removeMember'])->name('grupos.removeMember');
     Route::post('/grupos/{id}/make-admin', [GrupoController::class, 'makeAdmin'])->name('grupos.makeAdmin');
+    Route::post('/grupos/{id}/invite-link', [GrupoController::class, 'generateInviteLink'])->name('grupos.inviteLink');
+    Route::get('/grupos/join/{token}', [GrupoController::class, 'joinByToken'])->name('grupos.join');
     Route::post('/grupos/{id}/invite-friends', [GrupoController::class, 'inviteFriends'])->name('grupos.inviteFriends');
 });
 

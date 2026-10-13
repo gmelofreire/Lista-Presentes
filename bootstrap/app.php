@@ -3,7 +3,6 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -21,8 +20,23 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\HandleInertiaRequests::class,
         ]);
 
-        $middleware->trustProxies(at: '*');
+        // Sem proxy por padrão (uso local). Com túnel (ex.: ngrok) defina TRUSTED_PROXIES; "*" só por opt-in explícito.
+        $middleware->trustProxies(at: env('TRUSTED_PROXIES') === '*' ? '*' : (env('TRUSTED_PROXIES') ? explode(',', env('TRUSTED_PROXIES')) : null));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // Toda rota /api responde JSON, mesmo sem o header Accept.
+        $exceptions->shouldRenderJsonWhen(fn (\Illuminate\Http\Request $request) => $request->is('api/*') || $request->expectsJson());
+
+        $exceptions->render(function (\App\Exceptions\RegraDeNegocioException $e, \Illuminate\Http\Request $request) {
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => $e->getMessage()], $e->status);
+            }
+
+            if ($e->status === 403) {
+                return app(\Illuminate\Contracts\Debug\ExceptionHandler::class)
+                    ->render($request, new \Symfony\Component\HttpKernel\Exception\HttpException(403, $e->getMessage()));
+            }
+
+            return back()->withErrors(['error' => $e->getMessage()])->with('error', $e->getMessage());
+        });
     })->create();
