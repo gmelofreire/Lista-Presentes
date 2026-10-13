@@ -16,11 +16,13 @@ class Notificacao extends Model
         'link',
         'lido',
         'data_lido',
+        'push_enviado_em',
     ];
 
     protected $casts = [
         'lido' => 'boolean',
         'data_lido' => 'datetime',
+        'push_enviado_em' => 'datetime',
     ];
 
     public function user()
