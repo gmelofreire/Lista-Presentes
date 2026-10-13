@@ -31,6 +31,11 @@ class HandleInertiaRequests extends Middleware
     {
         return [
             ...parent::share($request),
+            // Mensagens de uma unica exibicao. Os controllers usam 'status' e 'success'; ambos viram flash.status.
+            'flash' => fn () => [
+                'status' => $request->session()->get('status') ?? $request->session()->get('success'),
+                'error' => $request->session()->get('error'),
+            ],
             'auth' => [
                 'user' => $request->user() ? array_merge($request->user()->toArray(), [
                     'perfil' => $request->user()->perfil,

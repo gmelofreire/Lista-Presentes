@@ -6,6 +6,9 @@ import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
 import Alert from '@/Components/Alert.vue';
 import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { PhotoIcon, XMarkIcon } from '@heroicons/vue/24/outline';
+import { CheckIcon } from '@heroicons/vue/20/solid';
+
 
 const props = defineProps({
     title: {
@@ -167,160 +170,113 @@ onUnmounted(() => {
 </script>
 
 <template>
+
     <Head :title="title" />
     <AppLayout :title="title">
-        <div>
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">
-                        <Alert v-if="hasErrorMessage" type="danger" title="Erro ao atualizar grupo"
-                            message="Por favor, corrija os erros abaixo e tente novamente." class="mb-6" />
+        <div class="mx-auto max-w-3xl">
+            <Alert v-if="hasErrorMessage" type="danger" title="Não foi possível salvar"
+                message="Corrija os campos indicados e tente novamente." class="mb-6" />
+
+            <div class="mb-8">
+                <h2 class="text-3xl font-semibold text-gray-900">Editar grupo</h2>
+                <p class="mt-1 text-gray-600">Atualize imagem, descrição e quem participa.</p>
+            </div>
+
+            <div class="surface p-5 sm:p-8">
+                <form class="space-y-8" @submit.prevent="submit">
+                    <div class="grid grid-cols-1 gap-5">
+                        <!-- Imagem -->
                         <div>
-                            <h2 class="text-2xl font-bold text-gray-900">Editar Grupo</h2>
+                            <InputLabel for="image_url" value="Imagem do grupo" />
+                            <button v-if="!imagePreview" type="button"
+                                class="press mt-2 flex w-full flex-col items-center rounded-xl border-2 border-dashed border-gray-300 px-6 py-10 hover:border-brand-500 hover:bg-brand-50/50"
+                                @click="$refs.fileInput.click()">
+                                <PhotoIcon class="size-10 text-gray-400" aria-hidden="true" />
+                                <span class="mt-2 text-sm font-medium text-brand-700">Escolher imagem</span>
+                                <span class="mt-1 text-xs text-gray-500">PNG ou JPG, até 5MB</span>
+                            </button>
+                            <input type="file" ref="fileInput" id="image_url" name="image_url" accept="image/*"
+                                class="hidden" @change="handleFileChange" />
+                            <div v-if="imagePreview" class="relative mt-2 overflow-hidden rounded-xl">
+                                <img :src="imagePreview" alt="Pré-visualização da imagem" class="aspect-[16/7] w-full object-cover" />
+                                <button type="button" @click="removeImage"
+                                    class="press absolute right-3 top-3 flex size-8 items-center justify-center rounded-full bg-surface/90 text-gray-700 shadow-sm backdrop-blur hover:bg-surface">
+                                    <XMarkIcon class="size-4" aria-hidden="true" />
+                                    <span class="sr-only">Remover imagem</span>
+                                </button>
+                            </div>
+                            <InputError class="mt-2" :message="form.errors.image_url" />
                         </div>
-                        <div class="mt-6">
-                            <form>
-                                <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                                    <div class="col-span-full">
-                                        <InputLabel for="image_url" value="Foto do grupo" />
 
-                                        <!-- Área de Upload -->
-                                        <div v-if="!imagePreview"
-                                            class=" mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-lg cursor-pointer border-gray-300 hover:border-indigo-500 hover:bg-indigo-50 transition"
-                                            @click="$refs.fileInput.click()">
-                                            <div class="space-y-1 text-center">
-                                                <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor"
-                                                    fill="none" viewBox="0 0 48 48">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M28 8H12a4 4 0 00-4 4v24a4 4 0 004 4h24a4 4 0 004-4V20l-12-12z" />
-                                                </svg>
-                                                <div class="flex text-sm text-gray-600 justify-center">
-                                                    <span
-                                                        class="relative font-medium text-indigo-600 hover:text-indigo-500">
-                                                        Clique para enviar
-                                                    </span>
-                                                </div>
-                                                <p class="text-xs text-gray-500">PNG, JPG até 5MB</p>
-                                            </div>
-                                        </div>
+                        <div>
+                            <InputLabel for="nome" value="Nome do grupo" :required="true" />
+                            <TextInput id="nome" type="text" class="mt-1.5 block w-full" v-model="form.nome" required
+                                autofocus autocomplete="off" />
+                            <InputError class="mt-2" :message="form.errors.nome" />
+                        </div>
 
-                                        <input type="file" ref="fileInput" id="image_url" name="image_url"
-                                            accept="image/*" class="hidden" @change="handleFileChange" />
+                        <div>
+                            <InputLabel for="descricao" value="Descrição" />
+                            <textarea id="descricao" name="descricao" rows="3" class="mt-1.5 block w-full"
+                                v-model="form.descricao" placeholder="Para que serve o grupo e quem participa"></textarea>
+                            <InputError class="mt-2" :message="form.errors.descricao" />
+                        </div>
 
-                                        <div v-if="imagePreview" class="mt-4 relative">
-                                            <img :src="imagePreview" alt="Preview da imagem"
-                                                class="w-full h-56 object-cover rounded-lg border shadow-sm" />
-                                            <button type="button" @click="removeImage"
-                                                class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600">
-                                                ×
-                                            </button>
-                                        </div>
-                                        <InputError class="mt-2" :message="form.errors.image_url" />
-                                    </div>
-                                    <div class="sm:col-span-1">
-                                        <InputLabel for="nome" value="Nome do Grupo" :required="true" />
-                                        <TextInput id="nome" type="text" class="mt-1 block w-full" v-model="form.nome"
-                                            required autofocus autocomplete="nome" />
-                                        <InputError class="mt-2" :message="form.errors.nome" />
-                                    </div>
-                                    <div class="col-span-full">
-                                        <InputLabel for="descricao" value="Descrição" />
-                                        <textarea id="descricao" name="descricao" rows="3"
-                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                            v-model="form.descricao" placeholder="Descreva seu grupo..."></textarea>
-                                        <InputError class="mt-2" :message="form.errors.descricao" />
-                                    </div>
+                        <!-- Integrantes -->
+                        <div>
+                            <InputLabel for="integrantes" value="Integrantes" />
+                            <input id="integrantes" v-model="searchTerm" type="search" placeholder="Buscar amigos"
+                                class="mt-1.5 block w-full" />
 
-                                    <div class="col-span-full">
-                                        <InputLabel for="integrantes" value="Integrantes" />
-                                        <div class="mt-1">
-                                            <!-- Barra de busca -->
-                                            <div class="mb-3">
-                                                <TextInput
-                                                    v-model="searchTerm"
-                                                    type="text"
-                                                    placeholder="Buscar amigos..."
-                                                    class="w-full"
-                                                />
-                                            </div>
-                                            
-                                            <div class="bg-white border border-gray-300 rounded-md shadow-sm max-h-60 overflow-auto">
-                                                <div v-if="!props.amizades || props.amizades.length === 0"
-                                                    class="px-3 py-4 text-gray-500 text-sm text-center">
-                                                    Nenhum amigo disponível para adicionar ao grupo
-                                                </div>
-                                                <div v-else-if="filteredAmizades.length === 0"
-                                                    class="px-3 py-4 text-gray-500 text-sm text-center">
-                                                    Nenhum amigo encontrado com "{{ searchTerm }}"
-                                                </div>
-                                                <div v-else class="py-2">
-                                                    <div v-for="amizade in filteredAmizades" :key="amizade.id"
-                                                    @click="toggleIntegrante(amizade.id)"
-                                                    class="flex items-center space-x-3 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors duration-150"
-                                                    :class="{ 'bg-indigo-50': isIntegranteSelected(amizade.id) }">
-                                                        <div class="flex-shrink-0">
-                                                            <div class="w-4 h-4 border-2 rounded flex items-center justify-center transition-all duration-150"
-                                                                :class="isIntegranteSelected(amizade.id) ? 'bg-indigo-600 border-indigo-600' : 'border-gray-300'">
-                                                                <svg v-if="isIntegranteSelected(amizade.id)"
-                                                                    class="w-3 h-3 text-white" fill="currentColor"
-                                                                    viewBox="0 0 20 20">
-                                                                    <path fill-rule="evenodd"
-                                                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                                                        clip-rule="evenodd"></path>
-                                                                </svg>
-                                                            </div>
-                                                        </div>
-
-                                                        <!-- Avatar do integrante -->
-                                                        <div v-if="amizade.perfil?.image_url"
-                                                            class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white text-sm font-semibold">
-                                                            <img :src="amizade.perfil.image_url" alt="Avatar"
-                                                                class="w-full h-full rounded-full">
-                                                        </div>
-                                                        <div v-else
-                                                            class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white text-sm font-semibold">
-                                                            {{ getInitials(amizade.nome || amizade.name) }}
-                                                        </div>
-
-                                                        <!-- Nome do integrante -->
-                                                        <div class="flex-1">
-                                                            <div class="text-sm font-medium text-gray-900">
-                                                                {{ amizade.nome || amizade.name }}
-                                                            </div>
-                                                            <div v-if="amizade.email"
-                                                                class="text-xs text-gray-500 truncate">
-                                                                {{ amizade.username }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div v-if="form.integrante_ids.length > 0" class="mt-2 text-sm text-gray-600">
-                                                {{ form.integrante_ids.length - 1 }} integrante(s) selecionado(s)
-                                            </div>
-                                        </div>
-                                        <InputError class="mt-2" :message="form.errors.integrante_ids" />
-                                    </div>
-                                    <div class="col-span-full">
-                                        <div class="flex justify-between">
-                                            <Link :href="route('grupos.show', grupo.id)">
-                                            <button
-                                                class="border bg-white text-black px-4 py-2 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
-                                                Cancelar
-                                            </button>
-                                            </Link>
-                                            <button @click="submit" type="button"
-                                                class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                                                Atualizar
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
+                            <div class="mt-3 max-h-64 overflow-auto rounded-xl border border-gray-200">
+                                <p v-if="!props.amizades || props.amizades.length === 0"
+                                    class="px-4 py-8 text-center text-sm text-gray-500">
+                                    Você ainda não tem amigos para adicionar. Convide pessoas depois pela página do grupo.
+                                </p>
+                                <p v-else-if="filteredAmizades.length === 0" class="px-4 py-8 text-center text-sm text-gray-500">
+                                    Nenhum amigo encontrado com "{{ searchTerm }}"
+                                </p>
+                                <ul v-else class="divide-y divide-gray-100">
+                                    <li v-for="amizade in filteredAmizades" :key="amizade.id">
+                                        <button type="button" @click="toggleIntegrante(amizade.id)"
+                                            class="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors duration-150 hover:bg-gray-50"
+                                            :class="{ 'bg-brand-50': isIntegranteSelected(amizade.id) }">
+                                            <span class="flex size-5 shrink-0 items-center justify-center rounded border-2 transition-colors duration-150"
+                                                :class="isIntegranteSelected(amizade.id) ? 'border-brand-600 bg-brand-600' : 'border-gray-300'">
+                                                <CheckIcon v-if="isIntegranteSelected(amizade.id)" class="size-3.5 text-white" aria-hidden="true" />
+                                            </span>
+                                            <img v-if="amizade.perfil?.image_url" :src="amizade.perfil.image_url" alt=""
+                                                class="size-9 shrink-0 rounded-full object-cover" />
+                                            <span v-else
+                                                class="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-100 text-sm font-semibold text-brand-800">
+                                                {{ getInitials(amizade.nome || amizade.name) }}
+                                            </span>
+                                            <span class="min-w-0 flex-1">
+                                                <span class="block truncate text-sm font-medium text-gray-900">
+                                                    {{ amizade.nome || amizade.name }}
+                                                </span>
+                                                <span v-if="amizade.username" class="block truncate text-xs text-gray-500">
+                                                    @{{ amizade.username }}
+                                                </span>
+                                            </span>
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                            <p v-if="form.integrante_ids.length > 1" class="mt-2 text-sm text-gray-600">
+                                {{ form.integrante_ids.length - 1 }} {{ (form.integrante_ids.length - 1) === 1 ? 'integrante selecionado' : 'integrantes selecionados' }}
+                            </p>
+                            <InputError class="mt-2" :message="form.errors.integrante_ids" />
                         </div>
                     </div>
-                </div>
+
+                    <div class="flex items-center justify-between gap-3 border-t border-gray-100 pt-6">
+                        <Link :href="route('grupos.show', grupo.id)" class="btn-secondary">Cancelar</Link>
+                        <button type="submit" class="btn-primary" :disabled="form.processing">
+                            {{ form.processing ? 'Salvando...' : 'Salvar alterações' }}
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </AppLayout>

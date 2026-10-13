@@ -10,10 +10,18 @@ use App\Http\Controllers\NotificacaoController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\PresenteController;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 Route::get('/', function () {
-    return redirect(route('login'));
-});
+    if (auth()->check()) {
+        return redirect()->route('dashboard');
+    }
+
+    return Inertia::render('Welcome', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+    ]);
+})->name('welcome');
 
 // Rota de verificação - redireciona para dashboard ou página de verificação pendente
 Route::get('/home', [EmailVerifiedCheckController::class, '__invoke'])->middleware('auth')->name('home');

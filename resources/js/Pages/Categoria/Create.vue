@@ -6,6 +6,11 @@ import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
 import Alert from '@/Components/Alert.vue';
 import { ref, computed, watch } from 'vue';
+import { CheckIcon } from '@heroicons/vue/20/solid';
+import { ArrowPathIcon } from '@heroicons/vue/24/outline';
+
+// Sugestoes: saturacao moderada, boas com texto claro ou escuro
+const paleta = ['#1A7F56', '#2563EB', '#7C3AED', '#DB2777', '#DC2626', '#EA580C', '#CA8A04', '#0891B2', '#52525B', '#18181B'];
 
 const props = defineProps({
     title: {
@@ -84,109 +89,87 @@ const submit = () => {
 
     <Head :title="title" />
     <AppLayout :title="title">
-        <div>
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">
-                        <Alert v-if="hasErrorMessage" type="danger" title="Erro ao salvar perfil"
-                            message="Por favor, corrija os erros abaixo e tente novamente." class="mb-6" />
+        <div class="mx-auto max-w-3xl">
+            <Alert v-if="hasErrorMessage" type="danger" title="Não foi possível salvar"
+                message="Corrija os campos indicados e tente novamente." class="mb-6" />
+
+            <div class="mb-8">
+                <h2 class="text-3xl font-semibold text-gray-900">Nova categoria</h2>
+                <p class="mt-1 text-gray-600">Escolha um nome e uma cor. A cor aparece nos presentes dessa categoria.</p>
+            </div>
+
+            <div class="surface p-5 sm:p-8">
+                <form class="space-y-8" @submit.prevent="submit">
+                    <div class="grid grid-cols-1 gap-5">
                         <div>
-                            <h2 class="text-2xl font-bold text-gray-900">Nova Categoria</h2>
+                            <InputLabel for="nome" value="Nome da categoria" :required="true" />
+                            <TextInput id="nome" type="text" class="mt-1.5 block w-full" v-model="form.nome" required
+                                autofocus autocomplete="off" />
+                            <InputError class="mt-2" :message="form.errors.nome" />
                         </div>
-                        <div class="mt-6">
-                            <form>
-                                <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                                    <div class="sm:col-span-1">
-                                        <InputLabel for="nome" value="Nome da Categoria" :required="true" />
-                                        <TextInput id="nome" type="text" class="mt-1 block w-full" v-model="form.nome"
-                                            required autofocus autocomplete="nome" />
-                                        <InputError class="mt-2" :message="form.errors.nome" />
-                                    </div>
-                                    <!-- <div class="sm:col-span-1">
-                                        <InputLabel for="hex_cor" value="Cor" :required="true" />
-                                        <input id="hex_cor" type="color" v-model="form.hex_cor"
-                                            class="w-1/2 h-10 mt-1 p-1 border-0 rounded cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-                                        <InputError class="mt-2" :message="form.errors.hex_cor" />
-                                    </div> -->
-                                    <div class="col-span-full">
-                                        <InputLabel for="descricao" value="Descrição" />
-                                        <textarea id="descricao" name="descricao" rows="3"
-                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                            v-model="form.descricao" placeholder="Descreva a categoria..."></textarea>
-                                        <InputError class="mt-2" :message="form.errors.descricao" />
-                                    </div>
 
-                                    <!-- Color Picker Melhorado -->
-                                    <div class="sm:col-span-2">
-                                        <InputLabel for="hex_cor" value="Cor da Categoria" :required="true" />
-                                        <div class="mt-3 space-y-4">
-
-                                            <!-- Preview Principal e Controles -->
-                                            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                                                <div class="flex items-center space-x-4">
-                                                    <!-- Preview Grande -->
-                                                    <div class="w-20 h-20 rounded-xl border-2 border-white shadow-lg flex items-center justify-center transition-all duration-300"
-                                                        :style="{ backgroundColor: form.hex_cor }">
-                                                        <span class="text-sm font-semibold" :class="{
-                                                            'text-white': isDarkColor(form.hex_cor),
-                                                            'text-gray-800': !isDarkColor(form.hex_cor)
-                                                        }">Aa</span>
-                                                    </div>
-
-                                                    <!-- Informações da Cor -->
-                                                    <div class="space-y-1">
-                                                        <div class="flex items-center space-x-2">
-                                                            <input id="hex_cor" type="color" v-model="form.hex_cor"
-                                                                class="w-8 h-8 border-0 rounded cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-                                                            <input type="text" v-model="form.hex_cor"
-                                                                class="w-28 px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-mono uppercase"
-                                                                placeholder="#000000" pattern="^#[0-9A-Fa-f]{6}$"
-                                                                @input="$event.target.value = $event.target.value.toUpperCase()" />
-                                                        </div>
-                                                        <p class="text-xs text-gray-500">Clique no quadrado ou digite o
-                                                            código</p>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Botões de Ação -->
-                                                <div class="flex space-x-2">
-                                                    <button type="button" @click="generateRandomColor"
-                                                        class="px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors">
-                                                        🎲 Aleatória
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Validação -->
-                                        <div v-if="form.hex_cor && !isValidHex(form.hex_cor)"
-                                            class="mt-2 text-sm text-red-600">
-                                            ⚠️ Formato inválido. Use o formato #RRGGBB (ex: #FF5733)
-                                        </div>
-                                        <InputError class="mt-2" :message="form.errors.hex_cor" />
-                                    </div>
-
-                                    <div class="col-span-full">
-                                        <div class="flex justify-between">
-                                            <Link :href="route('categorias.index')">
-                                            <button
-                                                class="border bg-white text-black px-4 py-2 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
-                                                Cancelar
-                                            </button>
-                                            </Link>
-                                            <button @click="submit" type="button"
-                                                class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                                                Salvar
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
+                        <div>
+                            <InputLabel for="descricao" value="Descrição" />
+                            <textarea id="descricao" name="descricao" rows="3" class="mt-1.5 block w-full"
+                                v-model="form.descricao" placeholder="Para que tipo de presente serve"></textarea>
+                            <InputError class="mt-2" :message="form.errors.descricao" />
                         </div>
+
+                        <!-- Cor -->
+                        <fieldset>
+                            <legend class="block text-sm font-medium text-gray-800">
+                                Cor <span class="text-red-500">*</span>
+                            </legend>
+
+                            <div class="mt-2 flex flex-wrap gap-2" role="radiogroup" aria-label="Cores sugeridas">
+                                <button v-for="cor in paleta" :key="cor" type="button" role="radio"
+                                    :aria-checked="form.hex_cor.toUpperCase() === cor" :aria-label="`Cor ${cor}`"
+                                    class="press flex size-9 items-center justify-center rounded-full ring-offset-2"
+                                    :class="form.hex_cor.toUpperCase() === cor ? 'ring-2 ring-gray-900' : 'ring-1 ring-black/10 hover:ring-2 hover:ring-gray-300'"
+                                    :style="{ backgroundColor: cor }" @click="form.hex_cor = cor">
+                                    <CheckIcon v-if="form.hex_cor.toUpperCase() === cor" class="size-4"
+                                        :class="isDarkColor(cor) ? 'text-white' : 'text-gray-900'" aria-hidden="true" />
+                                </button>
+                            </div>
+
+                            <div class="mt-4 flex flex-wrap items-center gap-3">
+                                <input id="hex_cor" type="color" v-model="form.hex_cor" aria-label="Escolher outra cor"
+                                    class="size-10 cursor-pointer rounded-md border border-gray-300 bg-surface p-1" />
+                                <input type="text" v-model="form.hex_cor" maxlength="7" placeholder="#000000"
+                                    aria-label="Código hexadecimal da cor"
+                                    class="w-32 font-mono text-sm uppercase"
+                                    @input="$event.target.value = $event.target.value.toUpperCase()" />
+                                <button type="button" class="btn-ghost" @click="generateRandomColor">
+                                    <ArrowPathIcon class="size-4" aria-hidden="true" />
+                                    Sortear
+                                </button>
+                            </div>
+
+                            <p v-if="form.hex_cor && !isValidHex(form.hex_cor)" class="mt-2 text-sm text-red-600" role="alert">
+                                Formato inválido. Use #RRGGBB, por exemplo #FF5733.
+                            </p>
+                            <InputError class="mt-2" :message="form.errors.hex_cor" />
+
+                            <!-- Previa como aparece no presente -->
+                            <div class="mt-5 rounded-xl bg-gray-50 p-4">
+                                <p class="text-xs font-medium text-gray-500">Como vai aparecer</p>
+                                <span v-if="isValidHex(form.hex_cor)"
+                                    class="mt-2 inline-flex items-center rounded-full px-3 py-1 text-sm font-medium transition-colors duration-200"
+                                    :style="{ backgroundColor: form.hex_cor, color: isDarkColor(form.hex_cor) ? '#ffffff' : '#18181b' }">
+                                    {{ form.nome || 'Nome da categoria' }}
+                                </span>
+                            </div>
+                        </fieldset>
                     </div>
-                </div>
+
+                    <div class="flex items-center justify-between gap-3 border-t border-gray-100 pt-6">
+                        <Link :href="route('categorias.index')" class="btn-secondary">Cancelar</Link>
+                        <button type="submit" class="btn-primary" :disabled="form.processing">
+                            {{ form.processing ? 'Salvando...' : 'Criar categoria' }}
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </AppLayout>
-
 </template>

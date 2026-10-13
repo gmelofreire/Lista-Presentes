@@ -2,10 +2,12 @@
 import { Head } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { usePage, Link } from '@inertiajs/vue3'
+import Alert from '@/Components/Alert.vue'
 import GridPresentes from '@/Layouts/GridPresentes.vue'
-import BotaoVoltar from '@/Components/BotaoVoltar.vue'
 import PencilIcon from '@heroicons/vue/24/outline/PencilIcon'
 import { ArrowLeftIcon } from '@heroicons/vue/20/solid';
+import { PlusIcon } from '@heroicons/vue/24/outline';
+import { computed } from 'vue'
 
 interface Lista {
     id: string
@@ -23,6 +25,8 @@ interface Categoria {
 
 const page = usePage()
 
+const mensagem = computed(() => page.props.flash?.status)
+
 defineProps<{
     title?: string
     lista: Lista
@@ -33,56 +37,49 @@ defineProps<{
 
     <Head :title="title" />
     <AppLayout :title="title">
+        <div class="space-y-8">
+            <Alert v-if="mensagem" type="success" :title="mensagem" />
 
-        <div>
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">
-                        <div class="flex w-full h-96 items-center justify-between space-x-6 py-9 rounded-xl bg-cover bg-center bg-no-repeat relative"
-                            :style="{ backgroundImage: `url(${lista.image_url})` }">
+            <!-- Capa -->
+            <section class="relative isolate overflow-hidden rounded-2xl bg-gray-200">
+                <img :src="lista.image_url || '/img/default_cover.png'" :alt="`Capa da lista ${lista.nome}`"
+                    class="h-64 w-full object-cover sm:h-80" />
+                <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/75 via-zinc-950/15 to-transparent"></div>
 
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent rounded-xl flex flex-col justify-end px-8 pb-8">
+                <Link :href="route('listas.index')"
+                    class="press absolute left-4 top-4 flex size-10 items-center justify-center rounded-full bg-surface/90 text-gray-800 shadow-sm backdrop-blur hover:bg-surface"
+                    aria-label="Voltar para as listas">
+                    <ArrowLeftIcon class="size-5" />
+                </Link>
+                <Link :href="route('listas.edit', lista.id)"
+                    class="press absolute right-4 top-4 flex size-10 items-center justify-center rounded-full bg-surface/90 text-gray-800 shadow-sm backdrop-blur hover:bg-surface"
+                    aria-label="Editar lista">
+                    <PencilIcon class="size-5" />
+                </Link>
 
-                                <Link :href="route('listas.index')">
-                                <span class=" absolute top-6 left-6 flex items-center justify-center size-10 rounded-full shadow-lg 
-                                     bg-indigo-500
-                                     text-white hover:scale-110 hover:shadow-xl transition-all duration-300">
-                                    <ArrowLeftIcon class="w-5 h-5" />
-                                </span>
-                                </Link>
-
-                                <Link :href="route('listas.edit', lista.id)">
-                                    <span class="absolute top-6 right-6 flex items-center justify-center size-10 rounded-full shadow-lg 
-                                     bg-indigo-500
-                                     text-white hover:scale-110 hover:shadow-xl transition-all duration-300">
-                                    <PencilIcon class="size-5" />
-                                </span>
-                                </Link>
-
-                                <div class="text-white">
-                                    <h2 class="text-4xl font-bold">{{ lista.nome }}</h2>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="m-6">
-                            <div class="text-2xl font-bold">Descrição</div>
-                            <div class="mt-2">{{ lista.descricao }}</div>
-                        </div>
-
-                        <div class="flex justify-between mx-6">
-                            <div class="text-2xl font-bold">Presentes</div>
-                            <Link :href="route('presentes.create', { lista_id: lista.id })">
-                            <button class="bg-blue-500 text-white px-4 py-2 rounded-md">Adicionar Presente</button>
-                            </Link>
-                        </div>
-
-                        <GridPresentes :presentes="lista.presentes" :categorias="categorias" />
-
-                    </div>
+                <div class="absolute inset-x-0 bottom-0 p-6 sm:p-8">
+                    <h2 class="text-3xl font-semibold text-white sm:text-4xl">{{ lista.nome }}</h2>
+                    <p v-if="lista.descricao" class="mt-2 max-w-2xl text-white/85 line-clamp-2">{{ lista.descricao }}</p>
                 </div>
-            </div>
+            </section>
 
+            <!-- Presentes -->
+            <section>
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                        <h3 class="text-2xl font-semibold text-gray-900">Presentes</h3>
+                        <p class="mt-1 text-sm text-gray-500">
+                            {{ lista.presentes.length }} {{ lista.presentes.length === 1 ? 'item' : 'itens' }} na lista
+                        </p>
+                    </div>
+                    <Link :href="route('presentes.create', { lista_id: lista.id })" class="btn-primary self-start sm:self-auto">
+                        <PlusIcon class="size-4" aria-hidden="true" />
+                        Adicionar presente
+                    </Link>
+                </div>
+
+                <GridPresentes class="mt-6" :presentes="lista.presentes" :categorias="categorias" :lista-id="lista.id" />
+            </section>
         </div>
     </AppLayout>
 </template>

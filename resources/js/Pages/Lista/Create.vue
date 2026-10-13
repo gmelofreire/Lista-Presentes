@@ -6,6 +6,13 @@ import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
 import Alert from '@/Components/Alert.vue';
 import { ref, computed } from 'vue';
+import { PhotoIcon, XMarkIcon } from '@heroicons/vue/24/outline';
+
+const visibilidades = [
+    { valor: 'publica', nome: 'Pública', texto: 'Amigos e membros do grupo conseguem ver a lista.' },
+    { valor: 'privada', nome: 'Privada', texto: 'Só quem você convidar enxerga os presentes.' },
+];
+
 
 const props = defineProps({
     title: {
@@ -132,118 +139,102 @@ const compressImage = (file, maxSizeMB = 5, quality = 0.8) => {
 
     <Head :title="title" />
     <AppLayout :title="title">
-        <div>
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">
-                        <Alert v-if="hasErrorMessage" type="danger" title="Erro ao salvar perfil"
-                            message="Por favor, corrija os erros abaixo e tente novamente." class="mb-6" />
-                        <div>
-                            <h2 class="text-2xl font-bold text-gray-900">Nova Lista de Presente</h2>
+        <div class="mx-auto max-w-3xl">
+            <Alert v-if="hasErrorMessage" type="danger" title="Não foi possível salvar"
+                message="Corrija os campos indicados e tente novamente." class="mb-6" />
+
+            <div class="mb-8">
+                <h2 class="text-3xl font-semibold text-gray-900">Nova lista</h2>
+                <p class="mt-1 text-gray-600">Defina o nome, escolha a capa e quem pode ver. Os presentes entram depois.</p>
+            </div>
+
+            <div class="surface p-5 sm:p-8">
+                <form class="space-y-8" @submit.prevent="submit">
+                    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                        <!-- Capa -->
+                        <div class="col-span-full">
+                            <InputLabel for="image_url" value="Capa da lista" />
+
+                            <button v-if="!imagePreview" type="button"
+                                class="press mt-2 flex w-full flex-col items-center rounded-xl border-2 border-dashed border-gray-300 px-6 py-10 hover:border-brand-500 hover:bg-brand-50/50"
+                                @click="$refs.fileInput.click()">
+                                <PhotoIcon class="size-10 text-gray-400" aria-hidden="true" />
+                                <span class="mt-2 text-sm font-medium text-brand-700">Escolher imagem</span>
+                                <span class="mt-1 text-xs text-gray-500">PNG ou JPG, até 5MB</span>
+                            </button>
+
+                            <input type="file" ref="fileInput" id="image_url" name="image_url" accept="image/*"
+                                class="hidden" @change="handleFileChange" />
+
+                            <div v-if="imagePreview" class="relative mt-2 overflow-hidden rounded-xl">
+                                <img :src="imagePreview" alt="Pré-visualização da capa" class="aspect-[16/7] w-full object-cover" />
+                                <button type="button" @click="removeImage"
+                                    class="press absolute right-3 top-3 flex size-8 items-center justify-center rounded-full bg-surface/90 text-gray-700 shadow-sm backdrop-blur hover:bg-surface">
+                                    <XMarkIcon class="size-4" aria-hidden="true" />
+                                    <span class="sr-only">Remover imagem</span>
+                                </button>
+                            </div>
+                            <InputError class="mt-2" :message="form.errors.image_url" />
                         </div>
-                        <div class="mt-6">
-                            <form>
-                                <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                                    <div class="col-span-full">
-                                        <InputLabel for="image_url" value="Foto da lista" />
 
-                                        <!-- Área de Upload -->
-                                        <div v-if="!imagePreview"
-                                            class=" mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-lg cursor-pointer border-gray-300 hover:border-indigo-500 hover:bg-indigo-50 transition"
-                                            @click="$refs.fileInput.click()">
-                                            <div class="space-y-1 text-center">
-                                                <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor"
-                                                    fill="none" viewBox="0 0 48 48">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M28 8H12a4 4 0 00-4 4v24a4 4 0 004 4h24a4 4 0 004-4V20l-12-12z" />
-                                                </svg>
-                                                <div class="flex text-sm text-gray-600 justify-center">
-                                                    <span
-                                                        class="relative font-medium text-indigo-600 hover:text-indigo-500">
-                                                        Clique para enviar
-                                                    </span>
-                                                </div>
-                                                <p class="text-xs text-gray-500">PNG, JPG até 5MB</p>
-                                            </div>
-                                        </div>
+                        <div>
+                            <InputLabel for="nome" value="Nome da lista" :required="true" />
+                            <TextInput id="nome" type="text" class="mt-1.5 block w-full" v-model="form.nome" required
+                                autofocus autocomplete="off" />
+                            <InputError class="mt-2" :message="form.errors.nome" />
+                        </div>
 
-                                        <input type="file" ref="fileInput" id="image_url" name="image_url"
-                                            accept="image/*" class="hidden" @change="handleFileChange" />
+                        <div>
+                            <InputLabel for="grupo_id" value="Grupo" :required="true" />
+                            <select id="grupo_id" class="mt-1.5 block w-full" v-model="form.grupo_id" required>
+                                <option value="">Selecione</option>
+                                <option v-for="grupo in grupos" :key="grupo.id" :value="grupo.id">{{ grupo.nome }}</option>
+                            </select>
+                            <InputError class="mt-2" :message="form.errors.grupo_id" />
+                        </div>
 
-                                        <div v-if="imagePreview" class="mt-4 relative">
-                                            <img :src="imagePreview" alt="Preview da imagem"
-                                                class="w-full h-56 object-cover rounded-lg border shadow-sm" />
-                                            <button type="button" @click="removeImage"
-                                                class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600">
-                                                ×
-                                            </button>
-                                        </div>
-                                        <InputError class="mt-2" :message="form.errors.image_url" />
-                                    </div>
-                                    <div class="sm:col-span-1">
-                                        <InputLabel for="nome" value="Nome da Lista" :required="true" />
-                                        <TextInput id="nome" type="text" class="mt-1 block w-full" v-model="form.nome"
-                                            required autofocus autocomplete="nome" />
-                                        <InputError class="mt-2" :message="form.errors.nome" />
-                                    </div>
-                                    <div class="sm:col-span-1">
-                                        <InputLabel for="grupo_id" value="Grupo" />
-                                        <select id="grupo_id" type="text"
-                                            class="rounded-md mt-1 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 w-full"
-                                            v-model="form.grupo_id" required>
-                                            <option value="">Selecione</option>
-                                            <option v-for="grupo in grupos" :key="grupo.id" :value="grupo.id">
-                                                {{ grupo.nome }}
-                                            </option>
-                                        </select>
-                                        <InputError class="mt-2" :message="form.errors.grupo_id" />
-                                    </div>
-                                    <div class="col-span-full">
-                                        <InputLabel for="descricao" value="Descrição" />
-                                        <textarea id="descricao" name="descricao" rows="3"
-                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                            v-model="form.descricao"
-                                            placeholder="Descreva sua lista de presentes..."></textarea>
-                                        <InputError class="mt-2" :message="form.errors.descricao" />
-                                    </div>
-                                    <div class="sm:col-span-1">
-                                        <InputLabel for="visibilidade" value="Visibilidade" :required="true" />
-                                        <select id="visibilidade" name="visibilidade"
-                                            class="rounded-md mt-1 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 w-full"
-                                            v-model="form.visibilidade">
-                                            <option value="">Selecione</option>
-                                            <option value="publica">Pública</option>
-                                            <option value="privada">Privada</option>
-                                        </select>
-                                        <InputError class="mt-2" :message="form.errors.visibilidade" />
-                                    </div>
-                                    <div class="sm:col-span-1">
-                                        <InputLabel for="data_evento" value="Data do Evento"
-                                            hint="Caso seja para um evento" />
-                                        <TextInput id="data_evento" type="date" class="mt-1 block w-full"
-                                            v-model="form.data_evento" autofocus autocomplete="data_evento" />
-                                        <InputError class="mt-2" :message="form.errors.data_evento" />
-                                    </div>
-                                    <div class="col-span-full">
-                                        <div class="flex justify-between">
-                                            <Link :href="getCancelRoute()">
-                                            <button
-                                                class="border bg-white text-black px-4 py-2 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
-                                                Cancelar
-                                            </button>
-                                            </Link>
-                                            <button @click="submit" type="button"
-                                                class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                                                Salvar
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
+                        <div class="col-span-full">
+                            <InputLabel for="descricao" value="Descrição" />
+                            <textarea id="descricao" name="descricao" rows="3" class="mt-1.5 block w-full"
+                                v-model="form.descricao"
+                                placeholder="Ocasião, tamanhos, dicas para quem vai presentear"></textarea>
+                            <InputError class="mt-2" :message="form.errors.descricao" />
+                        </div>
+
+                        <fieldset class="col-span-full">
+                            <legend class="block text-sm font-medium text-gray-800">
+                                Visibilidade <span class="text-red-500">*</span>
+                            </legend>
+                            <div class="mt-1.5 grid gap-3 sm:grid-cols-2">
+                                <label v-for="op in visibilidades" :key="op.valor"
+                                    class="press flex cursor-pointer items-start gap-3 rounded-xl border p-4 has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50"
+                                    :class="form.visibilidade === op.valor ? 'border-brand-600 bg-brand-50' : 'border-gray-200 hover:border-gray-300'">
+                                    <input type="radio" name="visibilidade" :value="op.valor" v-model="form.visibilidade"
+                                        class="mt-0.5" />
+                                    <span>
+                                        <span class="block text-sm font-medium text-gray-900">{{ op.nome }}</span>
+                                        <span class="mt-0.5 block text-sm text-gray-500">{{ op.texto }}</span>
+                                    </span>
+                                </label>
+                            </div>
+                            <InputError class="mt-2" :message="form.errors.visibilidade" />
+                        </fieldset>
+
+                        <div>
+                            <InputLabel for="data_evento" value="Data do evento" hint="Se houver" />
+                            <TextInput id="data_evento" type="date" class="mt-1.5 block w-full" v-model="form.data_evento"
+                                autocomplete="off" />
+                            <InputError class="mt-2" :message="form.errors.data_evento" />
                         </div>
                     </div>
-                </div>
+
+                    <div class="flex items-center justify-between gap-3 border-t border-gray-100 pt-6">
+                        <Link :href="getCancelRoute()" class="btn-secondary">Cancelar</Link>
+                        <button type="submit" class="btn-primary" :disabled="form.processing">
+                            {{ form.processing ? 'Salvando...' : 'Criar lista' }}
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </AppLayout>

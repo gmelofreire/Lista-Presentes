@@ -1,7 +1,8 @@
 <script setup>
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import { useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import AuthSplitLayout from '@/Layouts/AuthSplitLayout.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 
 defineProps({
     email: String,
@@ -15,71 +16,43 @@ const resendError = ref('');
 
 const resend = () => {
     resendError.value = '';
+    resendMessage.value = '';
     form.post(route('verification.send'), {
         onSuccess: () => {
-            resendMessage.value = 'Email reenviado com sucesso!';
+            resendMessage.value = 'E-mail reenviado com sucesso.';
             resendDisabled.value = true;
             setTimeout(() => {
                 resendDisabled.value = false;
             }, 30000);
         },
         onError: () => {
-            resendError.value = 'Erro ao reenviar email. Tente novamente.';
+            resendError.value = 'Não foi possível reenviar o e-mail. Tente novamente.';
         }
     });
 };
 </script>
 
 <template>
-    <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-md w-full space-y-8">
-            <div>
-                <div class="mx-auto h-12 w-12 flex items-center justify-center">
-                    <svg class="h-12 w-12 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                </div>
-                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                    Verifique seu email
-                </h2>
-                <p class="mt-2 text-center text-sm text-gray-600">
-                    Enviamos um email de verificação para<br>
-                    <strong>{{ email }}</strong>
-                </p>
-            </div>
+    <Head title="Verifique seu e-mail" />
 
-            <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-                <p class="text-sm text-gray-500 text-center mb-6">
-                    Por favor, clique no link enviado ao seu email para verificar sua conta. 
-                    Se você não recebeu o email, podemos reenviá-lo.
-                </p>
+    <AuthSplitLayout title="Verifique seu e-mail">
+        <p class="-mt-6 mb-6 text-gray-600">
+            Enviamos um link de verificação para
+            <strong class="break-all font-semibold text-gray-900">{{ email }}</strong>.
+            Clique nele para ativar sua conta.
+        </p>
 
-                <form @submit.prevent="resend">
-                    <PrimaryButton
-                        class="w-full flex justify-center"
-                        :class="{ 'opacity-50': resendDisabled }"
-                        :disabled="resendDisabled"
-                    >
-                        {{ resendDisabled ? 'Aguarde 30 segundos...' : 'Reenviar email de verificação' }}
-                    </PrimaryButton>
-                </form>
+        <form class="space-y-4" @submit.prevent="resend">
+            <PrimaryButton class="w-full py-3" :disabled="resendDisabled || form.processing">
+                {{ resendDisabled ? 'Aguarde 30 segundos para reenviar' : 'Reenviar e-mail de verificação' }}
+            </PrimaryButton>
+        </form>
 
-                <p v-if="resendMessage" class="mt-3 text-sm text-green-600 text-center">
-                    {{ resendMessage }}
-                </p>
-                <p v-if="resendError" class="mt-3 text-sm text-red-600 text-center">
-                    {{ resendError }}
-                </p>
-            </div>
+        <p v-if="resendMessage" class="mt-4 text-center text-sm text-brand-700" role="status">{{ resendMessage }}</p>
+        <p v-if="resendError" class="mt-4 text-center text-sm text-red-600" role="alert">{{ resendError }}</p>
 
-            <div class="text-center">
-                <form method="POST" action="/logout">
-                    <input type="hidden" name="_token" :value="$page.props.csrfToken">
-                    <button type="submit" class="text-sm text-gray-600 hover:text-gray-900 underline">
-                        Cancelar e fazer login com outra conta
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
+        <Link :href="route('logout')" method="post" as="button" class="btn-ghost mt-6 w-full">
+            Cancelar e entrar com outra conta
+        </Link>
+    </AuthSplitLayout>
 </template>

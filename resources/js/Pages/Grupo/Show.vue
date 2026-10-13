@@ -1,10 +1,12 @@
 <script setup>
-import { Head, Link, usePage } from '@inertiajs/vue3';
+import { Head, Link, usePage, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import Alert from '@/Components/Alert.vue';
 import { ref, computed } from 'vue';
 import GridListasGrupo from '@/Layouts/GridListasGrupo.vue';
-import { TrashIcon, UserMinusIcon, UserPlusIcon, StarIcon, XMarkIcon } from '@heroicons/vue/20/solid';
+import Modal from '@/Components/Modal.vue';
+import { TrashIcon, UserMinusIcon, UserPlusIcon, StarIcon, XMarkIcon, CheckIcon, PlusIcon } from '@heroicons/vue/20/solid';
+import { UserGroupIcon } from '@heroicons/vue/24/outline';
 import axios from 'axios';
 
 defineProps({
@@ -138,8 +140,6 @@ const makeAdmin = async (memberId, memberName) => {
     }
 };
 
-const { router } = usePage();
-
 const deleteGroup = async () => {
     if (confirm('EXCLUIR este grupo? Todos os dados serão perdidos.')) {
         try {
@@ -155,172 +155,163 @@ const deleteGroup = async () => {
 <template>
     <Head :title="title || 'Grupo'" />
     <AppLayout :title="title || 'Grupo'">
-        <div v-if="grupo.id">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <Alert v-if="hasSuccessMessage" type="success"
-                    :title="page.props.flash?.status || page.props.status || 'Sucesso'" class="mb-6" />
-                <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">
-                        <div class="flex justify-between items-center mb-4">
-                            <div>
-                                <h2 class="text-2xl font-bold text-gray-900">{{ grupo.nome }}</h2>
-                            </div>
-                            
-                            <div class="flex gap-2">
-                                <button v-if="isAdmin" @click="showInviteModal = true"
-                                    class="inline-flex items-center px-3 py-2 bg-green-600 text-white rounded-md text-sm hover:bg-green-700">
-                                    <UserPlusIcon class="w-4 h-4 mr-1" />
-                                    Convidar Amigo
-                                </button>
-                                
-                                <button @click="showMembersModal = true"
-                                    class="inline-flex items-center px-3 py-2 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700">
-                                    <UserPlusIcon class="w-4 h-4 mr-1" />
-                                    Membros ({{ grupo.integrantes ? grupo.integrantes.length : 0 }})
-                                </button>
-                                
-                                <button v-if="!isOwner" @click="leaveGroup"
-                                    class="inline-flex items-center px-3 py-2 bg-gray-200 text-gray-700 rounded-md text-sm hover:bg-gray-300">
-                                    <UserMinusIcon class="w-4 h-4 mr-1" />
-                                    Sair
-                                </button>
-                                
-                                <button v-if="isOwner" @click="deleteGroup"
-                                    class="inline-flex items-center px-3 py-2 bg-red-600 text-white rounded-md text-sm hover:bg-red-700">
-                                    <TrashIcon class="w-4 h-4 mr-1" />
-                                    Excluir
-                                </button>
-                                
-                                <Link
-                                    :href="route('listas.create', { grupo_id: grupo.id })"
-                                    class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700">
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                                    </svg>
-                                    Nova Lista
-                                </Link>
-                            </div>
+        <div v-if="grupo.id" class="space-y-8">
+            <Alert v-if="hasSuccessMessage" type="success"
+                :title="page.props.flash?.status || page.props.status || 'Sucesso'" />
+
+            <!-- Cabecalho do grupo -->
+            <section class="surface overflow-hidden">
+                <div v-if="grupo.banner_url || grupo.image_url" class="h-40 bg-gray-100 sm:h-56">
+                    <img :src="grupo.banner_url || grupo.image_url" :alt="`Imagem do grupo ${grupo.nome}`"
+                        class="size-full object-cover" />
+                </div>
+                <div v-else class="flex h-28 items-center justify-center bg-brand-100 text-brand-700 sm:h-36">
+                    <UserGroupIcon class="size-10" aria-hidden="true" />
+                </div>
+
+                <div class="space-y-5 p-5 sm:p-8">
+                    <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+                        <div class="min-w-0">
+                            <h2 class="text-3xl font-semibold text-gray-900">{{ grupo.nome }}</h2>
+                            <p v-if="grupo.descricao" class="mt-2 max-w-2xl whitespace-pre-wrap text-gray-600">{{ grupo.descricao }}</p>
+
+                            <button type="button" class="press mt-4 inline-flex items-center gap-3 rounded-full py-1 pr-3 hover:bg-gray-50"
+                                @click="showMembersModal = true">
+                                <span class="flex -space-x-2">
+                                    <template v-for="m in (grupo.integrantes || []).slice(0, 4)" :key="m.id">
+                                        <img v-if="m.perfil?.image_url" :src="m.perfil.image_url" alt=""
+                                            class="size-8 rounded-full object-cover ring-2 ring-surface" />
+                                        <span v-else
+                                            class="flex size-8 items-center justify-center rounded-full bg-brand-100 text-xs font-semibold text-brand-800 ring-2 ring-surface">
+                                            {{ m.name ? m.name.charAt(0).toUpperCase() : '?' }}
+                                        </span>
+                                    </template>
+                                </span>
+                                <span class="text-sm font-medium text-gray-700">
+                                    {{ grupo.integrantes ? grupo.integrantes.length : 0 }}
+                                    {{ (grupo.integrantes?.length || 0) === 1 ? 'membro' : 'membros' }}
+                                </span>
+                            </button>
                         </div>
 
-                        <div v-if="grupo.descricao" class="mb-6 p-4 bg-gray-50 rounded-lg">
-                            <h3 class="text-sm font-semibold text-gray-700 mb-1">Descrição</h3>
-                            <p class="text-sm text-gray-600 whitespace-pre-wrap">{{ grupo.descricao }}</p>
+                        <div class="flex flex-wrap gap-2 lg:justify-end">
+                            <Link :href="route('listas.create', { grupo_id: grupo.id })" class="btn-primary">
+                                <PlusIcon class="size-4" aria-hidden="true" />
+                                Nova lista
+                            </Link>
+                            <button v-if="isAdmin" type="button" @click="showInviteModal = true" class="btn-secondary">
+                                <UserPlusIcon class="size-4" aria-hidden="true" />
+                                Convidar
+                            </button>
+                            <button v-if="!isOwner" type="button" @click="leaveGroup" class="btn-ghost">
+                                <UserMinusIcon class="size-4" aria-hidden="true" />
+                                Sair
+                            </button>
+                            <button v-if="isOwner" type="button" @click="deleteGroup" class="btn-ghost text-red-600 hover:bg-red-50 hover:text-red-700">
+                                <TrashIcon class="size-4" aria-hidden="true" />
+                                Excluir
+                            </button>
                         </div>
-
-                        <GridListasGrupo :listas="listasForGrid" />
                     </div>
                 </div>
-            </div>
+            </section>
+
+            <section>
+                <h3 class="mb-5 text-2xl font-semibold text-gray-900">Listas do grupo</h3>
+                <GridListasGrupo :listas="listasForGrid" :grupo-id="grupo.id" />
+            </section>
         </div>
     </AppLayout>
 
-    <Teleport to="body">
-        <div v-if="showInviteModal" class="fixed inset-0 z-50 overflow-y-auto" @click.self="showInviteModal = false">
-            <div class="flex min-h-full items-center justify-center p-4">
-                <div class="fixed inset-0 bg-gray-500/75" @click="showInviteModal = false"></div>
-                <div class="relative bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-semibold">Convidar Amigo</h3>
-                        <button @click="showInviteModal = false" class="text-gray-400 hover:text-gray-600">
-                            <XMarkIcon class="w-6 h-6" />
-                        </button>
-                    </div>
-                    
-                    <div class="mb-4">
-                        <input v-model="searchTerm" type="text" placeholder="Buscar por nome ou @username..."
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-                    </div>
-                    
-                    <div class="space-y-2 max-h-64 overflow-y-auto">
-                        <div v-if="filteredFriends.length === 0" class="text-center py-4 text-gray-500">
-                            Nenhum amigo disponível para convidar.
-                        </div>
-                        <div v-else v-for="amigo in filteredFriends" :key="amigo.id"
-                            @click="toggleFriend(amigo.id)"
-                            class="flex items-center p-3 rounded-lg cursor-pointer transition-colors"
-                            :class="isSelected(amigo.id) ? 'bg-indigo-50 border-2 border-indigo-500' : 'bg-gray-50 border-2 border-transparent hover:bg-gray-100'">
-                            <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center mr-3">
-                                <span class="text-sm font-medium text-indigo-600">{{ amigo.name ? amigo.name.charAt(0) : '?' }}</span>
-                            </div>
-                            <div class="flex-1">
-                                <div class="text-sm font-medium">{{ amigo.name }}</div>
-                                <div class="text-xs text-gray-500">@{{ amigo.username }}</div>
-                            </div>
-                            <div v-if="isSelected(amigo.id)" class="text-indigo-600">
-                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-4 flex justify-end gap-2">
-                        <button @click="showInviteModal = false"
-                            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">
-                            Cancelar
-                        </button>
-                        <button @click="sendInvitations"
-                            class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-                            :disabled="selectedFriends.length === 0">
-                            Adicionar ({{ selectedFriends.length }})
-                        </button>
-                    </div>
-                </div>
+    <!-- Convidar amigos -->
+    <Modal :show="showInviteModal" max-width="md" @close="showInviteModal = false">
+        <div class="p-6">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-semibold text-gray-900">Convidar amigos</h3>
+                <button type="button" class="press rounded-full p-1.5 text-gray-500 hover:bg-gray-100" @click="showInviteModal = false">
+                    <span class="sr-only">Fechar</span>
+                    <XMarkIcon class="size-5" />
+                </button>
             </div>
-        </div>
-    </Teleport>
 
-    <Teleport to="body">
-        <div v-if="showMembersModal" class="fixed inset-0 z-50 overflow-y-auto" @click.self="showMembersModal = false">
-            <div class="flex min-h-full items-center justify-center p-4">
-                <div class="fixed inset-0 bg-gray-500/75" @click="showMembersModal = false"></div>
-                <div class="relative bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-semibold">Membros do Grupo</h3>
-                        <button @click="showMembersModal = false" class="text-gray-400 hover:text-gray-600">
-                            <XMarkIcon class="w-6 h-6" />
-                        </button>
-                    </div>
-                    
-                    <div class="space-y-3 max-h-96 overflow-y-auto">
-                        <div v-for="membro in grupo.integrantes" :key="membro.id" 
-                            class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                            <div class="flex items-center">
-                                <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center mr-3">
-                                    <span class="text-sm font-medium text-indigo-600">{{ membro.name ? membro.name.charAt(0) : '?' }}</span>
-                                </div>
-                                <div>
-                                    <div class="text-sm font-medium">{{ membro.name }}</div>
-                                    <div class="text-xs text-gray-500">@{{ membro.username }}</div>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span v-if="membro.id === grupo.cadastrado_por" class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Proprietário</span>
-                                <span v-else-if="membro.pivot && membro.pivot.role === 'admin'" class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">Admin</span>
-                                <span v-else class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">Membro</span>
-                                
-                                <button v-if="isAdmin && membro.id !== grupo.cadastrado_por && membro.id !== user.id" 
-                                    @click="makeAdmin(membro.id, membro.name)"
-                                    class="p-1 text-blue-600 hover:text-blue-800" title="Tornar admin">
-                                    <StarIcon class="w-4 h-4" />
-                                </button>
-                                <button v-if="isAdmin && membro.id !== grupo.cadastrado_por && membro.id !== user.id" 
-                                    @click="removeMember(membro.id, membro.name)"
-                                    class="p-1 text-red-600 hover:text-red-800" title="Remover">
-                                    <UserMinusIcon class="w-4 h-4" />
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-4 flex justify-end">
-                        <button @click="showMembersModal = false"
-                            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">
-                            Fechar
-                        </button>
-                    </div>
-                </div>
+            <input v-model="searchTerm" type="search" placeholder="Buscar por nome ou @username"
+                aria-label="Buscar amigos" class="mt-4 block w-full" />
+
+            <ul class="mt-4 max-h-72 space-y-1 overflow-y-auto">
+                <li v-if="filteredFriends.length === 0" class="py-8 text-center text-sm text-gray-500">
+                    Nenhum amigo disponível para convidar.
+                </li>
+                <li v-for="amigo in filteredFriends" :key="amigo.id">
+                    <button type="button" @click="toggleFriend(amigo.id)"
+                        class="press flex w-full items-center gap-3 rounded-lg border p-3 text-left"
+                        :class="isSelected(amigo.id) ? 'border-brand-600 bg-brand-50' : 'border-transparent hover:bg-gray-50'">
+                        <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-100 text-sm font-semibold text-brand-800">
+                            {{ amigo.name ? amigo.name.charAt(0).toUpperCase() : '?' }}
+                        </span>
+                        <span class="min-w-0 flex-1">
+                            <span class="block truncate text-sm font-medium text-gray-900">{{ amigo.name }}</span>
+                            <span class="block truncate text-xs text-gray-500">@{{ amigo.username }}</span>
+                        </span>
+                        <CheckIcon v-if="isSelected(amigo.id)" class="size-5 text-brand-700" aria-hidden="true" />
+                    </button>
+                </li>
+            </ul>
+
+            <div class="mt-6 flex justify-end gap-2">
+                <button type="button" class="btn-secondary" @click="showInviteModal = false">Cancelar</button>
+                <button type="button" class="btn-primary" :disabled="selectedFriends.length === 0" @click="sendInvitations">
+                    Adicionar{{ selectedFriends.length ? ` (${selectedFriends.length})` : '' }}
+                </button>
             </div>
         </div>
-    </Teleport>
+    </Modal>
+
+    <!-- Membros -->
+    <Modal :show="showMembersModal" max-width="md" @close="showMembersModal = false">
+        <div class="p-6">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-semibold text-gray-900">Membros</h3>
+                <button type="button" class="press rounded-full p-1.5 text-gray-500 hover:bg-gray-100" @click="showMembersModal = false">
+                    <span class="sr-only">Fechar</span>
+                    <XMarkIcon class="size-5" />
+                </button>
+            </div>
+
+            <ul class="mt-4 max-h-96 divide-y divide-gray-100 overflow-y-auto">
+                <li v-for="membro in grupo.integrantes" :key="membro.id" class="flex items-center gap-3 py-3">
+                    <img v-if="membro.perfil?.image_url" :src="membro.perfil.image_url" alt=""
+                        class="size-10 shrink-0 rounded-full object-cover" />
+                    <span v-else
+                        class="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-100 text-sm font-semibold text-brand-800">
+                        {{ membro.name ? membro.name.charAt(0).toUpperCase() : '?' }}
+                    </span>
+                    <span class="min-w-0 flex-1">
+                        <span class="block truncate text-sm font-medium text-gray-900">{{ membro.name }}</span>
+                        <span class="block truncate text-xs text-gray-500">@{{ membro.username }}</span>
+                    </span>
+
+                    <span v-if="membro.id === grupo.cadastrado_por" class="rounded-full bg-brand-100 px-2.5 py-1 text-xs font-medium text-brand-800">Proprietário</span>
+                    <span v-else-if="membro.pivot && membro.pivot.role === 'admin'" class="rounded-full bg-zinc-900 px-2.5 py-1 text-xs font-medium text-white">Admin</span>
+                    <span v-else class="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600">Membro</span>
+
+                    <template v-if="isAdmin && membro.id !== grupo.cadastrado_por && membro.id !== user.id">
+                        <button type="button" @click="makeAdmin(membro.id, membro.name)"
+                            class="press rounded-full p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-800" title="Tornar admin">
+                            <span class="sr-only">Tornar {{ membro.name }} admin</span>
+                            <StarIcon class="size-4" />
+                        </button>
+                        <button type="button" @click="removeMember(membro.id, membro.name)"
+                            class="press rounded-full p-1.5 text-gray-500 hover:bg-red-50 hover:text-red-600" title="Remover">
+                            <span class="sr-only">Remover {{ membro.name }}</span>
+                            <UserMinusIcon class="size-4" />
+                        </button>
+                    </template>
+                </li>
+            </ul>
+
+            <div class="mt-6 flex justify-end">
+                <button type="button" class="btn-secondary" @click="showMembersModal = false">Fechar</button>
+            </div>
+        </div>
+    </Modal>
 </template>

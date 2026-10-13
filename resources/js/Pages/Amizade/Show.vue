@@ -6,7 +6,6 @@ import { computed } from 'vue';
 import { Carousel, Slide, Navigation } from 'vue3-carousel'
 import 'vue3-carousel/dist/carousel.css';
 import { 
-    ChevronRightIcon, 
     UserPlusIcon, 
     ChatBubbleLeftIcon, 
     UserIcon, 
@@ -30,8 +29,8 @@ defineProps({
         default: () => ({})
     },
     grupos: {
-        type: Object,
-        default: () => ({})
+        type: [Array, Object],
+        default: () => []
     }
 })
 
@@ -78,138 +77,92 @@ const breakpoints = computed(() => ({
 
     <Head :title="title" />
     <AppLayout :title="title">
+        <div class="space-y-8">
+            <Alert v-if="hasSuccessMessage" type="success"
+                :title="page.props.flash?.status || page.props.status || 'Sucesso'" />
 
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                
-                <Alert v-if="hasSuccessMessage" type="success"
-                    :title="page.props.flash?.status || page.props.status || 'Sucesso'" class="mb-6" />
+            <!-- Perfil -->
+            <section class="surface p-6 sm:p-8">
+                <div class="flex flex-col items-center gap-6 text-center md:flex-row md:items-start md:text-left">
+                    <img :src="amigo?.perfil?.image_url ?? '/img/default_profile.png'" alt="Foto de perfil"
+                        class="size-32 shrink-0 rounded-full bg-gray-100 object-cover ring-4 ring-gray-50" />
 
-                <!-- Profile Header Card -->
-                <div class="bg-white border border-gray-200 rounded-xl p-8 mb-8 shadow-sm">
-                    <div class="flex flex-col md:flex-row gap-8 items-center md:items-start text-center md:text-left">
-                        <!-- Large Profile Avatar -->
-                        <div class="relative shrink-0">
-                            <img :src="amigo?.perfil?.image_url" 
-                                 class="size-32 rounded-full border-4 border-indigo-50 shadow-lg object-cover bg-gray-100" 
-                                 alt="Foto de perfil">
-                        </div>
-
-                        <!-- Profile Info -->
-                        <div class="flex-1 flex flex-col justify-center">
-                            <div class="flex flex-col gap-1 mb-4">
-                                <h1 class="text-gray-900 text-3xl font-bold leading-tight tracking-tight">{{ amigo?.name }}</h1>
-                                <p class="text-indigo-600 font-medium text-lg">@{{ amigo?.username }}</p>
-                            </div>
-                            <p class="text-gray-500 text-base font-normal leading-relaxed max-w-xl">
-                                {{ amigo?.perfil?.biografia || 'Sem biografia disponível.' }}
-                            </p>
-                        </div>
-
-                        <!-- Action Buttons -->
-                        <div class="flex flex-row md:flex-col gap-3 w-full md:w-auto mt-4 md:mt-0" v-if="amigo.id !== currentUser.id">
-                            <!-- Caso 1: Sem amizade (Botão Seguir) -->
-                            <Link :href="route('amizade.store', amigo?.id)" method="post" as="button"
-                                v-if="!amizade"
-                                class="flex flex-1 md:min-w-[160px] cursor-pointer items-center justify-center rounded-lg h-11 px-6 py-2 bg-indigo-600 text-white text-sm font-bold tracking-wide hover:bg-indigo-700 transition-all shadow-md gap-2">
-                                <UserPlusIcon class="size-5" />
-                                <span class="truncate">Seguir</span>
-                            </Link>
-
-                            <!-- Caso 2: Amizade Pendente -->
-                            <template v-else-if="amizade.status === 'pendente'">
-                                <!-- Subcaso 2.1: Eu enviei a solicitação -->
-                                <Link :href="route('amizades.destroy', amigo?.id)" method="delete" as="button"
-                                    v-if="amizade.usuario_id == currentUser.id"
-                                    class="flex flex-1 md:min-w-[160px] cursor-pointer items-center justify-center rounded-lg h-11 px-6 py-2 bg-gray-100 text-gray-700 text-sm font-bold tracking-wide hover:bg-gray-200 transition-all border border-gray-200 gap-2">
-                                    <ClockIcon class="size-5" />
-                                    <span class="truncate">Solicitação Enviada</span>
-                                </Link>
-
-                                <!-- Subcaso 2.2: Eu recebi a solicitação (Botões Aceitar/Recusar) -->
-                                <div v-else class="flex flex-col gap-2 w-full">
-                                    <Link :href="route('amizades.update', amigo?.id)" method="put" as="button"
-                                        class="flex flex-1 md:min-w-[160px] cursor-pointer items-center justify-center rounded-lg h-11 px-6 py-2 bg-indigo-600 text-white text-sm font-bold tracking-wide hover:bg-indigo-700 transition-all shadow-md gap-2">
-                                        <CheckIcon class="size-5" />
-                                        <span class="truncate">Aceitar</span>
-                                    </Link>
-                                    <Link :href="route('amizades.destroy', amigo?.id)" method="delete" as="button"
-                                        class="flex flex-1 md:min-w-[160px] cursor-pointer items-center justify-center rounded-lg h-11 px-6 py-2 bg-red-100 text-red-700 text-sm font-bold tracking-wide hover:bg-red-200 transition-all border border-red-200 gap-2">
-                                        <XMarkIcon class="size-5" />
-                                        <span class="truncate">Recusar</span>
-                                    </Link>
-                                </div>
-                            </template>
-
-                            <!-- Caso 3: Amizade Aceita -->
-                            <Link :href="route('amizades.destroy', amigo?.id)" method="delete" as="button"
-                                v-else-if="amizade.status === 'aceito'"
-                                class="flex flex-1 md:min-w-[160px] cursor-pointer items-center justify-center rounded-lg h-11 px-6 py-2 bg-green-600 text-white text-sm font-bold tracking-wide hover:bg-green-700 transition-all shadow-md gap-2">
-                                <CheckIcon class="size-5" />
-                                <span class="truncate">Amigos</span>
-                            </Link>
-                        </div>
+                    <div class="min-w-0 flex-1">
+                        <h2 class="text-3xl font-semibold text-gray-900">{{ amigo?.name }}</h2>
+                        <p class="mt-1 text-lg font-medium text-brand-700">@{{ amigo?.username }}</p>
+                        <p class="mt-3 max-w-xl text-gray-600">
+                            {{ amigo?.perfil?.biografia || 'Sem biografia por enquanto.' }}
+                        </p>
                     </div>
-                </div>
 
-                <!-- Action Panel / Privacy Notice -->
-                <!-- <div class="mb-8" v-if="!amizade || amizade.status !== 'aceito'">
-                    <div class="flex flex-1 flex-col items-start justify-between gap-4 rounded-xl border border-dashed border-gray-300 bg-gray-50/50 p-6 md:flex-row md:items-center">
-                        <div class="flex flex-col gap-1">
-                            <p class="text-gray-900 text-base font-bold leading-tight">Quer ver a lista de desejos?</p>
-                            <p class="text-gray-500 text-sm font-normal leading-normal">
-                                {{ amigo?.name }} compartilha seus desejos apenas com amigos confirmados. Envie uma solicitação!
-                            </p>
-                        </div>
-                        <Link :href="route('amizade.store', amigo?.id)" method="post" as="button" v-if="!amizade"
-                             class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-9 px-5 bg-indigo-50 text-indigo-600 text-sm font-bold hover:bg-indigo-100 transition-all">
-                            <span class="truncate">Solicitar Amizade</span>
+                    <div v-if="amigo.id !== currentUser.id" class="flex w-full flex-col gap-2 md:w-auto md:min-w-[11rem]">
+                        <!-- Sem relacao -->
+                        <Link v-if="!amizade" :href="route('amizade.store', amigo?.id)" method="post" as="button" class="btn-primary">
+                            <UserPlusIcon class="size-5" aria-hidden="true" />
+                            Adicionar amigo
+                        </Link>
+
+                        <!-- Pendente -->
+                        <template v-else-if="amizade.status === 'pendente'">
+                            <Link v-if="amizade.usuario_id == currentUser.id" :href="route('amizades.destroy', amigo?.id)"
+                                method="delete" as="button" class="btn-secondary">
+                                <ClockIcon class="size-5" aria-hidden="true" />
+                                Cancelar solicitação
+                            </Link>
+                            <template v-else>
+                                <Link :href="route('amizades.update', amigo?.id)" method="put" as="button" class="btn-primary">
+                                    <CheckIcon class="size-5" aria-hidden="true" />
+                                    Aceitar
+                                </Link>
+                                <Link :href="route('amizades.destroy', amigo?.id)" method="delete" as="button" class="btn-secondary">
+                                    <XMarkIcon class="size-5" aria-hidden="true" />
+                                    Recusar
+                                </Link>
+                            </template>
+                        </template>
+
+                        <!-- Amigos -->
+                        <Link v-else-if="amizade.status === 'aceito'" :href="route('amizades.destroy', amigo?.id)"
+                            method="delete" as="button" class="btn-secondary group"
+                            :on-before="() => confirm(`Desfazer a amizade com ${amigo?.name}?`)">
+                            <CheckIcon class="size-5 text-brand-700" aria-hidden="true" />
+                            <span class="group-hover:hidden">Amigos</span>
+                            <span class="hidden group-hover:inline">Desfazer amizade</span>
                         </Link>
                     </div>
-                </div> -->
-
-                <!-- Section: Grupos em Comum -->
-                <div class="mb-12" v-if="amigo?.grupos && amigo.grupos.length > 0">
-                    <div class="flex justify-between items-center px-2 mb-6">
-                        <h2 class="text-gray-900 text-xl font-bold leading-tight tracking-tight">Grupos em Comum</h2>
-
-                        <span class="text-indigo-600 text-sm font-bold hover:underline cursor-pointer">Ver todos</span>
-                    </div>
-
-                    <!-- Horizontal Carousel adaptado para o estilo do design -->
-                    <Carousel v-bind="carouselSettings" :breakpoints="breakpoints" class="grupos-carousel pb-4">
-                        <Slide v-for="grupo in grupos" :key="grupo.id">
-                            <Link :href="route('grupos.show', grupo.id)" class="w-full h-full px-2 block">
-                                <div class="flex h-full w-full flex-col gap-4 text-center rounded-xl bg-white border border-gray-200 p-5 shrink-0 hover:shadow-lg hover:border-indigo-200 transition-all duration-300 group cursor-pointer">
-                                    <div class="bg-center bg-no-repeat aspect-video bg-cover rounded-xl flex flex-col self-center w-full border border-gray-100 group-hover:opacity-90 transition-opacity" 
-                                         :style="{ backgroundImage: `url(${grupo.image_url})` }">
-                                    </div>
-                                    <div class="flex flex-col items-center">
-                                        <p class="text-gray-900 text-sm font-bold leading-normal truncate w-full group-hover:text-indigo-600 transition-colors">
-                                            {{ grupo.nome }}
-                                        </p>
-                                        <p class="text-gray-500 text-xs font-normal leading-normal mt-1">
-                                            {{ grupo.descricao || 'Grupo' }}
-                                        </p>
-                                    </div>
-                                </div>
-                            </Link>
-                        </Slide>
-                        
-                        <template #addons>
-                            <Navigation />
-                        </template>
-                    </Carousel>
                 </div>
+            </section>
 
-                <!-- Footer Section Info -->
-                <!-- <div class="border-t border-gray-200 pt-8 pb-12 flex flex-col items-center gap-4 text-center">
-                    <SparklesIcon class="size-10 text-gray-400" />
-                    <p class="text-gray-500 text-sm italic">
-                        "O melhor presente é aquele que é compartilhado."
-                    </p>
-                </div> -->
+            <!-- Grupos em comum -->
+            <section v-if="grupos && grupos.length > 0">
+                <h3 class="mb-5 text-xl font-semibold text-gray-900">Grupos em comum</h3>
 
-            </div>
+                <Carousel v-bind="carouselSettings" :breakpoints="breakpoints" class="grupos-carousel pb-4">
+                    <Slide v-for="grupo in grupos" :key="grupo.id">
+                        <Link :href="route('grupos.show', grupo.id)" class="block size-full px-2">
+                            <div class="surface-link group flex h-full w-full flex-col overflow-hidden text-left">
+                                <div class="aspect-video overflow-hidden bg-brand-100">
+                                    <img v-if="grupo.image_url" :src="grupo.image_url" :alt="`Imagem do grupo ${grupo.nome}`"
+                                        class="size-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]" />
+                                </div>
+                                <div class="p-4">
+                                    <p class="truncate font-semibold text-gray-900">{{ grupo.nome }}</p>
+                                    <p class="mt-1 line-clamp-1 text-sm text-gray-500">{{ grupo.descricao || 'Grupo' }}</p>
+                                </div>
+                            </div>
+                        </Link>
+                    </Slide>
+
+                    <template #addons>
+                        <Navigation />
+                    </template>
+                </Carousel>
+            </section>
+
+            <section v-else-if="amizade?.status === 'aceito'" class="surface px-6 py-10 text-center">
+                <p class="text-sm text-gray-500">Vocês ainda não participam do mesmo grupo.</p>
+            </section>
+        </div>
     </AppLayout>
 </template>
 
@@ -240,8 +193,9 @@ const breakpoints = computed(() => ({
 /* Estilização dos botões de navegação */
 :deep(.carousel__prev),
 :deep(.carousel__next) {
-    background: white;
-    border: 1px solid #e5e7eb;
+    background: rgb(var(--surface));
+    color: rgb(var(--gray-700));
+    border: 1px solid rgb(var(--gray-200));
     border-radius: 50%;
     width: 40px;
     height: 40px;
@@ -255,9 +209,9 @@ const breakpoints = computed(() => ({
 
 :deep(.carousel__prev):hover,
 :deep(.carousel__next):hover {
-    background: #f9fafb;
-    border-color: #6366f1;
-    color: #6366f1;
+    background: rgb(var(--gray-50));
+    border-color: #1a7f56;
+    color: #1a7f56;
 }
 
 :deep(.carousel__prev svg),

@@ -1,5 +1,7 @@
 <script setup>
-import { StarIcon } from '@heroicons/vue/20/solid';
+import { StarIcon, CheckIcon, MagnifyingGlassIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/20/solid';
+import { GiftIcon } from '@heroicons/vue/24/outline';
+import { Link } from '@inertiajs/vue3';
 import { ref, computed, nextTick, watch } from 'vue';
 import ShowPresente from '@/Components/ShowPresente.vue';
 
@@ -11,6 +13,10 @@ const props = defineProps({
     categorias: {
         type: [Array, Object],
         default: () => []
+    },
+    listaId: {
+        type: String,
+        default: null
     }
 })
 
@@ -172,181 +178,124 @@ const nextPage = () => {
 </script>
 
 <template>
-    <div class="p-4 sm:p-6">
-        <div class="mb-6">
-            <div class="flex flex-col sm:flex-row gap-4 sm:items-center">
-                <!-- Busca -->
-                <div class="flex-1 max-w-xl">
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
-                        </div>
-                        <input v-model="searchTerm" type="text" placeholder="Buscar presentes..."
-                            class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-                    </div>
-                </div>
-
-                <!-- Filtros -->
-                <div class="flex flex-col sm:flex-row gap-4 sm:gap-2">
-                    <!-- Filtro por categoria -->
-                    <div class="flex-shrink-0">
-                        <select v-model="selectedCategoria"
-                            class="block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                            <option value="">Todas as categorias</option>
-                            <option v-for="categoria in categorias" :key="categoria.id" :value="categoria.id">
-                                {{ categoria.nome }}
-                            </option>
-                        </select>
-                    </div>
-
-                    <!-- Ordenação -->
-                    <div class="flex-shrink-0">
-                        <select v-model="sortBy"
-                            class="block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                            <option value="avaliacao-desc">Mais desejado</option>
-                            <option value="avaliacao-asc">Menos desejado</option>
-                            <option value="nome-asc">Nome (A-Z)</option>
-                            <option value="nome-desc">Nome (Z-A)</option>
-                            <option value="created-desc">Mais recentes</option>
-                            <option value="created-asc">Mais antigos</option>
-                        </select>
-                    </div>
-                </div>
+    <div>
+        <!-- Barra de busca e filtros -->
+        <div v-if="presentes.length > 0" class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div class="relative flex-1 sm:max-w-md">
+                <MagnifyingGlassIcon class="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-gray-400" aria-hidden="true" />
+                <input v-model="searchTerm" type="search" placeholder="Buscar presentes" aria-label="Buscar presentes"
+                    class="block w-full pl-10 text-sm" />
+            </div>
+            <div class="grid grid-cols-2 gap-2 sm:flex">
+                <select v-model="selectedCategoria" aria-label="Categoria" class="text-sm">
+                    <option value="">Todas as categorias</option>
+                    <option v-for="categoria in categorias" :key="categoria.id" :value="categoria.id">
+                        {{ categoria.nome }}
+                    </option>
+                </select>
+                <select v-model="sortBy" aria-label="Ordenar" class="text-sm">
+                    <option value="avaliacao-desc">Mais desejado</option>
+                    <option value="avaliacao-asc">Menos desejado</option>
+                    <option value="nome-asc">Nome (A-Z)</option>
+                    <option value="nome-desc">Nome (Z-A)</option>
+                    <option value="created-desc">Mais recentes</option>
+                    <option value="created-asc">Mais antigos</option>
+                </select>
             </div>
         </div>
 
-        <ul role="list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            <li v-for="presente in paginatedPresentes" :key="presente.id"
-                class="flex flex-col text-center w-full max-w-sm mx-auto sm:mx-0 h-72">
-                <div class="group relative cursor-pointer" @click="openPresenteModal(presente)">
-                    <div class="flex aspect-square w-full items-end justify-between space-x-6 pt-9 rounded-xl bg-cover bg-center bg-no-repeat relative group-hover:opacity-75 transition-opacity duration-200"
-                        :style="{ backgroundImage: `url(${presente.image_url})` }">
-                        <div
-                            class="absolute flex justify-center inset-0 bg-gradient-to-t items-end from-black/60 via-black/5 to-transparent rounded-xl">
-                            <div
-                                class="flex items-center text-white font-extrabold mb-3 sm:mb-5 text-sm sm:text-base px-2">
-                                <span class="truncate">{{ presente.avaliacao }}</span>
-                                <StarIcon class="size-3 sm:size-4 ml-1 mr-2 text-yellow-400 flex-shrink-0" />
-                                <span class="truncate">{{ avaliacao[presente.avaliacao] }}</span>
-                            </div>
+        <ul v-if="paginatedPresentes.length > 0" role="list"
+            class="stagger grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <li v-for="(presente, i) in paginatedPresentes" :key="presente.id" :style="{ '--i': Math.min(i, 8) }">
+                <button type="button" @click="openPresenteModal(presente)"
+                    class="surface-link group flex h-full w-full flex-col overflow-hidden text-left">
+                    <div class="relative aspect-[4/3] overflow-hidden bg-gray-100">
+                        <img v-if="presente.image_url" :src="presente.image_url" :alt="presente.nome"
+                            class="size-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+                            :class="presente.comprado ? 'opacity-60 saturate-50' : ''" />
+                        <div v-else class="flex size-full items-center justify-center text-gray-300">
+                            <GiftIcon class="size-10" aria-hidden="true" />
                         </div>
+                        <span v-if="presente.comprado"
+                            class="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-brand-600 px-2.5 py-1 text-xs font-medium text-white shadow-sm">
+                            <CheckIcon class="size-3.5" aria-hidden="true" />
+                            Comprado
+                        </span>
                     </div>
-                    <div class="mt-4 sm:mt-6 px-2 sm:px-0">
-                        <h3 class="mt-1 font-semibold text-gray-900 text-sm sm:text-base line-clamp-2">
-                            <span class="hover:text-indigo-600 transition-colors duration-200">
-                                {{ presente.nome }}
-                            </span>
-                        </h3>
-                        <p class="mt-1 text-gray-900 font-medium text-sm sm:text-base">
-                            {{ presente.preco ? 'R$ ' + Number(presente.preco).toFixed(2) : 'Sem preço' }}
+
+                    <div class="flex flex-1 flex-col p-4">
+                        <h3 class="line-clamp-2 font-semibold text-gray-900">{{ presente.nome }}</h3>
+                        <p class="mt-1 text-sm font-medium text-gray-700">
+                            {{ presente.preco ? 'R$ ' + Number(presente.preco).toFixed(2).replace('.', ',') : 'Sem preço' }}
                         </p>
-                        <div v-if="presente.comprado" class="mt-2">
-                            <span
-                                class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                ✓ Comprado
+
+                        <div class="mt-3 flex items-center gap-1.5 text-sm text-gray-600" v-if="presente.avaliacao">
+                            <span class="flex" aria-hidden="true">
+                                <StarIcon v-for="n in 5" :key="n" class="size-4"
+                                    :class="n <= presente.avaliacao ? 'text-amber-400' : 'text-gray-200'" />
                             </span>
+                            <span class="truncate">{{ avaliacao[presente.avaliacao] }}</span>
                         </div>
-                        
-                        <div v-if="presente.categorias && presente.categorias.length > 0" class="mt-2 flex flex-wrap gap-1 justify-center">
+
+                        <div v-if="presente.categorias && presente.categorias.length > 0" class="mt-3 flex flex-wrap gap-1.5">
                             <span v-for="categoria in presente.categorias" :key="categoria.id"
-                                class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                                class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
                                 :style="{
                                     backgroundColor: categoria.hex_cor || '#6B7280',
-                                    color: isDarkColor(categoria.hex_cor) ? '#FFFFFF' : '#000000'
+                                    color: isDarkColor(categoria.hex_cor) ? '#FFFFFF' : '#18181b'
                                 }">
                                 {{ categoria.nome }}
                             </span>
                         </div>
                     </div>
-                </div>
+                </button>
             </li>
         </ul>
 
-        <!-- Mensagem quando não há presentes -->
-        <div v-if="filteredAndSortedPresentes.length === 0" class="text-center py-12">
-            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-            </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900">
-                {{ (searchTerm || selectedCategoria) ? 'Nenhum presente encontrado' : 'Nenhum presente encontrado' }}
-            </h3>
-            <p class="mt-1 text-sm text-gray-500">
-                {{ (searchTerm || selectedCategoria) ? 'Nenhum presente corresponde aos filtros aplicados' : 'Ainda não há presentes nesta lista.' }}
+        <!-- Estado vazio -->
+        <div v-else class="surface flex flex-col items-center px-6 py-16 text-center">
+            <span class="flex size-12 items-center justify-center rounded-full bg-brand-50 text-brand-700">
+                <GiftIcon class="size-6" aria-hidden="true" />
+            </span>
+            <template v-if="searchTerm || selectedCategoria">
+                <h3 class="mt-4 font-semibold text-gray-900">Nenhum presente encontrado</h3>
+                <p class="mt-1 max-w-xs text-sm text-gray-500">Nada corresponde à busca ou ao filtro aplicado.</p>
+                <button type="button" class="btn-secondary mt-6" @click="searchTerm = ''; selectedCategoria = ''">
+                    Limpar filtros
+                </button>
+            </template>
+            <template v-else>
+                <h3 class="mt-4 font-semibold text-gray-900">Esta lista ainda está vazia</h3>
+                <p class="mt-1 max-w-xs text-sm text-gray-500">
+                    Adicione o primeiro presente. Dá para colar o link da loja e preencher os dados automaticamente.
+                </p>
+                <Link v-if="listaId" :href="route('presentes.create', { lista_id: listaId })" class="btn-primary mt-6">
+                    Adicionar presente
+                </Link>
+            </template>
+        </div>
+
+        <!-- Paginacao -->
+        <nav v-if="totalPages > 1" class="mt-8 flex items-center justify-between gap-4" aria-label="Paginação">
+            <p class="hidden text-sm text-gray-500 sm:block">
+                {{ paginationInfo.from }} a {{ paginationInfo.to }} de {{ paginationInfo.total }}
             </p>
-            
-        </div>
-
-        <!-- Controles de paginação responsivos -->
-        <div v-if="totalPages > 1"
-            class="mt-8 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
-            <!-- Paginação mobile -->
-            <div class="flex justify-center w-full sm:hidden">
-                <div class="flex items-center space-x-2">
-                    <button @click="previousPage" :disabled="currentPage === 1"
-                        class="relative inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200">
-                        ← Anterior
-                    </button>
-                    <span class="text-sm text-gray-700 px-2">
-                        {{ currentPage }} / {{ totalPages }}
-                    </span>
-                    <button @click="nextPage" :disabled="currentPage === totalPages"
-                        class="relative inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200">
-                        Próxima →
-                    </button>
-                </div>
+            <div class="flex items-center gap-1 max-sm:mx-auto">
+                <button type="button" @click="previousPage" :disabled="currentPage === 1" class="btn-ghost px-2.5" aria-label="Página anterior">
+                    <ChevronLeftIcon class="size-5" />
+                </button>
+                <button v-for="page in visiblePages" :key="page" type="button" @click="goToPage(page)"
+                    :aria-current="page === currentPage ? 'page' : undefined"
+                    :class="page === currentPage ? 'bg-brand-600 text-white hover:bg-brand-600' : 'btn-ghost'"
+                    class="press min-w-10 rounded-md px-3 py-2 text-sm font-medium">
+                    {{ page }}
+                </button>
+                <button type="button" @click="nextPage" :disabled="currentPage === totalPages" class="btn-ghost px-2.5" aria-label="Próxima página">
+                    <ChevronRightIcon class="size-5" />
+                </button>
             </div>
+        </nav>
 
-            <!-- Paginação desktop -->
-            <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                <div>
-                    <p class="text-sm text-gray-700">
-                        Mostrando
-                        <span class="font-medium">{{ paginationInfo.from }}</span>
-                        a
-                        <span class="font-medium">{{ paginationInfo.to }}</span>
-                        de
-                        <span class="font-medium">{{ paginationInfo.total }}</span>
-                        resultados
-                    </p>
-                </div>
-                <div>
-                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                        <button @click="previousPage" :disabled="currentPage === 1"
-                            class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200">
-                            <span class="sr-only">Anterior</span>
-                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                        </button>
-
-                        <button v-for="page in visiblePages" :key="page" @click="goToPage(page)" :class="[
-                            page === currentPage
-                                ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
-                                : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50',
-                            'relative inline-flex items-center px-4 py-2 border text-sm font-medium transition-colors duration-200'
-                        ]">
-                            {{ page }}
-                        </button>
-
-                        <button @click="nextPage" :disabled="currentPage === totalPages"
-                            class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200">
-                            <span class="sr-only">Próxima</span>
-                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                        </button>
-                    </nav>
-                </div>
-            </div>
-        </div>
         <ShowPresente v-if="showModal && selectedPresente" :key="modalKey" :presente="selectedPresente"
             @close="closePresenteModal" />
     </div>

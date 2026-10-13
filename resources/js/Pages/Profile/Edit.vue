@@ -3,7 +3,7 @@ import { Head, useForm } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { usePage } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
-import { PencilIcon, ExclamationTriangleIcon } from '@heroicons/vue/24/outline';
+import { CameraIcon, ExclamationTriangleIcon, ArrowPathIcon, CheckCircleIcon, XCircleIcon, KeyIcon } from '@heroicons/vue/24/outline';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import InputError from '@/Components/InputError.vue';
@@ -47,7 +47,7 @@ const form = useForm({
         genero: user.perfil?.genero || '',
     },
     imagem: null,
-    confirm_desativar: false
+    confirm_desativar: ''
 });
 
 const usernameStatus = ref(null);
@@ -162,200 +162,147 @@ const emailAlterado = computed(() => form.email !== user.email);
     <Head :title="title" />
 
     <AppLayout :title="title">
-        <div class="w-full">
-            <div class="mx-auto max-w-7xl space-y-4 sm:space-y-6">
-                <Alert 
-                    v-if="hasSuccessMessage"
-                    type="success" 
-                    :title="page.props.flash?.status || page.props.status || 'Sucesso'"
-                    class="mb-6"
-                />
-                <Alert 
-                    v-if="hasErrorMessage"
-                    type="danger" 
-                    title="Erro ao salvar perfil"
-                    message="Por favor, corrija os erros abaixo e tente novamente."
-                    class="mb-6"
-                />
-                <div class="bg-white p-4 sm:p-6 lg:p-8 shadow sm:rounded-lg">
-                    <header>
-                        <h2 class="text-lg sm:text-xl text-center font-medium text-gray-900">
-                            Informações Pessoais
-                        </h2>
-                    </header>
+        <div class="mx-auto max-w-4xl space-y-8">
+            <Alert v-if="hasSuccessMessage" type="success"
+                :title="page.props.flash?.status || page.props.status || 'Sucesso'" />
+            <Alert v-if="hasErrorMessage" type="danger" title="Não foi possível salvar"
+                message="Corrija os campos indicados e tente novamente." />
 
-                    <div class="mt-6 sm:mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-                        <div class="flex lg:justify-center">
-                            <div class="flex flex-col items-center lg:items-start">
-                                <div class="relative inline-block mx-auto">
-                                    <input ref="fileInput" type="file" accept="image/*" class="hidden"
-                                        @change="handleFileChange">
-
-                                    <div class="relative size-32 sm:size-40 lg:size-52 rounded-full overflow-hidden cursor-pointer group"
-                                        @click="handleImageClick">
-                                        <img :src="previewUrl ?? '/img/default_profile.png'" alt="Foto de perfil"
-                                            class="w-full h-full rounded-full bg-blue-200 object-cover transition-all duration-300 group-hover:blur-sm">
-                                        <div
-                                            class="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full">
-                                            <PencilIcon
-                                                class="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white mb-1 sm:mb-2" />
-                                            <span class="text-white text-xs sm:text-sm font-medium">Editar foto</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <p
-                                    class="mt-3 text-xs sm:text-sm text-gray-500 text-center lg:text-left max-w-32 sm:max-w-40 lg:max-w-52">
-                                    Clique para editar foto.<br>
-                                    <span class="text-gray-400">Máx: 10MB</span>
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                            <div class="sm:col-span-1">
-                                <InputLabel for="nome" value="Nome" />
-                                <TextInput id="nome" type="text" class="mt-1 block w-full" v-model="form.name" required
-                                    autofocus autocomplete="nome" />
-                                <InputError class="mt-2" :message="form.errors.name" />
-                            </div>
-
-                            <div class="sm:col-span-1">
-                                <InputLabel for="username" value="Username" />
-                                <div class="relative">
-                                    <TextInput id="username" type="text" class="mt-1 block w-full" v-model="form.username"
-                                        required autofocus autocomplete="username"
-                                        @blur="checkUsername" @input="checkUsername" />
-                                    <div v-if="checkingUsername" class="absolute right-3 top-3">
-                                        <svg class="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
-                                    </div>
-                                    <div v-else-if="usernameStatus" class="absolute right-3 top-3" 
-                                        :class="usernameStatus.available ? 'text-green-500' : 'text-red-500'">
-                                        {{ usernameStatus.available ? '✓' : '✗' }}
-                                    </div>
-                                </div>
-                                <p v-if="usernameStatus" class="mt-1 text-xs" :class="usernameStatus.available ? 'text-green-600' : 'text-red-600'">
-                                    {{ usernameStatus.message }}
-                                </p>
-                                <InputError class="mt-2" :message="form.errors.username" />
-                            </div>
-
-                            <div class="sm:col-span-1">
-                                <InputLabel for="email" value="Email" />
-                                <TextInput id="email" type="email" class="mt-1 block w-full" v-model="form.email"
-                                    required autofocus autocomplete="email" />
-                                <InputError class="mt-2" :message="form.errors.email" />
-                            </div>
-
-                            <div class="sm:col-span-1">
-                                <InputLabel for="telefone" value="Telefone" />
-                                <PhoneInput id="telefone" class="mt-1 block w-full" v-model="form.perfil.telefone"
-                                    placeholder="(11) 99999-9999" />
-                                <InputError class="mt-2" :message="form.errors['perfil.telefone']" />
-                            </div>
-
-                            <div class="sm:col-span-1">
-                                <InputLabel for="data_nascimento" value="Data de Nascimento" />
-                                <TextInput id="data_nascimento" type="date" class="mt-1 block w-full"
-                                    v-model="form.perfil.data_nascimento" />
-                                <InputError class="mt-2" :message="form.errors['perfil.data_nascimento']" />
-                            </div>
-
-                            <div class="sm:col-span-1">
-                                <InputLabel for="genero" value="Gênero" />
-                                <select id="genero" name="genero"
-                                    class="rounded-md mt-1 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 w-full"
-                                    v-model="form.perfil.genero">
-                                    <option value="masculino">Masculino</option>
-                                    <option value="feminino">Feminino</option>
-                                    <option value="outro">Outro</option>
-                                </select>
-                                <InputError class="mt-2" :message="form.errors['perfil.genero']" />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div v-if="emailAlterado" class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
-                        <div class="flex">
-                            <div class="flex-shrink-0">
-                                <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                            <div class="ml-3">
-                                <h3 class="text-sm font-medium text-yellow-800">
-                                    Alteração de Email
-                                </h3>
-                                <div class="mt-2 text-sm text-yellow-700">
-                                    <p>Para alterar o email, confirme sua senha atual:</p>
-                                </div>
-                                <div class="mt-4">
-                                    <InputLabel for="senha_atual" value="Senha Atual" />
-                                    <TextInput id="senha_atual" type="password" class="mt-1 block w-full sm:w-1/2" 
-                                        v-model="form.senha_atual" />
-                                    <InputError class="mt-2" :message="form.errors.senha_atual" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex justify-center mt-8 sm:mt-12">
-                        <button type="button"
-                            class="rounded-md w-full sm:w-auto sm:min-w-44 bg-indigo-600 px-6 py-2 text-center text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-colors duration-200"
-                            @click="submit">
-                            Salvar
-                        </button>
-                    </div>
-                </div>
-
-                <div class="bg-white p-4 sm:p-6 lg:p-8 shadow sm:rounded-lg">
-                    <header>
-                        <h2 class="text-lg sm:text-xl text-center font-medium text-gray-900">
-                            Zona de Perigo
-                        </h2>
-                    </header>
-                    
-                    <div class="mt-4 text-center">
-                        <p class="text-sm text-gray-600 mb-4">
-                            Desativar sua conta temporariamente. Você pode reativar a qualquer momento fazendo login novamente.
-                        </p>
-                        <button type="button"
-                            class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-150"
-                            @click="showDesativarModal = true">
-                            <ExclamationTriangleIcon class="w-4 h-4 mr-2" />
-                            Desativar Minha Conta
-                        </button>
-                    </div>
-                </div>
+            <div>
+                <h2 class="text-3xl font-semibold text-gray-900">Seu perfil</h2>
+                <p class="mt-1 text-gray-600">Como as outras pessoas veem você no Desejário.</p>
             </div>
+
+            <form class="surface p-5 sm:p-8" @submit.prevent="submit">
+                <div class="grid gap-8 md:grid-cols-[auto_minmax(0,1fr)] md:gap-10">
+                    <!-- Foto -->
+                    <div class="flex flex-col items-center gap-3">
+                        <input ref="fileInput" type="file" accept="image/*" class="hidden" @change="handleFileChange">
+                        <button type="button" @click="handleImageClick" class="press group relative size-36 overflow-hidden rounded-full sm:size-44"
+                            aria-label="Trocar foto de perfil">
+                            <img :src="previewUrl ?? '/img/default_profile.png'" alt="Foto de perfil"
+                                class="size-full bg-gray-100 object-cover" />
+                            <span class="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-zinc-950/50 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100 max-md:opacity-100 max-md:bg-zinc-950/35">
+                                <CameraIcon class="size-6" aria-hidden="true" />
+                                <span class="text-xs font-medium">Trocar foto</span>
+                            </span>
+                        </button>
+                        <p class="text-xs text-gray-500">JPG ou PNG</p>
+                    </div>
+
+                    <!-- Campos -->
+                    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                        <div>
+                            <InputLabel for="nome" value="Nome" />
+                            <TextInput id="nome" type="text" class="mt-1.5 block w-full" v-model="form.name" required autocomplete="name" />
+                            <InputError class="mt-2" :message="form.errors.name" />
+                        </div>
+
+                        <div>
+                            <InputLabel for="username" value="Username" />
+                            <div class="relative">
+                                <TextInput id="username" type="text" class="mt-1.5 block w-full pr-10" v-model="form.username" required
+                                    autocomplete="username" @blur="checkUsername" @input="checkUsername" />
+                                <span class="absolute right-3 top-1/2 mt-0.5 -translate-y-1/2">
+                                    <ArrowPathIcon v-if="checkingUsername" class="size-5 animate-spin text-gray-400" aria-hidden="true" />
+                                    <CheckCircleIcon v-else-if="usernameStatus?.available" class="size-5 text-brand-600" aria-hidden="true" />
+                                    <XCircleIcon v-else-if="usernameStatus" class="size-5 text-red-500" aria-hidden="true" />
+                                </span>
+                            </div>
+                            <p v-if="usernameStatus" class="mt-1.5 text-xs" :class="usernameStatus.available ? 'text-brand-700' : 'text-red-600'">
+                                {{ usernameStatus.message }}
+                            </p>
+                            <InputError class="mt-2" :message="form.errors.username" />
+                        </div>
+
+                        <div>
+                            <InputLabel for="email" value="E-mail" />
+                            <TextInput id="email" type="email" class="mt-1.5 block w-full" v-model="form.email" required autocomplete="email" />
+                            <InputError class="mt-2" :message="form.errors.email" />
+                        </div>
+
+                        <div>
+                            <InputLabel for="telefone" value="Telefone" />
+                            <PhoneInput id="telefone" class="mt-1.5 block w-full" v-model="form.perfil.telefone" placeholder="(11) 99999-9999" />
+                            <InputError class="mt-2" :message="form.errors['perfil.telefone']" />
+                        </div>
+
+                        <div>
+                            <InputLabel for="data_nascimento" value="Data de nascimento" />
+                            <TextInput id="data_nascimento" type="date" class="mt-1.5 block w-full" v-model="form.perfil.data_nascimento" />
+                            <InputError class="mt-2" :message="form.errors['perfil.data_nascimento']" />
+                        </div>
+
+                        <div>
+                            <InputLabel for="genero" value="Gênero" />
+                            <select id="genero" name="genero" class="mt-1.5 block w-full" v-model="form.perfil.genero">
+                                <option value="">Prefiro não informar</option>
+                                <option value="masculino">Masculino</option>
+                                <option value="feminino">Feminino</option>
+                                <option value="outro">Outro</option>
+                            </select>
+                            <InputError class="mt-2" :message="form.errors['perfil.genero']" />
+                        </div>
+
+                        <!-- Confirmacao para trocar e-mail -->
+                        <div v-if="emailAlterado" class="col-span-full rounded-xl border border-amber-200 bg-amber-50 p-4">
+                            <div class="flex items-start gap-3">
+                                <KeyIcon class="mt-0.5 size-5 shrink-0 text-amber-600" aria-hidden="true" />
+                                <div class="flex-1">
+                                    <h3 class="text-sm font-semibold text-amber-900">Confirme sua senha para trocar o e-mail</h3>
+                                    <div class="mt-3 max-w-xs">
+                                        <InputLabel for="senha_atual" value="Senha atual" />
+                                        <TextInput id="senha_atual" type="password" class="mt-1.5 block w-full" v-model="form.senha_atual"
+                                            autocomplete="current-password" />
+                                        <InputError class="mt-2" :message="form.errors.senha_atual" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 flex justify-end border-t border-gray-100 pt-6">
+                    <button type="submit" class="btn-primary min-w-40" :disabled="form.processing">
+                        {{ form.processing ? 'Salvando...' : 'Salvar alterações' }}
+                    </button>
+                </div>
+            </form>
+
+            <section class="rounded-xl border border-red-200 bg-surface p-5 sm:p-8">
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900">Desativar conta</h3>
+                        <p class="mt-1 max-w-xl text-sm text-gray-600">
+                            Seu perfil e suas listas ficam ocultos. Para reativar, basta entrar de novo.
+                        </p>
+                    </div>
+                    <button type="button" class="btn-danger self-start sm:self-auto" @click="showDesativarModal = true">
+                        <ExclamationTriangleIcon class="size-4" aria-hidden="true" />
+                        Desativar conta
+                    </button>
+                </div>
+            </section>
         </div>
 
-        <Modal :show="showDesativarModal" @close="showDesativarModal = false">
+        <Modal :show="showDesativarModal" max-width="md" @close="showDesativarModal = false">
             <div class="p-6">
-                <h3 class="text-lg font-medium text-gray-900">
-                    Desativar Conta
-                </h3>
-                <p class="mt-2 text-sm text-gray-500">
-                    Tem certeza que deseja desativar sua conta? Você poderá reativar a qualquer momento fazendo login novamente.
+                <span class="flex size-12 items-center justify-center rounded-full bg-red-100 text-red-600">
+                    <ExclamationTriangleIcon class="size-6" aria-hidden="true" />
+                </span>
+                <h3 class="mt-4 text-lg font-semibold text-gray-900">Desativar sua conta?</h3>
+                <p class="mt-2 text-sm text-gray-600">
+                    Você poderá reativá-la a qualquer momento fazendo login novamente.
                 </p>
-                <div class="mt-4">
-                    <InputLabel for="confirm_desativar" value="Digite 'DESATIVAR' para confirmar" class="mb-2" />
-                    <TextInput id="confirm_desativar" type="text" class="mt-1 block w-full" 
-                        v-model="form.confirm_desativar" />
+                <div class="mt-5">
+                    <InputLabel for="confirm_desativar" value="Digite DESATIVAR para confirmar" />
+                    <TextInput id="confirm_desativar" type="text" class="mt-1.5 block w-full" v-model="form.confirm_desativar"
+                        autocomplete="off" />
                 </div>
                 <div class="mt-6 flex justify-end gap-3">
-                    <button type="button" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                        @click="showDesativarModal = false">
-                        Cancelar
-                    </button>
-                    <button type="button" 
-                        class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-500 disabled:opacity-50"
-                        :disabled="form.confirm_desativar !== 'DESATIVAR'"
-                        @click="submitDesativar">
-                        Desativar Conta
+                    <button type="button" class="btn-secondary" @click="showDesativarModal = false">Cancelar</button>
+                    <button type="button" class="btn-danger" :disabled="form.confirm_desativar !== 'DESATIVAR'" @click="submitDesativar">
+                        Desativar conta
                     </button>
                 </div>
             </div>

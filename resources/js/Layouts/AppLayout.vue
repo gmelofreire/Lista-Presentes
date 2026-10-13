@@ -1,54 +1,44 @@
 <template>
-  <div class="h-screen flex flex-col">
+  <div class="flex min-h-[100dvh] flex-col">
+    <!-- Sidebar mobile -->
     <TransitionRoot as="template" :show="sidebarOpen">
       <Dialog class="relative z-50 lg:hidden" @close="sidebarOpen = false">
-        <TransitionChild as="template" enter="transition-opacity ease-linear duration-300" enter-from="opacity-0"
-          enter-to="" leave="transition-opacity ease-linear duration-300" leave-from="" leave-to="opacity-0">
-          <div class="fixed inset-0 bg-gray-900/80" />
+        <TransitionChild as="template" enter="transition-opacity ease-out duration-200" enter-from="opacity-0"
+          enter-to="opacity-100" leave="transition-opacity ease-out duration-150" leave-from="opacity-100" leave-to="opacity-0">
+          <div class="fixed inset-0 bg-zinc-950/50 backdrop-blur-[2px]" />
         </TransitionChild>
 
         <div class="fixed inset-0 flex">
-          <TransitionChild as="template" enter="transition ease-in-out duration-300 transform"
+          <TransitionChild as="template" enter="transition ease-drawer duration-300 transform"
             enter-from="-translate-x-full" enter-to="translate-x-0"
-            leave="transition ease-in-out duration-300 transform" leave-from="translate-x-0"
+            leave="transition ease-drawer duration-200 transform" leave-from="translate-x-0"
             leave-to="-translate-x-full">
             <DialogPanel class="relative mr-16 flex w-full max-w-xs flex-1">
-              <TransitionChild as="template" enter="ease-in-out duration-300" enter-from="opacity-0" enter-to=""
-                leave="ease-in-out duration-300" leave-from="" leave-to="opacity-0">
-                <div class="absolute top-0 left-full flex w-16 justify-center pt-5">
-                  <button type="button" class="-m-2.5 p-2.5" @click="sidebarOpen = false">
-                    <span class="sr-only">Close sidebar</span>
+              <TransitionChild as="template" enter="ease-out duration-200" enter-from="opacity-0" enter-to="opacity-100"
+                leave="ease-out duration-150" leave-from="opacity-100" leave-to="opacity-0">
+                <div class="absolute left-full top-0 flex w-16 justify-center pt-5">
+                  <button type="button" class="press -m-2.5 rounded-full p-2.5" @click="sidebarOpen = false">
+                    <span class="sr-only">Fechar menu</span>
                     <XMarkIcon class="size-6 text-white" aria-hidden="true" />
                   </button>
                 </div>
               </TransitionChild>
-              <div class="relative flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4">
-                <div class="relative flex h-16 shrink-0 items-center gap-3">
-                  <GiftIcon class="size-8 text-indigo-600" />
-                  <span class="text-lg font-bold mt-1 text-gray-900">Desejário</span>
-                </div>
-                <nav class="relative flex flex-1 flex-col">
-                  <ul role="list" class="flex flex-1 flex-col gap-y-7">
-                    <li>
-                      <ul role="list" class="-mx-2 space-y-1">
-                        <li v-for="item in navigation" :key="item.name">
-                          <a :href="item.href"
-                            :class="[item.current ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:bg-gray-50 hover:text-indigo-600', 'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold']">
-                            <component :is="item.icon"
-                              :class="[item.current ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600', 'size-6 shrink-0']"
-                              aria-hidden="true" />
-                            {{ item.name }}
-                          </a>
-                        </li>
-                      </ul>
-                    </li>
-                    <li class="mt-auto">
-                      <a href="#"
-                        class="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
-                        <Cog6ToothIcon class="size-6 shrink-0 text-gray-400 group-hover:text-indigo-600"
-                          aria-hidden="true" />
-                        Settings
-                      </a>
+              <div class="relative flex grow flex-col gap-y-6 overflow-y-auto bg-surface px-5 pb-5">
+                <Link :href="route('dashboard')" class="flex h-16 shrink-0 items-center gap-2.5">
+                  <span class="flex size-9 items-center justify-center rounded-md bg-brand-600 text-white">
+                    <GiftIcon class="size-5" aria-hidden="true" />
+                  </span>
+                  <span class="text-xl font-semibold tracking-tight text-gray-900">Desejário</span>
+                </Link>
+                <nav class="flex flex-1 flex-col">
+                  <ul role="list" class="flex flex-1 flex-col gap-y-1">
+                    <li v-for="item in navigation" :key="item.name">
+                      <component :is="item.disabled ? 'span' : Link" :href="item.disabled ? undefined : item.href"
+                        :class="[navItemClass(item), item.disabled ? 'cursor-not-allowed text-gray-400' : '']">
+                        <component :is="item.icon" :class="[item.current ? 'text-brand-700' : 'text-gray-400 group-hover:text-gray-600', 'size-5 shrink-0']" aria-hidden="true" />
+                        {{ item.name }}
+                        <span v-if="item.disabled" class="ml-auto rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500">Em breve</span>
+                      </component>
                     </li>
                   </ul>
                 </nav>
@@ -59,127 +49,128 @@
       </Dialog>
     </TransitionRoot>
 
-    <div class="hidden bg-gray-900 lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-      <!-- Sidebar component, swap this element with another sidebar if you like -->
-      <div class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4">
-        <div class="flex h-16 shrink-0 items-center gap-3">
-          <GiftIcon class="size-8 text-indigo-600" />
-          <span class="text-lg font-bold mt-1 text-gray-900">Desejário</span>
-        </div>
+    <!-- Sidebar desktop -->
+    <div class="hidden lg:fixed lg:inset-y-0 lg:z-40 lg:flex lg:w-64 lg:flex-col">
+      <div class="flex grow flex-col gap-y-6 overflow-y-auto border-r border-gray-200/80 bg-surface px-5 pb-5">
+        <Link :href="route('dashboard')" class="flex h-16 shrink-0 items-center gap-2.5">
+          <span class="flex size-9 items-center justify-center rounded-md bg-brand-600 text-white">
+            <GiftIcon class="size-5" aria-hidden="true" />
+          </span>
+          <span class="text-xl font-semibold tracking-tight text-gray-900">Desejário</span>
+        </Link>
         <nav class="flex flex-1 flex-col">
-          <ul role="list" class="flex flex-1 flex-col gap-y-7">
-            <li>
-              <ul role="list" class="-mx-2 space-y-1">
-                <li v-for="item in navigation" :key="item.name">
-                  <a :href="item.href"
-                    :class="[item.current ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:bg-gray-50 hover:text-indigo-600', 'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold']">
-                    <component :is="item.icon"
-                      :class="[item.current ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600', 'size-6 shrink-0']"
-                      aria-hidden="true" />
-                    {{ item.name }}
-                  </a>
-                </li>
-              </ul>
-            </li>
-            <li class="mt-auto">
-              <a href="#"
-                class="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
-                <Cog6ToothIcon class="size-6 shrink-0 text-gray-400 group-hover:text-indigo-600" aria-hidden="true" />
-                Settings
-              </a>
+          <ul role="list" class="flex flex-1 flex-col gap-y-1">
+            <li v-for="item in navigation" :key="item.name">
+              <component :is="item.disabled ? 'span' : Link" :href="item.disabled ? undefined : item.href"
+                :class="[navItemClass(item), item.disabled ? 'cursor-not-allowed text-gray-400' : '']">
+                <component :is="item.icon" :class="[item.current ? 'text-brand-700' : 'text-gray-400 group-hover:text-gray-600', 'size-5 shrink-0']" aria-hidden="true" />
+                {{ item.name }}
+                <span v-if="item.disabled" class="ml-auto rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500">Em breve</span>
+              </component>
             </li>
           </ul>
         </nav>
       </div>
     </div>
 
-    <div class="lg:pl-72 flex flex-col h-full">
-      <div
-        class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-xs sm:gap-x-6 sm:px-6 lg:px-8">
-        <button type="button" class="-m-2.5 p-2.5 text-gray-700 hover:text-gray-900 lg:hidden"
+    <div class="flex min-h-[100dvh] flex-col lg:pl-64">
+      <header
+        class="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200/80 bg-surface/85 px-4 backdrop-blur sm:px-6 lg:px-8">
+        <button type="button" class="press -m-2.5 rounded-md p-2.5 text-gray-700 hover:text-gray-900 lg:hidden"
           @click="sidebarOpen = true">
-          <span class="sr-only">Open sidebar</span>
+          <span class="sr-only">Abrir menu</span>
           <Bars3Icon class="size-6" aria-hidden="true" />
         </button>
 
-        <div class="h-6 w-px bg-gray-200 lg:hidden" aria-hidden="true" />
-        <span class="text-black text-xl font-bold">{{ title }}</span>
-        <div class="flex flex-1 justify-end gap-x-4 self-stretch lg:gap-x-6">
-          <div class="flex items-center gap-x-4 lg:gap-x-6">
-            <button type="button" class="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500 relative" @click="showNotifications = !showNotifications">
-              <span class="sr-only">View notifications</span>
+        <h1 class="truncate text-lg font-semibold tracking-tight text-gray-900">{{ title }}</h1>
+
+        <div class="flex flex-1 items-center justify-end gap-x-3">
+          <ThemeToggle />
+
+          <!-- Notificacoes -->
+          <div class="relative">
+            <button type="button" class="press relative rounded-full p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-800"
+              :aria-expanded="showNotifications" @click="showNotifications = !showNotifications">
+              <span class="sr-only">Ver notificações</span>
               <BellIcon class="size-6" aria-hidden="true" />
-              <span v-if="unreadCount > 0" class="absolute -top-1 -right-1 size-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+              <span v-if="unreadCount > 0"
+                class="absolute -right-0.5 -top-0.5 flex size-5 items-center justify-center rounded-full bg-brand-600 text-[11px] font-semibold text-white ring-2 ring-surface">
                 {{ unreadCount > 9 ? '9+' : unreadCount }}
               </span>
             </button>
 
-            <!-- Notifications Dropdown -->
-            <div v-if="showNotifications" class="absolute right-0 top-12 z-50 w-96 bg-white rounded-lg shadow-lg border border-gray-200 p-4">
-              <div class="flex justify-between items-center mb-3">
-                <h3 class="text-sm font-semibold text-gray-900">Notificações</h3>
-                <button @click="showNotifications = false" class="text-gray-400 hover:text-gray-600">
-                  <XMarkIcon class="size-4" />
-                </button>
-              </div>
-              <div v-if="notificationsList.length === 0" class="text-sm text-gray-500 text-center py-4">
-                Nenhuma notificação
-              </div>
-              <div v-else class="space-y-2 max-h-64 overflow-y-auto">
-                <div v-for="notif in notificationsList" :key="notif.id" 
-                  class="p-2 rounded-lg cursor-pointer hover:bg-gray-50" :class="!notif.lido ? 'bg-indigo-50' : ''"
-                  @click="marcarLidaENavegar(notif)">
-                  <p class="text-sm font-medium text-gray-900">{{ notif.titulo }}</p>
-                  <p class="text-xs text-gray-500">{{ notif.mensagem }}</p>
-                  <p class="text-xs text-gray-400 mt-1">{{ new Date(notif.created_at).toLocaleDateString('pt-BR') }}</p>
+            <Transition enter-active-class="transition ease-out duration-150" enter-from-class="opacity-0 scale-95"
+              enter-to-class="opacity-100 scale-100" leave-active-class="transition ease-out duration-100"
+              leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
+              <div v-if="showNotifications"
+                class="absolute right-0 top-full z-50 mt-2 w-[min(24rem,calc(100vw-2rem))] origin-top-right rounded-xl border border-gray-200 bg-surface p-2 shadow-lg">
+                <div class="flex items-center justify-between px-3 pb-2 pt-2">
+                  <h3 class="text-sm font-semibold text-gray-900">Notificações</h3>
+                  <button @click="showNotifications = false" class="press rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600">
+                    <span class="sr-only">Fechar</span>
+                    <XMarkIcon class="size-4" />
+                  </button>
+                </div>
+                <div v-if="notificationsList.length === 0" class="px-3 py-8 text-center text-sm text-gray-500">
+                  Nada por aqui ainda. Os avisos de amizades e novas listas aparecem neste lugar.
+                </div>
+                <div v-else class="max-h-72 space-y-0.5 overflow-y-auto">
+                  <button v-for="notif in notificationsList" :key="notif.id" type="button"
+                    class="block w-full rounded-lg px-3 py-2.5 text-left transition-colors duration-150 hover:bg-gray-50"
+                    :class="!notif.lido ? 'bg-brand-50/70' : ''" @click="marcarLidaENavegar(notif)">
+                    <p class="text-sm font-medium text-gray-900">{{ notif.titulo }}</p>
+                    <p class="mt-0.5 text-sm text-gray-500">{{ notif.mensagem }}</p>
+                    <p class="mt-1 text-xs text-gray-400">{{ new Date(notif.created_at).toLocaleDateString('pt-BR') }}</p>
+                  </button>
+                </div>
+                <div class="mt-1 border-t border-gray-100 pt-1">
+                  <Link :href="route('notificacoes.index')" class="block rounded-lg px-3 py-2 text-center text-sm font-medium text-brand-700 hover:bg-gray-50"
+                    @click="showNotifications = false">
+                    Ver todas
+                  </Link>
                 </div>
               </div>
-            </div>
-
-            <!-- Separator -->
-            <div class="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200" aria-hidden="true" />
-
-            <!-- Profile dropdown -->
-            <Menu as="div" class="relative">
-              <MenuButton class="relative flex items-center">
-                <span class="absolute -inset-1.5" />
-                <span class="sr-only">Open user menu</span>
-                <img :src="user.perfil.image_url ?? '/img/default_profile.png'" alt="Foto de perfil"
-                  class="size-8 rounded-full bg-gray-50 outline -outline-offset-1 outline-black/5 object-cover" />
-                <span class="hidden lg:flex lg:items-center">
-                  <span class="ml-4 text-sm/6 font-semibold text-gray-900" aria-hidden="true">{{ user.username }}</span>
-                  <ChevronDownIcon class="ml-2 size-5 text-gray-400" aria-hidden="true" />
-                </span>
-              </MenuButton>
-              <transition enter-active-class="transition ease-out duration-100"
-                enter-from-class="transform opacity-0 scale-95" enter-to-class="transform scale-100"
-                leave-active-class="transition ease-in duration-75" leave-from-class="transform scale-100"
-                leave-to-class="transform opacity-0 scale-95">
-                <MenuItems
-                  class="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg outline-1 outline-gray-900/5">
-                  <MenuItem v-slot="{ active }">
-                  <a :href="route('perfil.edit')"
-                    :class="[active ? 'bg-gray-50 outline-hidden' : '', 'block px-3 py-1 text-sm/6 text-gray-900']">
-                    Seu perfil
-                  </a>
-                  </MenuItem>
-                  <MenuItem v-slot="{ active }">
-                    <Link :href="route('logout')" method="post" class="block w-full">
-                    <button
-                      :class="[active ? 'bg-gray-50 outline-hidden' : '', 'block w-full text-left px-3 py-1 text-sm/6 text-gray-900']">
-                      Sair
-                    </button>
-                    </Link>
-                  </MenuItem>
-                </MenuItems>
-              </transition>
-            </Menu>
+            </Transition>
           </div>
-        </div>
-      </div>
 
-      <main class="flex-1 py-10 bg-gray-50">
-        <div class="px-4 sm:px-6 lg:px-8">
+          <div class="hidden h-6 w-px bg-gray-200 sm:block" aria-hidden="true" />
+
+          <!-- Menu do usuario -->
+          <Menu as="div" class="relative">
+            <MenuButton class="press flex items-center gap-2.5 rounded-full py-1 pl-1 pr-2 hover:bg-gray-100">
+              <span class="sr-only">Abrir menu do usuário</span>
+              <img :src="user.perfil.image_url ?? '/img/default_profile.png'" alt="Foto de perfil"
+                class="size-8 rounded-full bg-gray-100 object-cover ring-1 ring-gray-900/5" />
+              <span class="hidden items-center sm:flex">
+                <span class="text-sm font-medium text-gray-900" aria-hidden="true">{{ user.username }}</span>
+                <ChevronDownIcon class="ml-1 size-5 text-gray-400" aria-hidden="true" />
+              </span>
+            </MenuButton>
+            <transition enter-active-class="transition ease-out duration-150" enter-from-class="opacity-0 scale-95"
+              enter-to-class="opacity-100 scale-100" leave-active-class="transition ease-out duration-100"
+              leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
+              <MenuItems
+                class="absolute right-0 z-50 mt-2 w-44 origin-top-right rounded-xl border border-gray-200 bg-surface p-1.5 shadow-lg focus:outline-none">
+                <MenuItem v-slot="{ active }">
+                  <Link :href="route('perfil.edit')"
+                    :class="[active ? 'bg-gray-100' : '', 'block rounded-md px-3 py-2 text-sm text-gray-800']">
+                    Seu perfil
+                  </Link>
+                </MenuItem>
+                <MenuItem v-slot="{ active }">
+                  <Link :href="route('logout')" method="post" as="button"
+                    :class="[active ? 'bg-gray-100' : '', 'block w-full rounded-md px-3 py-2 text-left text-sm text-gray-800']">
+                    Sair
+                  </Link>
+                </MenuItem>
+              </MenuItems>
+            </transition>
+          </Menu>
+        </div>
+      </header>
+
+      <main class="flex-1 py-8 sm:py-10">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <slot />
         </div>
       </main>
@@ -203,7 +194,6 @@ import {
 import {
   Bars3Icon,
   BellIcon,
-  Cog6ToothIcon,
   GiftTopIcon,
   GiftIcon,
   HomeIcon,
@@ -216,6 +206,7 @@ import {
 import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/vue/20/solid'
 import { usePage } from '@inertiajs/vue3';
 import { Link } from '@inertiajs/vue3';
+import ThemeToggle from '@/Components/ThemeToggle.vue';
 
 defineProps({
   title: {
@@ -257,12 +248,17 @@ const marcarLidaENavegar = async (notif) => {
 
 loadNotifications();
 
+const navItemClass = (item) => [
+  'group flex items-center gap-x-3 rounded-md px-3 py-2.5 text-sm font-medium press',
+  item.current ? 'bg-brand-50 text-brand-800' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900',
+]
+
 const navigation = [
   { name: 'Página inicial', href: route('dashboard'), icon: HomeIcon, current: route().current('dashboard') },
   { name: 'Amizades', href: route('amizades.index'), icon: UsersIcon, current: route().current('amizades.*') },
   { name: 'Listas de presentes', href: route('listas.index'), icon: GiftTopIcon, current: route().current('listas.*') },
   { name: 'Grupos', href: route('grupos.index'), icon: UserGroupIcon, current: route().current('grupos.*') },
   { name: 'Categorias', href: route('categorias.index'), icon: TagIcon, current: route().current('categorias.*') },
-  { name: 'Amigo Secreto', href: '#', icon: LockClosedIcon, current: false },
+  { name: 'Amigo Secreto', href: '#', icon: LockClosedIcon, current: false, disabled: true },
 ]
 </script>

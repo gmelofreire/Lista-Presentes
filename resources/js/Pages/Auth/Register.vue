@@ -3,6 +3,7 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+import AuthSplitLayout from '@/Layouts/AuthSplitLayout.vue';
 import PasswordStrength from '@/Components/PasswordStrength.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
@@ -69,30 +70,15 @@ const submit = () => {
 <template>
     <Head title="Cadastro" />
 
-    <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-md w-full space-y-8">
-            <div>
-                <div class="mx-auto h-12 w-12 flex items-center justify-center">
-                    <svg class="h-12 w-12 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
-                    </svg>
-                </div>
-                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                    Criar Conta
-                </h2>
-                <p class="mt-2 text-center text-sm text-gray-600">
-                    Cadastre-se na Lista de Presentes
-                </p>
-            </div>
-
-            <form class="mt-8 space-y-6" @submit.prevent="submit">
+    <AuthSplitLayout title="Criar conta" subtitle="Leva menos de um minuto.">
+        <form class="space-y-5" @submit.prevent="submit">
                 <div class="space-y-4">
                     <div>
                         <InputLabel for="name" value="Nome" />
                         <TextInput
                             id="name"
                             type="text"
-                            class="mt-1 block w-full"
+                            class="mt-1.5 block w-full"
                             v-model="form.name"
                             required
                             autofocus
@@ -106,7 +92,7 @@ const submit = () => {
                         <TextInput
                             id="email"
                             type="email"
-                            class="mt-1 block w-full"
+                            class="mt-1.5 block w-full"
                             v-model="form.email"
                             required
                             autocomplete="username"
@@ -119,7 +105,7 @@ const submit = () => {
                             <TextInput
                                 id="username"
                                 type="text"
-                                class="mt-1 block w-full"
+                                class="mt-1.5 block w-full"
                                 v-model="form.username"
                                 required
                                 autocomplete="username"
@@ -147,7 +133,7 @@ const submit = () => {
                         <TextInput
                             id="password"
                             type="password"
-                            class="mt-1 block w-full"
+                            class="mt-1.5 block w-full"
                             v-model="form.password"
                             required
                             autocomplete="new-password"
@@ -161,7 +147,7 @@ const submit = () => {
                         <TextInput
                             id="password_confirmation"
                             type="password"
-                            class="mt-1 block w-full"
+                            class="mt-1.5 block w-full"
                             v-model="form.password_confirmation"
                             required
                             autocomplete="new-password"
@@ -174,11 +160,11 @@ const submit = () => {
                             id="termos"
                             type="checkbox"
                             v-model="form.termos"
-                            class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mt-1"
+                            class="size-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500 mt-0.5"
                             required
                         />
                         <label for="termos" class="ml-2 block text-sm text-gray-900">
-                            Eu aceito os <a href="/termos" class="text-indigo-600 hover:text-indigo-500 underline">Termos de Uso</a> e a <a href="/privacidade" class="text-indigo-600 hover:text-indigo-500 underline">Política de Privacidade</a>
+                            Eu aceito os <a href="/termos" class="text-brand-700 hover:text-brand-800 underline">Termos de Uso</a> e a <a href="/privacidade" class="text-brand-700 hover:text-brand-800 underline">Política de Privacidade</a>
                         </label>
                     </div>
                     <InputError class="mt-2" :message="form.errors.termos" />
@@ -186,8 +172,7 @@ const submit = () => {
 
                 <div>
                     <PrimaryButton
-                        class="group relative w-full flex justify-center"
-                        :class="{ 'opacity-25': form.processing }"
+                        class="w-full py-3"
                         :disabled="form.processing"
                     >
                         Criar Conta
@@ -199,13 +184,12 @@ const submit = () => {
                         Já tem uma conta?
                         <Link
                             :href="route('login')"
-                            class="font-medium text-indigo-600 hover:text-indigo-500"
+                            class="font-medium text-brand-700 hover:text-brand-800"
                         >
                             Faça login aqui
                         </Link>
                     </p>
                 </div>
             </form>
-        </div>
-    </div>
+    </AuthSplitLayout>
 </template>

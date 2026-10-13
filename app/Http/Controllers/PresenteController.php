@@ -53,7 +53,7 @@ class PresenteController extends Controller
             $presente->categorias()->sync($dados['categoria_ids']);
         }
 
-        return redirect()->route('listas.show', $dados['lista_id']);
+        return redirect()->route('listas.show', $dados['lista_id'])->with('status', 'Presente adicionado à lista.');
     }
 
     public function edit($id)
@@ -97,7 +97,7 @@ class PresenteController extends Controller
             $presente->categorias()->sync($dados['categoria_ids']);
         }
 
-        return redirect()->route('listas.show', $presente->lista_id);
+        return redirect()->route('listas.show', $presente->lista_id)->with('status', 'Presente atualizado.');
     }
 
     public function destroy($id)
@@ -106,7 +106,7 @@ class PresenteController extends Controller
         $lista_id = $presente->lista_id;
         $presente->delete();
 
-        return redirect()->route('listas.show', $lista_id);
+        return redirect()->route('listas.show', $lista_id)->with('status', 'Presente removido da lista.');
     }
 
     public function buscarDadosUrl(Request $request)

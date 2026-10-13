@@ -1,53 +1,40 @@
 <template>
     <div>
-        <div class="mb-6">
-            <div class="mt-4 text-sm text-gray-600">
-                <span>Mostrando {{ listas.data.length }} de {{ listas.total }} listas</span>
-            </div>
-        </div>
+        <p class="mb-5 text-sm text-gray-500">
+            {{ listas.total }} {{ listas.total === 1 ? 'lista' : 'listas' }}
+        </p>
 
         <!-- Grid View -->
-        <ul v-if="viewMode === 'grid'" role="list" class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-            <li v-for="lista in listas.data" :key="lista.id"
-                class="col-span-1 rounded-2xl duration-200">
-                <div class="shadow-sm group hover:shadow-md rounded-2xl transition-shadow ">
-                    <div class="flex w-full items-center justify-between px-5 pt-16 rounded-t-lg bg-cover bg-center bg-no-repeat relative"
-                        :style="{ backgroundImage: `url(${lista.image_url})` }">
-                        <div
-                            class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent rounded-t-2xl">
-                            <div
-                                class="flex text-white justify-end p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                <Link :href="route('listas.edit', lista.id)">
-                                <PencilIcon class="size-5" />
-                                </Link>
-                            </div>
+        <ul v-if="viewMode === 'grid' && listas.data.length > 0" role="list"
+            class="stagger grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            <li v-for="(lista, i) in listas.data" :key="lista.id" :style="{ '--i': Math.min(i, 8) }">
+                <div class="surface-link group relative flex h-full flex-col overflow-hidden">
+                    <Link :href="route('listas.show', lista.id)" class="block">
+                        <div class="aspect-[16/10] overflow-hidden bg-gray-100">
+                            <img :src="lista.image_url || '/img/default_cover.png'" :alt="`Capa da lista ${lista.nome}`"
+                                class="size-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]" />
                         </div>
-                        <div class="flex-1 truncate rounded-lg py-3 relative z-10">
-                            <div class="flex items-center space-x-3">
-                                <h3 class="truncate text-sm font-bold text-white">{{ lista.nome }}</h3>
-                                <!-- <span v-if="lista.status" :class="getStatusClass(lista.status)" class="text-xs px-2 py-1 rounded-full text-slate-700">
-                                    {{ lista.status }}
-                                </span> -->
-                            </div>
-                            <p class="mt-1 truncate text-sm text-white">{{ lista.descricao }}</p>
+                        <div class="p-5 pb-4">
+                            <h3 class="truncate font-semibold text-gray-900">{{ lista.nome }}</h3>
+                            <p class="mt-1 line-clamp-2 min-h-[2.5rem] text-sm text-gray-500">
+                                {{ lista.descricao || 'Sem descrição' }}
+                            </p>
                         </div>
+                    </Link>
+                    <div class="mt-auto flex items-center justify-between gap-3 px-5 pb-5">
+                        <Link v-if="lista.grupo" :href="route('grupos.show', lista.grupo.id)"
+                            class="truncate rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-700 transition-colors duration-150 hover:bg-gray-200">
+                            {{ lista.grupo.nome }}
+                        </Link>
+                        <span v-else class="text-xs text-gray-400">Lista pessoal</span>
+                        <span v-if="lista.data_evento" class="shrink-0 text-xs font-medium text-gray-600">
+                            {{ new Date(lista.data_evento).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }) }}
+                        </span>
                     </div>
-                    <div>
-                        <div class="-mt-px flex divide-x divide-gray-200">
-                            <Link :href="route('listas.show', lista.id)" class="w-full">
-                            <button
-                                class="text-center w-full h-12 bg-indigo-500 text-white rounded-b-lg hover:bg-indigo-600 transition-colors">
-                                Acessar
-                            </button>
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex justify-center" v-if="lista.grupo">
-                    <Link :href="route('grupos.show', lista.grupo.id)">
-                    <div class="inline-block text-black text-center my-3 font-medium py-1 px-4 rounded-full transition-colors" >
-                       Grupo da lista: {{ lista.grupo?.nome }}
-                    </div>
+                    <Link :href="route('listas.edit', lista.id)"
+                        class="press absolute right-3 top-3 rounded-full bg-surface/90 p-2 text-gray-700 opacity-0 shadow-sm backdrop-blur transition-opacity duration-150 hover:bg-surface focus-visible:opacity-100 group-hover:opacity-100 max-md:opacity-100"
+                        aria-label="Editar lista">
+                        <PencilIcon class="size-4" />
                     </Link>
                 </div>
             </li>
@@ -67,7 +54,7 @@
                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
+                <tbody class="bg-surface divide-y divide-gray-200">
                     <tr v-for="lista in listas.data" :key="lista.id" class="hover:bg-gray-50">
                         <td class="px-6 py-4 whitespace-nowrap">
                             <img :src="lista.image_url" :alt="lista.nome" class="h-12 w-12 rounded-lg object-cover">
@@ -105,25 +92,25 @@
             </table>
         </div>
 
-        <div v-if="listas.data.length === 0" class="text-center py-12">
-            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900">Nenhuma lista encontrada</h3>
-            <p class="mt-1 text-sm text-gray-500">
-                Você ainda não criou nenhuma lista.
+        <div v-if="listas.data.length === 0" class="surface flex flex-col items-center px-6 py-16 text-center">
+            <span class="flex size-12 items-center justify-center rounded-full bg-brand-50 text-brand-700">
+                <GiftIcon class="size-6" aria-hidden="true" />
+            </span>
+            <h3 class="mt-4 font-semibold text-gray-900">Nenhuma lista encontrada</h3>
+            <p class="mt-1 max-w-xs text-sm text-gray-500">
+                Ajuste os filtros ou crie uma lista nova para começar.
             </p>
+            <Link :href="route('listas.create')" class="btn-primary mt-6">Nova lista</Link>
         </div>
 
         <div v-if="listas.last_page > 1" class="mt-8 flex items-center justify-between">
             <div class="flex-1 flex justify-between sm:hidden">
                 <button @click="goToPage(listas.current_page - 1)" :disabled="listas.current_page === 1"
-                    class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                    class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-surface hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
                     Anterior
                 </button>
                 <button @click="goToPage(listas.current_page + 1)" :disabled="listas.current_page === listas.last_page"
-                    class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                    class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-surface hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
                     Próxima
                 </button>
             </div>
@@ -143,7 +130,7 @@
                 <div>
                     <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
                         <button @click="goToPage(listas.current_page - 1)" :disabled="listas.current_page === 1"
-                            class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                            class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-surface text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
                             <span class="sr-only">Anterior</span>
                             <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd"
@@ -155,7 +142,7 @@
                         <button v-for="page in visiblePages" :key="page" @click="goToPage(page)" :class="[
                             page === listas.current_page
                                 ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
-                                : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50',
+                                : 'bg-surface border-gray-300 text-gray-500 hover:bg-gray-50',
                             'relative inline-flex items-center px-4 py-2 border text-sm font-medium'
                         ]">
                             {{ page }}
@@ -163,7 +150,7 @@
 
                         <button @click="goToPage(listas.current_page + 1)"
                             :disabled="listas.current_page === listas.last_page"
-                            class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                            class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-surface text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
                             <span class="sr-only">Próxima</span>
                             <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd"
@@ -183,6 +170,7 @@ import { ref, computed } from 'vue';
 import { router } from '@inertiajs/vue3'
 import { Link } from '@inertiajs/vue3'
 import PencilIcon from '@heroicons/vue/24/outline/PencilIcon'
+import GiftIcon from '@heroicons/vue/24/outline/GiftIcon'
 
 const props = defineProps({
     listas: {

@@ -1,3 +1,197 @@
+@import '@fontsource-variable/outfit';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    :root {
+        --surface: 255 255 255;
+        --gray-50: 250 250 250;
+        --gray-100: 244 244 245;
+        --gray-200: 228 228 231;
+        --gray-300: 212 212 216;
+        --gray-400: 161 161 170;
+        --gray-500: 113 113 122;
+        --gray-600: 82 82 91;
+        --gray-700: 63 63 70;
+        --gray-800: 39 39 42;
+        --gray-900: 24 24 27;
+        --gray-950: 9 9 11;
+        --brand-50: 239 250 244;
+        --brand-100: 215 243 227;
+        --brand-200: 176 230 201;
+    }
+
+    /* Tema escuro: a escala de cinza inverte, a superficie sobe um degrau acima do fundo */
+    .dark {
+        color-scheme: dark;
+        --surface: 24 24 27;
+        --gray-50: 15 15 17;
+        --gray-100: 39 39 42;
+        --gray-200: 52 52 58;
+        --gray-300: 68 68 76;
+        --gray-400: 113 113 122;
+        --gray-500: 161 161 170;
+        --gray-600: 180 180 188;
+        --gray-700: 212 212 216;
+        --gray-800: 228 228 231;
+        --gray-900: 244 244 245;
+        --gray-950: 250 250 250;
+        --brand-50: 14 38 29;
+        --brand-100: 20 56 42;
+        --brand-200: 27 84 64;
+    }
+}
+
+@layer base {
+    html {
+        -webkit-tap-highlight-color: transparent;
+        text-rendering: optimizeLegibility;
+    }
+
+    body {
+        @apply bg-gray-50 text-gray-900 antialiased;
+        transition: background-color 200ms theme('transitionTimingFunction.out');
+        font-feature-settings: 'ss01', 'cv11';
+    }
+
+    ::selection {
+        @apply bg-brand-200 text-brand-950;
+    }
+
+    h1, h2, h3 {
+        @apply tracking-tight;
+        text-wrap: balance;
+    }
+
+    p {
+        text-wrap: pretty;
+    }
+
+    :focus-visible {
+        @apply outline-none ring-2 ring-brand-500 ring-offset-2 ring-offset-surface;
+    }
+
+    /* Campos de formulario herdam o raio e o foco da marca */
+    input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='range']),
+    select,
+    textarea {
+        @apply rounded-md border-gray-300 bg-surface text-gray-900 placeholder:text-gray-400;
+        transition: border-color 150ms theme('transitionTimingFunction.out'),
+            box-shadow 150ms theme('transitionTimingFunction.out');
+    }
+
+    input[type='checkbox'],
+    input[type='radio'] {
+        @apply text-brand-600 border-gray-300;
+    }
+}
+
+@layer components {
+    /* Feedback fisico ao pressionar: qualquer elemento clicavel */
+    .press {
+        transition: transform 160ms theme('transitionTimingFunction.out'),
+            background-color 160ms theme('transitionTimingFunction.out'),
+            border-color 160ms theme('transitionTimingFunction.out'),
+            color 160ms theme('transitionTimingFunction.out'),
+            box-shadow 160ms theme('transitionTimingFunction.out');
+    }
+    .press:active:not(:disabled) {
+        transform: scale(0.97);
+    }
+
+    /* Botoes de acao (todas as telas) */
+    .btn {
+        @apply press inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-md px-4 py-2.5 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50;
+    }
+    .btn-primary {
+        @apply btn bg-brand-600 text-white shadow-sm hover:bg-brand-700;
+    }
+    .btn-secondary {
+        @apply btn border border-gray-300 bg-surface text-gray-800 shadow-xs hover:bg-gray-50;
+    }
+    .btn-danger {
+        @apply btn bg-red-600 text-white shadow-sm hover:bg-red-700;
+    }
+    .btn-ghost {
+        @apply btn text-gray-600 hover:bg-gray-100 hover:text-gray-900;
+    }
+
+    /* Superficie padrao: so quando a elevacao comunica hierarquia */
+    .surface {
+        @apply rounded-xl border border-gray-200/80 bg-surface shadow-xs;
+    }
+
+    /* Card clicavel */
+    .surface-link {
+        @apply surface;
+        transition: transform 200ms theme('transitionTimingFunction.out'),
+            box-shadow 200ms theme('transitionTimingFunction.out'),
+            border-color 200ms theme('transitionTimingFunction.out');
+    }
+}
+
+/* Hover so em dispositivos com ponteiro preciso (toque dispara hover no tap) */
+@media (hover: hover) and (pointer: fine) {
+    .surface-link:hover {
+        @apply -translate-y-0.5 border-gray-300 shadow-md;
+    }
+}
+
+/* Entrada escalonada: defina --i em cada item (30 a 60ms de passo) */
+.stagger > * {
+    animation: rise-in 320ms theme('transitionTimingFunction.out') both;
+    animation-delay: calc(var(--i, 0) * 45ms);
+}
+
+/* Movimento reduzido: mantem opacidade e cor, remove deslocamento e escala */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+    }
+    .press:active:not(:disabled) {
+        transform: none;
+    }
+}
+
+
+/* ---------- Tema escuro: ajustes que a troca de variaveis nao cobre ---------- */
+.dark .text-brand-700,
+.dark .text-indigo-700 { color: #4ab986; }
+.dark .text-brand-800,
+.dark .text-indigo-800 { color: #7fd2a9; }
+.dark .text-brand-900,
+.dark .text-indigo-900 { color: #b0e6c9; }
+.dark .text-brand-950 { color: #d7f3e3; }
+.dark .hover\:text-brand-800:hover,
+.dark .hover\:text-indigo-900:hover { color: #b0e6c9; }
+.dark .border-indigo-700 { border-color: #1a7f56; }
+
+/* Avisos e estados: fundo translucido, texto claro */
+.dark .bg-red-50,
+.dark .bg-red-100 { background-color: rgb(127 29 29 / 0.25); }
+.dark .bg-amber-50,
+.dark .bg-amber-100,
+.dark .bg-yellow-50 { background-color: rgb(120 53 15 / 0.25); }
+.dark .bg-blue-50,
+.dark .bg-blue-100 { background-color: rgb(30 58 138 / 0.25); }
+.dark .bg-green-50,
+.dark .bg-green-100 { background-color: rgb(20 83 45 / 0.25); }
+.dark .hover\:bg-red-50:hover { background-color: rgb(127 29 29 / 0.25); }
+.dark .border-red-200 { border-color: rgb(248 113 113 / 0.3); }
+.dark .border-amber-200 { border-color: rgb(251 191 36 / 0.3); }
+.dark .border-blue-50 { border-color: rgb(96 165 250 / 0.2); }
+.dark .text-red-700,
+.dark .text-red-800 { color: #fca5a5; }
+.dark .text-amber-800,
+.dark .text-amber-900 { color: #fcd34d; }
+.dark .text-green-800,
+.dark .text-green-900 { color: #86efac; }
+.dark .text-blue-700,
+.dark .text-blue-800 { color: #93c5fd; }
