@@ -1,0 +1,4375 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Lista Presentes",
+        "version": "0.0.1"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000/api"
+        }
+    ],
+    "paths": {
+        "/usuarios/buscar": {
+            "get": {
+                "operationId": "usuarios.buscar",
+                "tags": [
+                    "Amizade"
+                ],
+                "parameters": [
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "default": ""
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "username": {
+                                                        "type": "string"
+                                                    },
+                                                    "avatar": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ]
+                                                    }
+                                                },
+                                                "required": [
+                                                    "id",
+                                                    "name",
+                                                    "username",
+                                                    "avatar"
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "minItems": 0,
+                                            "maxItems": 0
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/amigos": {
+            "get": {
+                "operationId": "amizade.index",
+                "summary": "Amigos aceitos",
+                "tags": [
+                    "Amizades",
+                    "Amizade"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `UserResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/UserResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "The \"cursor\" that points to the next set of items."
+                                                },
+                                                "prev_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "The \"cursor\" that points to the previous set of items."
+                                                }
+                                            },
+                                            "required": [
+                                                "path",
+                                                "per_page",
+                                                "next_cursor",
+                                                "prev_cursor"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/amigos/pendentes": {
+            "get": {
+                "operationId": "amizade.pendentes",
+                "summary": "Solicita\u00e7\u00f5es recebidas (`recebidas`) e enviadas (`enviadas`) ainda pendentes",
+                "tags": [
+                    "Amizades",
+                    "Amizade"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "recebidas": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/UserResource"
+                                            }
+                                        },
+                                        "enviadas": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/UserResource"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "recebidas",
+                                        "enviadas"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/usuarios/buscar": {
+            "get": {
+                "operationId": "amizade.buscar",
+                "summary": "Busca usu\u00e1rios por nome ou username (m\u00ednimo 2 caracteres)",
+                "tags": [
+                    "Amizades",
+                    "Amizade"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of `UserResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/UserResource"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/amigos/{usuario}/solicitacao": {
+            "post": {
+                "operationId": "amizade.solicitar",
+                "tags": [
+                    "Amizades",
+                    "Amizade"
+                ],
+                "parameters": [
+                    {
+                        "name": "usuario",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Solicita\u00e7\u00e3o enviada."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "amizade.cancelar",
+                "tags": [
+                    "Amizades",
+                    "Amizade"
+                ],
+                "parameters": [
+                    {
+                        "name": "usuario",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/amigos/{usuario}/aceitar": {
+            "post": {
+                "operationId": "amizade.aceitar",
+                "tags": [
+                    "Amizades",
+                    "Amizade"
+                ],
+                "parameters": [
+                    {
+                        "name": "usuario",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Amizade aceita."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/amigos/{usuario}/recusar": {
+            "post": {
+                "operationId": "amizade.recusar",
+                "tags": [
+                    "Amizades",
+                    "Amizade"
+                ],
+                "parameters": [
+                    {
+                        "name": "usuario",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/amigos/{usuario}": {
+            "delete": {
+                "operationId": "amizade.desfazer",
+                "tags": [
+                    "Amizades",
+                    "Amizade"
+                ],
+                "parameters": [
+                    {
+                        "name": "usuario",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/amigos/{usuario}/bloqueio": {
+            "post": {
+                "operationId": "amizade.bloquear",
+                "tags": [
+                    "Amizades",
+                    "Amizade"
+                ],
+                "parameters": [
+                    {
+                        "name": "usuario",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Usu\u00e1rio bloqueado."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "amizade.desbloquear",
+                "tags": [
+                    "Amizades",
+                    "Amizade"
+                ],
+                "parameters": [
+                    {
+                        "name": "usuario",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/auth/register": {
+            "post": {
+                "operationId": "auth.register",
+                "summary": "Cadastra um usu\u00e1rio e j\u00e1 devolve um token de acesso",
+                "tags": [
+                    "Autentica\u00e7\u00e3o",
+                    "Auth"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "maxLength": 255
+                                    },
+                                    "username": {
+                                        "type": "string",
+                                        "pattern": "^[a-zA-Z0-9_]+$",
+                                        "minLength": 3,
+                                        "maxLength": 30
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "termos": {
+                                        "enum": [
+                                            "yes",
+                                            "on",
+                                            "1",
+                                            1,
+                                            "true",
+                                            true
+                                        ]
+                                    },
+                                    "device_name": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 100
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "username",
+                                    "password",
+                                    "termos",
+                                    "password_confirmation"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "token": {
+                                            "type": "string"
+                                        },
+                                        "tipo": {
+                                            "type": "string",
+                                            "const": "Bearer"
+                                        },
+                                        "user": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/UserResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "avatar"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "token",
+                                        "tipo",
+                                        "user"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/v1/auth/login": {
+            "post": {
+                "operationId": "auth.login",
+                "summary": "Login por e-mail ou username. Bloqueia por 15 minutos ap\u00f3s 10 tentativas inv\u00e1lidas",
+                "tags": [
+                    "Autentica\u00e7\u00e3o",
+                    "Auth"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "login": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "device_name": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 100
+                                    }
+                                },
+                                "required": [
+                                    "login",
+                                    "password"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "token": {
+                                            "type": "string"
+                                        },
+                                        "tipo": {
+                                            "type": "string",
+                                            "const": "Bearer"
+                                        },
+                                        "user": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/UserResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "avatar"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "token",
+                                        "tipo",
+                                        "user"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/v1/auth/esqueci-senha": {
+            "post": {
+                "operationId": "auth.esqueciSenha",
+                "summary": "Envia o link de redefini\u00e7\u00e3o de senha. Sempre responde igual, para n\u00e3o revelar quais e-mails existem",
+                "tags": [
+                    "Autentica\u00e7\u00e3o",
+                    "Auth"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    }
+                                },
+                                "required": [
+                                    "email"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Se o e-mail existir, enviaremos o link de redefini\u00e7\u00e3o."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/v1/auth/logout": {
+            "post": {
+                "operationId": "auth.logout",
+                "summary": "Revoga o token usado nesta requisi\u00e7\u00e3o",
+                "tags": [
+                    "Autentica\u00e7\u00e3o",
+                    "Auth"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Sess\u00e3o encerrada."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/me": {
+            "get": {
+                "operationId": "auth.me",
+                "summary": "Usu\u00e1rio autenticado",
+                "tags": [
+                    "Autentica\u00e7\u00e3o",
+                    "Auth"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`UserResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/UserResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "avatar"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/categorias": {
+            "get": {
+                "operationId": "categoria.index",
+                "tags": [
+                    "Categorias",
+                    "Categoria"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of `CategoriaResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/CategoriaResource"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "categoria.store",
+                "tags": [
+                    "Categorias",
+                    "Categoria"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CategoriaValidator"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`CategoriaResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/CategoriaResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/v1/categorias/ordem": {
+            "post": {
+                "operationId": "categoria.reordenar",
+                "summary": "Define a ordem das categorias do usu\u00e1rio: `order` \u00e9 a lista de ids na ordem desejada",
+                "tags": [
+                    "Categorias",
+                    "Categoria"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "order": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "minItems": 1
+                                    }
+                                },
+                                "required": [
+                                    "order"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/categorias/{categoria}": {
+            "put": {
+                "operationId": "categoria.update",
+                "tags": [
+                    "Categorias",
+                    "Categoria"
+                ],
+                "parameters": [
+                    {
+                        "name": "categoria",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CategoriaValidator"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`CategoriaResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/CategoriaResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "categoria.destroy",
+                "tags": [
+                    "Categorias",
+                    "Categoria"
+                ],
+                "parameters": [
+                    {
+                        "name": "categoria",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/dispositivos": {
+            "post": {
+                "operationId": "dispositivo.store",
+                "summary": "Registra (ou atualiza) o token de push do aparelho. Se o token j\u00e1 era de outro usu\u00e1rio, passa para o atual",
+                "tags": [
+                    "Dispositivos (push)",
+                    "Dispositivo"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "token": {
+                                        "type": "string",
+                                        "maxLength": 512
+                                    },
+                                    "plataforma": {
+                                        "type": "string",
+                                        "enum": [
+                                            "ios",
+                                            "android"
+                                        ]
+                                    },
+                                    "nome": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 100
+                                    }
+                                },
+                                "required": [
+                                    "token",
+                                    "plataforma"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "id"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "dispositivo.destroy",
+                "summary": "Remove o token (chame no logout do app)",
+                "tags": [
+                    "Dispositivos (push)",
+                    "Dispositivo"
+                ],
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/grupos": {
+            "get": {
+                "operationId": "grupo.index",
+                "tags": [
+                    "Grupos",
+                    "Grupo"
+                ],
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ],
+                            "maxLength": 100
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ],
+                            "minimum": 1,
+                            "maximum": 50
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `GrupoResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/GrupoResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "The \"cursor\" that points to the next set of items."
+                                                },
+                                                "prev_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "The \"cursor\" that points to the previous set of items."
+                                                }
+                                            },
+                                            "required": [
+                                                "path",
+                                                "per_page",
+                                                "next_cursor",
+                                                "prev_cursor"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "grupo.store",
+                "summary": "Cria o grupo; `integrante_ids` aceita somente amigos",
+                "tags": [
+                    "Grupos",
+                    "Grupo"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GrupoValidator"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`GrupoResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/GrupoResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "meu_papel",
+                                                        "integrantes"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/v1/grupos/entrar/{token}": {
+            "post": {
+                "operationId": "grupo.entrar",
+                "summary": "Entra no grupo com o token. `resultado`: entrou, ja_membro ou pendente (grupo privado)",
+                "tags": [
+                    "Grupos",
+                    "Grupo"
+                ],
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "resultado": {
+                                            "type": "string"
+                                        },
+                                        "grupo_id": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "resultado",
+                                        "grupo_id"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/grupos/{grupo}": {
+            "get": {
+                "operationId": "grupo.show",
+                "tags": [
+                    "Grupos",
+                    "Grupo"
+                ],
+                "parameters": [
+                    {
+                        "name": "grupo",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`GrupoResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/GrupoResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "meu_papel",
+                                                        "integrantes",
+                                                        "listas"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "put": {
+                "operationId": "v1.grupo.update_30",
+                "tags": [
+                    "Grupos",
+                    "Grupo"
+                ],
+                "parameters": [
+                    {
+                        "name": "grupo",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GrupoValidator"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`GrupoResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/GrupoResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "meu_papel",
+                                                        "integrantes"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "grupo.destroy",
+                "tags": [
+                    "Grupos",
+                    "Grupo"
+                ],
+                "parameters": [
+                    {
+                        "name": "grupo",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/grupos/{grupo}/atualizar": {
+            "post": {
+                "operationId": "v1.grupo.update_31",
+                "tags": [
+                    "Grupos",
+                    "Grupo"
+                ],
+                "parameters": [
+                    {
+                        "name": "grupo",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/GrupoValidator"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`GrupoResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/GrupoResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "meu_papel",
+                                                        "integrantes"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/v1/grupos/{grupo}/sair": {
+            "post": {
+                "operationId": "grupo.sair",
+                "tags": [
+                    "Grupos",
+                    "Grupo"
+                ],
+                "parameters": [
+                    {
+                        "name": "grupo",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/grupos/{grupo}/convite": {
+            "post": {
+                "operationId": "grupo.convite",
+                "tags": [
+                    "Grupos",
+                    "Grupo"
+                ],
+                "parameters": [
+                    {
+                        "name": "grupo",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "token": {
+                                            "type": "string"
+                                        },
+                                        "expira_em": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ],
+                                            "format": "date-time"
+                                        }
+                                    },
+                                    "required": [
+                                        "token",
+                                        "expira_em"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/grupos/{grupo}/convidar-amigos": {
+            "post": {
+                "operationId": "grupo.convidarAmigos",
+                "tags": [
+                    "Grupos",
+                    "Grupo"
+                ],
+                "parameters": [
+                    {
+                        "name": "grupo",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "friend_ids": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "minItems": 1
+                                    }
+                                },
+                                "required": [
+                                    "friend_ids"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "adicionados": {
+                                            "type": "integer"
+                                        },
+                                        "ja_membros": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "required": [
+                                        "adicionados",
+                                        "ja_membros"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/grupos/{grupo}/membros/{membro}/promover": {
+            "post": {
+                "operationId": "grupo.promover",
+                "summary": "Promove um membro a admin (somente o propriet\u00e1rio)",
+                "tags": [
+                    "Grupos",
+                    "Grupo"
+                ],
+                "parameters": [
+                    {
+                        "name": "grupo",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "membro",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Administrador atribu\u00eddo."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/grupos/{grupo}/membros/{membro}": {
+            "delete": {
+                "operationId": "grupo.removerMembro",
+                "tags": [
+                    "Grupos",
+                    "Grupo"
+                ],
+                "parameters": [
+                    {
+                        "name": "grupo",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "membro",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/listas": {
+            "get": {
+                "operationId": "lista.index",
+                "summary": "Listas em que o usu\u00e1rio participa. Pagina\u00e7\u00e3o por cursor (`next_cursor`)",
+                "tags": [
+                    "Listas",
+                    "Lista"
+                ],
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ],
+                            "maxLength": 100
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ],
+                            "enum": [
+                                "ativa",
+                                "inativa",
+                                null
+                            ]
+                        }
+                    },
+                    {
+                        "name": "grupo_id",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ],
+                            "enum": [
+                                "nome",
+                                "data_evento",
+                                "created_at",
+                                null
+                            ]
+                        }
+                    },
+                    {
+                        "name": "direction",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ],
+                            "enum": [
+                                "asc",
+                                "desc",
+                                null
+                            ]
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ],
+                            "minimum": 1,
+                            "maximum": 50
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `ListaResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "allOf": [
+                                                    {
+                                                        "$ref": "#/components/schemas/ListaResource"
+                                                    },
+                                                    {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "meu_papel",
+                                                            "participantes"
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "The \"cursor\" that points to the next set of items."
+                                                },
+                                                "prev_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "The \"cursor\" that points to the previous set of items."
+                                                }
+                                            },
+                                            "required": [
+                                                "path",
+                                                "per_page",
+                                                "next_cursor",
+                                                "prev_cursor"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "lista.store",
+                "summary": "Cria uma lista (multipart quando enviar `image_url`)",
+                "tags": [
+                    "Listas",
+                    "Lista"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ListaStoreValidator"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`ListaResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/ListaResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "meu_papel",
+                                                        "participantes"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/v1/listas/{lista}": {
+            "get": {
+                "operationId": "lista.show",
+                "summary": "Detalhe da lista com presentes e participantes",
+                "tags": [
+                    "Listas",
+                    "Lista"
+                ],
+                "parameters": [
+                    {
+                        "name": "lista",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`ListaResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ListaResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "put": {
+                "operationId": "v1.lista.update_9",
+                "summary": "Atualiza a lista. Com upload de imagem use POST com `_method=PATCH`",
+                "tags": [
+                    "Listas",
+                    "Lista"
+                ],
+                "parameters": [
+                    {
+                        "name": "lista",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ListaUpdateValidator"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`ListaResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/ListaResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "meu_papel",
+                                                        "participantes"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "lista.destroy",
+                "tags": [
+                    "Listas",
+                    "Lista"
+                ],
+                "parameters": [
+                    {
+                        "name": "lista",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/listas/{lista}/atualizar": {
+            "post": {
+                "operationId": "v1.lista.update_10",
+                "summary": "Atualiza a lista. Com upload de imagem use POST com `_method=PATCH`",
+                "tags": [
+                    "Listas",
+                    "Lista"
+                ],
+                "parameters": [
+                    {
+                        "name": "lista",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ListaUpdateValidator"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`ListaResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/ListaResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "meu_papel",
+                                                        "participantes"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/v1/listas/{lista}/convite": {
+            "post": {
+                "operationId": "lista.convite",
+                "summary": "Gera link/token de convite (somente admin da lista)",
+                "tags": [
+                    "Listas",
+                    "Lista"
+                ],
+                "parameters": [
+                    {
+                        "name": "lista",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "token": {
+                                            "type": "string"
+                                        },
+                                        "expira_em": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "token",
+                                        "expira_em"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/listas/{lista}/entrar": {
+            "post": {
+                "operationId": "lista.entrar",
+                "summary": "Entra na lista com um token de convite (sempre como visualizador)",
+                "tags": [
+                    "Listas",
+                    "Lista"
+                ],
+                "parameters": [
+                    {
+                        "name": "lista",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "token": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "token"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`ListaResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/ListaResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "meu_papel",
+                                                        "participantes"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/listas/{lista}/participantes": {
+            "post": {
+                "operationId": "lista.adicionarParticipante",
+                "tags": [
+                    "Listas",
+                    "Lista"
+                ],
+                "parameters": [
+                    {
+                        "name": "lista",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "usuario_id": {
+                                        "type": "string"
+                                    },
+                                    "papel": {
+                                        "type": "string",
+                                        "enum": [
+                                            "admin",
+                                            "editor",
+                                            "visualizador"
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "usuario_id",
+                                    "papel"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Participante adicionado."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/listas/{lista}/participantes/{participante}": {
+            "patch": {
+                "operationId": "lista.alterarPapel",
+                "tags": [
+                    "Listas",
+                    "Lista"
+                ],
+                "parameters": [
+                    {
+                        "name": "lista",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "participante",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "papel": {
+                                        "type": "string",
+                                        "enum": [
+                                            "admin",
+                                            "editor",
+                                            "visualizador"
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "papel"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer"
+                                        },
+                                        "papel": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "id",
+                                        "papel"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "lista.removerParticipante",
+                "tags": [
+                    "Listas",
+                    "Lista"
+                ],
+                "parameters": [
+                    {
+                        "name": "lista",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "participante",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/notificacoes": {
+            "get": {
+                "operationId": "notificacao.index",
+                "tags": [
+                    "Notifica\u00e7\u00f5es",
+                    "Notificacao"
+                ],
+                "parameters": [
+                    {
+                        "name": "somente_nao_lidas",
+                        "in": "query",
+                        "schema": {
+                            "type": "boolean",
+                            "default": false
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `NotificacaoResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/NotificacaoResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "The \"cursor\" that points to the next set of items."
+                                                },
+                                                "prev_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "The \"cursor\" that points to the previous set of items."
+                                                }
+                                            },
+                                            "required": [
+                                                "path",
+                                                "per_page",
+                                                "next_cursor",
+                                                "prev_cursor"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/notificacoes/nao-lidas": {
+            "get": {
+                "operationId": "notificacao.naoLidas",
+                "tags": [
+                    "Notifica\u00e7\u00f5es",
+                    "Notificacao"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "count": {
+                                            "type": "integer",
+                                            "minimum": 0
+                                        }
+                                    },
+                                    "required": [
+                                        "count"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/notificacoes/ler-todas": {
+            "post": {
+                "operationId": "notificacao.marcarTodasLidas",
+                "tags": [
+                    "Notifica\u00e7\u00f5es",
+                    "Notificacao"
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/notificacoes/{notificacao}/lida": {
+            "post": {
+                "operationId": "notificacao.marcarLida",
+                "tags": [
+                    "Notifica\u00e7\u00f5es",
+                    "Notificacao"
+                ],
+                "parameters": [
+                    {
+                        "name": "notificacao",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/listas/{lista}/presentes": {
+            "get": {
+                "operationId": "presente.index",
+                "summary": "Presentes da lista",
+                "tags": [
+                    "Presentes",
+                    "Presente"
+                ],
+                "parameters": [
+                    {
+                        "name": "lista",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `PresenteResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "allOf": [
+                                                    {
+                                                        "$ref": "#/components/schemas/PresenteResource"
+                                                    },
+                                                    {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "categorias"
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "The \"cursor\" that points to the next set of items."
+                                                },
+                                                "prev_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "The \"cursor\" that points to the previous set of items."
+                                                }
+                                            },
+                                            "required": [
+                                                "path",
+                                                "per_page",
+                                                "next_cursor",
+                                                "prev_cursor"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "presente.store",
+                "summary": "Adiciona presente (admin ou editor da lista)",
+                "tags": [
+                    "Presentes",
+                    "Presente"
+                ],
+                "parameters": [
+                    {
+                        "name": "lista",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PresenteValidator"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`PresenteResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/PresenteResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "categorias"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/v1/presentes/buscar-dados-url": {
+            "post": {
+                "operationId": "presente.buscarDadosUrl",
+                "summary": "Pr\u00e9-preenche dados de um produto a partir da URL da loja",
+                "tags": [
+                    "Presentes",
+                    "Presente"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "url": {
+                                        "type": "string",
+                                        "maxLength": 2048
+                                    }
+                                },
+                                "required": [
+                                    "url"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": [
+                                        "object",
+                                        "null"
+                                    ],
+                                    "properties": {
+                                        "nome": {
+                                            "type": "string"
+                                        },
+                                        "descricao": {
+                                            "type": "string"
+                                        },
+                                        "preco": {
+                                            "type": "string"
+                                        },
+                                        "imagem": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "nome",
+                                        "descricao",
+                                        "preco",
+                                        "imagem"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "502": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "N\u00e3o foi poss\u00edvel buscar os dados desta URL."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/presentes/{presente}": {
+            "get": {
+                "operationId": "presente.show",
+                "tags": [
+                    "Presentes",
+                    "Presente"
+                ],
+                "parameters": [
+                    {
+                        "name": "presente",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`PresenteResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/PresenteResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "put": {
+                "operationId": "v1.presente.update_21",
+                "tags": [
+                    "Presentes",
+                    "Presente"
+                ],
+                "parameters": [
+                    {
+                        "name": "presente",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PresenteUpdateValidator"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`PresenteResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/PresenteResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "categorias"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "presente.destroy",
+                "tags": [
+                    "Presentes",
+                    "Presente"
+                ],
+                "parameters": [
+                    {
+                        "name": "presente",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/presentes/{presente}/atualizar": {
+            "post": {
+                "operationId": "v1.presente.update_22",
+                "tags": [
+                    "Presentes",
+                    "Presente"
+                ],
+                "parameters": [
+                    {
+                        "name": "presente",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PresenteUpdateValidator"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`PresenteResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/PresenteResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "categorias"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/v1/presentes/{presente}/reserva": {
+            "post": {
+                "operationId": "presente.reservar",
+                "summary": "Reserva o presente. O dono da lista n\u00e3o pode reservar, e dois pedidos simult\u00e2neos resultam em 409 para o segundo",
+                "tags": [
+                    "Presentes",
+                    "Presente"
+                ],
+                "parameters": [
+                    {
+                        "name": "presente",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`PresenteResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/PresenteResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "presente.liberar",
+                "summary": "Cancela a reserva (somente quem reservou)",
+                "tags": [
+                    "Presentes",
+                    "Presente"
+                ],
+                "parameters": [
+                    {
+                        "name": "presente",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`PresenteResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/PresenteResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/check-username": {
+            "get": {
+                "operationId": "username.checkUsername",
+                "tags": [
+                    "Username"
+                ],
+                "parameters": [
+                    {
+                        "name": "username",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "default": ""
+                        }
+                    },
+                    {
+                        "name": "exclude_user_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "available": {
+                                                    "type": "boolean"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Username j\u00e1 est\u00e1 em uso",
+                                                        "Username dispon\u00edvel"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "available",
+                                                "message"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "available": {
+                                                    "type": "boolean"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "const": "Username pode conter apenas letras, n\u00fameros e underscore"
+                                                }
+                                            },
+                                            "required": [
+                                                "available",
+                                                "message"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "available": {
+                                                    "type": "boolean"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "const": "Username deve ter pelo menos 3 caracteres"
+                                                }
+                                            },
+                                            "required": [
+                                                "available",
+                                                "message"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "available": {
+                                                    "type": "boolean"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "const": "Username n\u00e3o pode ser vazio"
+                                                }
+                                            },
+                                            "required": [
+                                                "available",
+                                                "message"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "CategoriaResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "nome": {
+                        "type": "string"
+                    },
+                    "descricao": {
+                        "type": "string"
+                    },
+                    "hex_cor": {
+                        "type": "string"
+                    },
+                    "icone": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "parent_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "ordem": {
+                        "type": "integer"
+                    },
+                    "padrao": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "id",
+                    "nome",
+                    "descricao",
+                    "hex_cor",
+                    "icone",
+                    "parent_id",
+                    "ordem",
+                    "padrao"
+                ],
+                "title": "CategoriaResource"
+            },
+            "CategoriaValidator": {
+                "type": "object",
+                "properties": {
+                    "nome": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "descricao": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "hex_cor": {
+                        "type": "string",
+                        "maxLength": 7
+                    },
+                    "cadastrado_por": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "nome",
+                    "hex_cor",
+                    "cadastrado_por"
+                ],
+                "title": "CategoriaValidator"
+            },
+            "GrupoResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "nome": {
+                        "type": "string"
+                    },
+                    "descricao": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "imagem": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "banner": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "visibilidade": {
+                        "type": "string"
+                    },
+                    "dono_id": {
+                        "type": "string"
+                    },
+                    "meu_papel": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "integrantes_count": {
+                        "type": "integer"
+                    },
+                    "integrantes": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/UserResource"
+                        }
+                    },
+                    "listas": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ListaResource"
+                        }
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "nome",
+                    "descricao",
+                    "imagem",
+                    "banner",
+                    "visibilidade",
+                    "dono_id",
+                    "created_at"
+                ],
+                "title": "GrupoResource"
+            },
+            "GrupoValidator": {
+                "type": "object",
+                "properties": {
+                    "nome": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "descricao": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "integrante_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "minItems": 1
+                    },
+                    "image_url": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "banner_url": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "visibilidade": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "enum": [
+                            "publica",
+                            "privada",
+                            null
+                        ]
+                    }
+                },
+                "required": [
+                    "nome",
+                    "integrante_ids"
+                ],
+                "title": "GrupoValidator"
+            },
+            "ListaResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "nome": {
+                        "type": "string"
+                    },
+                    "descricao": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "visibilidade": {
+                        "type": "string"
+                    },
+                    "data_evento": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "imagem": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "grupo_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "dono_id": {
+                        "type": "string"
+                    },
+                    "meu_papel": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "presentes_count": {
+                        "type": "integer"
+                    },
+                    "grupo": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/GrupoResource"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "presentes": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PresenteResource"
+                        }
+                    },
+                    "participantes": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "papel": {
+                                    "type": "string"
+                                },
+                                "usuario": {
+                                    "$ref": "#/components/schemas/UserResource"
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "papel",
+                                "usuario"
+                            ]
+                        }
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "nome",
+                    "descricao",
+                    "status",
+                    "visibilidade",
+                    "data_evento",
+                    "imagem",
+                    "grupo_id",
+                    "dono_id",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "ListaResource"
+            },
+            "ListaStoreValidator": {
+                "type": "object",
+                "properties": {
+                    "nome": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "descricao": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "visibilidade": {
+                        "type": "string",
+                        "enum": [
+                            "privada",
+                            "publica"
+                        ]
+                    },
+                    "data_evento": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "grupo_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "image_url": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "binary",
+                        "contentMediaType": "application/octet-stream",
+                        "description": "Maximum file size: 2048 kilobytes."
+                    },
+                    "cadastrado_por_id": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "nome",
+                    "visibilidade",
+                    "cadastrado_por_id"
+                ],
+                "title": "ListaStoreValidator"
+            },
+            "ListaUpdateValidator": {
+                "type": "object",
+                "properties": {
+                    "nome": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "descricao": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "visibilidade": {
+                        "type": "string",
+                        "enum": [
+                            "privada",
+                            "publica"
+                        ]
+                    },
+                    "data_evento": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "grupo_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "image_url": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "binary",
+                        "contentMediaType": "application/octet-stream",
+                        "description": "Maximum file size: 2048 kilobytes."
+                    }
+                },
+                "required": [
+                    "nome",
+                    "visibilidade"
+                ],
+                "title": "ListaUpdateValidator"
+            },
+            "NotificacaoResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "tipo": {
+                        "type": "string"
+                    },
+                    "titulo": {
+                        "type": "string"
+                    },
+                    "mensagem": {
+                        "type": "string"
+                    },
+                    "link": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "lida": {
+                        "type": "boolean"
+                    },
+                    "lida_em": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "tipo",
+                    "titulo",
+                    "mensagem",
+                    "link",
+                    "lida",
+                    "lida_em",
+                    "created_at"
+                ],
+                "title": "NotificacaoResource"
+            },
+            "PresenteResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "lista_id": {
+                        "type": "string"
+                    },
+                    "nome": {
+                        "type": "string"
+                    },
+                    "descricao": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "preco": {
+                        "type": [
+                            "number",
+                            "null"
+                        ]
+                    },
+                    "link": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "imagem": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "anotacoes": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "avaliacao": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "reservado": {
+                        "type": "boolean",
+                        "description": "Nunca exp\u00f5e quem reservou: o dono da lista s\u00f3 v\u00ea \"reservado\"."
+                    },
+                    "reservado_por_mim": {
+                        "type": "boolean"
+                    },
+                    "categorias": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CategoriaResource"
+                        }
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "lista_id",
+                    "nome",
+                    "descricao",
+                    "preco",
+                    "link",
+                    "imagem",
+                    "anotacoes",
+                    "avaliacao",
+                    "reservado",
+                    "reservado_por_mim",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "PresenteResource"
+            },
+            "PresenteUpdateValidator": {
+                "type": "object",
+                "properties": {
+                    "nome": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "descricao": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "preco": {
+                        "type": [
+                            "number",
+                            "null"
+                        ]
+                    },
+                    "link": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "image_url": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "anotacoes": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "categoria_ids": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "avaliacao": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "nome"
+                ],
+                "title": "PresenteUpdateValidator"
+            },
+            "PresenteValidator": {
+                "type": "object",
+                "properties": {
+                    "nome": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "descricao": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "preco": {
+                        "type": [
+                            "number",
+                            "null"
+                        ]
+                    },
+                    "link": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "image_url": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "lista_id": {
+                        "type": "string"
+                    },
+                    "anotacoes": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "avaliacao": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "categoria_ids": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "cadastrado_por": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "nome",
+                    "lista_id",
+                    "cadastrado_por"
+                ],
+                "title": "PresenteValidator"
+            },
+            "UserResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "username": {
+                        "type": "string"
+                    },
+                    "avatar": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "email": {
+                        "type": "string",
+                        "description": "Dados de contato s\u00f3 para o pr\u00f3prio usu\u00e1rio."
+                    },
+                    "perfil": {
+                        "type": "object",
+                        "properties": {
+                            "telefone": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "data_nascimento": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "genero": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "biografia": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "telefone",
+                            "data_nascimento",
+                            "genero",
+                            "biografia"
+                        ]
+                    },
+                    "papel": {
+                        "type": "string",
+                        "description": "Papel no grupo ou na lista quando carregado via pivot."
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "username"
+                ],
+                "title": "UserResource"
+            }
+        },
+        "responses": {
+            "ValidationException": {
+                "description": "Validation error",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "description": "Errors overview."
+                                },
+                                "errors": {
+                                    "type": "object",
+                                    "description": "A detailed description of each field that failed validation.",
+                                    "additionalProperties": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            },
+                            "required": [
+                                "message",
+                                "errors"
+                            ]
+                        }
+                    }
+                }
+            },
+            "AuthenticationException": {
+                "description": "Unauthenticated",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "description": "Error overview."
+                                }
+                            },
+                            "required": [
+                                "message"
+                            ]
+                        }
+                    }
+                }
+            },
+            "AuthorizationException": {
+                "description": "Authorization error",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "description": "Error overview."
+                                }
+                            },
+                            "required": [
+                                "message"
+                            ]
+                        }
+                    }
+                }
+            },
+            "ModelNotFoundException": {
+                "description": "Not found",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "description": "Error overview."
+                                }
+                            },
+                            "required": [
+                                "message"
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
