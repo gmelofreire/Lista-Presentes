@@ -1,164 +1,83 @@
 <template>
     <div>
-        <div class="mb-6">
-            <div class="flex gap-3">
-                <div class="relative flex-1">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </div>
-                    <input v-model="searchTerm" @keyup.enter="performSearch" type="text"
-                        placeholder="Buscar grupos por nome ou descrição..."
-                        class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500" />
-                </div>
-
-                <button @click="performSearch" :disabled="isSearching"
-                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed">
-                    <svg v-if="isSearching" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none"
-                        viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
-                        </circle>
-                        <path class="opacity-75" fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                        </path>
-                    </svg>
-                    <svg v-else class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
+        <form class="mb-6 flex flex-col gap-2 sm:flex-row" @submit.prevent="performSearch">
+            <div class="relative flex-1 sm:max-w-md">
+                <MagnifyingGlassIcon class="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-gray-400" aria-hidden="true" />
+                <input v-model="searchTerm" type="search" placeholder="Buscar por nome ou descrição"
+                    aria-label="Buscar grupos" class="block w-full pl-10" />
+            </div>
+            <div class="flex gap-2">
+                <button type="submit" :disabled="isSearching" class="btn-primary">
                     {{ isSearching ? 'Buscando...' : 'Buscar' }}
                 </button>
-
-                <button @click="clearSearch"
-                    class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed">
-                    <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                    Limpar
-                </button>
+                <button v-if="hasActiveSearch || searchTerm" type="button" class="btn-secondary" @click="clearSearch">Limpar</button>
             </div>
+        </form>
 
-            <div v-if="hasActiveSearch" class="mt-2 flex items-center text-sm text-indigo-600">
-                <svg class="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z" />
-                </svg>
-                Buscando por: "{{ filters.search }}"
-            </div>
+        <p class="mb-5 text-sm text-gray-500">
+            <template v-if="hasActiveSearch">Resultados para "{{ filters.search }}": </template>
+            {{ grupos?.total || 0 }} {{ (grupos?.total || 0) === 1 ? 'grupo' : 'grupos' }}
+        </p>
 
-            <div class="mt-4 text-sm text-gray-600">
-                <span>Mostrando {{ grupos?.data?.length || 0 }} de {{ grupos?.total || 0 }} grupos</span>
-            </div>
-        </div>
-
-        <ul role="list" class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-            <li v-for="grupo in (grupos?.data || [])" :key="grupo.id"
-                class="col-span-1 divide-y divide-gray-200 rounded-2xl bg-blue-50 shadow-sm group hover:shadow-md transition-shadow duration-200">
-                <div class="flex  w-full items-center justify-between px-5 pt-16 rounded-t-lg bg-cover bg-center bg-no-repeat relative"
-                    :style="{ backgroundImage: `url(${grupo.image_url})` }">
-                    <div
-                        class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent rounded-t-2xl">
-                        <div
-                            class="flex text-white justify-end p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                            <Link :href="route('grupos.edit', grupo.id)">
-                            <PencilIcon class="size-5" />
-                            </Link>
+        <ul v-if="(grupos?.data?.length || 0) > 0" role="list"
+            class="stagger grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            <li v-for="(grupo, i) in grupos.data" :key="grupo.id" :style="{ '--i': Math.min(i, 8) }">
+                <div class="surface-link group relative flex h-full flex-col overflow-hidden">
+                    <Link :href="route('grupos.show', grupo.id)" class="block">
+                        <div class="aspect-[16/9] overflow-hidden bg-brand-100">
+                            <img v-if="grupo.image_url" :src="grupo.image_url" :alt="`Imagem do grupo ${grupo.nome}`"
+                                class="size-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]" />
+                            <div v-else class="flex size-full items-center justify-center text-brand-700">
+                                <UserGroupIcon class="size-10" aria-hidden="true" />
+                            </div>
                         </div>
-                    </div>
-                    <div class="flex-1 truncate rounded-lg py-3 relative z-10">
-                        <div class="flex items-center space-x-3">
-                            <h3 class="truncate text-sm font-bold text-white">{{ grupo.nome }}</h3>
+                        <div class="p-5">
+                            <h3 class="truncate font-semibold text-gray-900">{{ grupo.nome }}</h3>
+                            <p class="mt-1 line-clamp-2 min-h-[2.5rem] text-sm text-gray-500">
+                                {{ grupo.descricao || 'Sem descrição' }}
+                            </p>
                         </div>
-                        <p class="mt-1 truncate text-sm text-white">{{ grupo.descricao }} &ensp; </p>
-                    </div>
-                </div>
-                <div>
-                    <div class="-mt-px flex divide-x divide-gray-200">
-                        <Link :href="route('grupos.show', grupo.id)" class="w-full">
-                        <button
-                            class="text-center w-full h-12 bg-indigo-500 text-white rounded-b-lg hover:bg-indigo-600 transition-colors">
-                            Acessar
-                        </button>
-                        </Link>
-                    </div>
+                    </Link>
+                    <Link :href="route('grupos.edit', grupo.id)"
+                        class="press absolute right-3 top-3 rounded-full bg-surface/90 p-2 text-gray-700 opacity-0 shadow-sm backdrop-blur hover:bg-surface focus-visible:opacity-100 group-hover:opacity-100 max-md:opacity-100"
+                        aria-label="Editar grupo">
+                        <PencilIcon class="size-4" />
+                    </Link>
                 </div>
             </li>
         </ul>
 
-        <div v-if="(grupos?.data?.length || 0) === 0" class="text-center py-12">
-            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900">Nenhuma grupo encontrada</h3>
-            <p class="mt-1 text-sm text-gray-500">
-                {{ hasActiveSearch ? 'Tente ajustar o termo de busca ou limpar os filtros.' : 'Você ainda não criou nenhuma grupo.' }}
+        <div v-else class="surface flex flex-col items-center px-6 py-16 text-center">
+            <span class="flex size-12 items-center justify-center rounded-full bg-brand-50 text-brand-700">
+                <UserGroupIcon class="size-6" aria-hidden="true" />
+            </span>
+            <h3 class="mt-4 font-semibold text-gray-900">
+                {{ hasActiveSearch ? 'Nenhum grupo encontrado' : 'Você ainda não tem grupos' }}
+            </h3>
+            <p class="mt-1 max-w-xs text-sm text-gray-500">
+                {{ hasActiveSearch ? 'Tente outro termo ou limpe a busca.' : 'Crie um grupo para reunir amigos e compartilhar listas com todos de uma vez.' }}
             </p>
+            <Link v-if="!hasActiveSearch" :href="route('grupos.create')" class="btn-primary mt-6">Criar grupo</Link>
         </div>
 
-        <div v-if="(grupos?.last_page || 0) > 1" class="mt-8 flex items-center justify-between">
-            <div class="flex-1 flex justify-between sm:hidden">
-                <button @click="goToPage((grupos?.current_page || 1) - 1)" :disabled="(grupos?.current_page || 1) === 1"
-                    class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-                    Anterior
+        <nav v-if="(grupos?.last_page || 0) > 1" class="mt-8 flex items-center justify-between gap-4" aria-label="Paginação">
+            <p class="hidden text-sm text-gray-500 sm:block">
+                {{ grupos?.from || 0 }} a {{ grupos?.to || 0 }} de {{ grupos?.total || 0 }}
+            </p>
+            <div class="flex items-center gap-1 max-sm:mx-auto">
+                <button type="button" class="btn-ghost px-3" :disabled="(grupos?.current_page || 1) === 1"
+                    @click="goToPage((grupos?.current_page || 1) - 1)">Anterior</button>
+                <button v-for="page in visiblePages" :key="page" type="button" @click="goToPage(page)"
+                    :aria-current="page === grupos?.current_page ? 'page' : undefined"
+                    :class="page === grupos?.current_page ? 'bg-brand-600 text-white hover:bg-brand-600' : 'btn-ghost'"
+                    class="press min-w-10 rounded-md px-3 py-2 text-sm font-medium">
+                    {{ page }}
                 </button>
-                <button @click="goToPage((grupos?.current_page || 1) + 1)"
+                <button type="button" class="btn-ghost px-3"
                     :disabled="(grupos?.current_page || 1) === (grupos?.last_page || 1)"
-                    class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-                    Próxima
-                </button>
+                    @click="goToPage((grupos?.current_page || 1) + 1)">Próxima</button>
             </div>
-
-            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                <div>
-                    <p class="text-sm text-gray-700">
-                        Mostrando
-                        <span class="font-medium">{{ grupos?.from || 0 }}</span>
-                        a
-                        <span class="font-medium">{{ grupos?.to || 0 }}</span>
-                        de
-                        <span class="font-medium">{{ grupos?.total || 0 }}</span>
-                        resultados
-                    </p>
-                </div>
-                <div>
-                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                        <button @click="goToPage((grupos?.current_page || 1) - 1)"
-                            :disabled="(grupos?.current_page || 1) === 1"
-                            class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-                            <span class="sr-only">Anterior</span>
-                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                        </button>
-
-                        <button v-for="page in visiblePages" :key="page" @click="goToPage(page)" :class="[
-                            page === (grupos?.current_page || 1)
-                                ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
-                                : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50',
-                            'relative inline-flex items-center px-4 py-2 border text-sm font-medium']">
-                            {{ page }}
-                        </button>
-
-                        <button @click="goToPage((grupos?.current_page || 1) + 1)"
-                            :disabled="(grupos?.current_page || 1) === (grupos?.last_page || 1)"
-                            class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-                            <span class="sr-only">Próxima</span>
-                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                        </button>
-                    </nav>
-                </div>
-            </div>
-        </div>
+        </nav>
     </div>
 </template>
 
@@ -167,6 +86,7 @@ import { ref, computed } from 'vue';
 import { router } from '@inertiajs/vue3'
 import { Link } from '@inertiajs/vue3'
 import PencilIcon from '@heroicons/vue/24/outline/PencilIcon'
+import { MagnifyingGlassIcon, UserGroupIcon } from '@heroicons/vue/24/outline'
 
 // Props
 const props = defineProps({

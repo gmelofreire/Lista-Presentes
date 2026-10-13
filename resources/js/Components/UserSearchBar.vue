@@ -26,7 +26,7 @@
 
             <!-- Dropdown de sugestões -->
             <div v-if="showSuggestions && suggestions.length > 0"
-                class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto"
+                class="absolute z-50 w-full mt-1 bg-surface border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto"
                 @click.stop>
                 <Link v-for="(user, index) in suggestions" :key="user.id" 
                     :href="route('amizades.show', user.id)"
@@ -53,7 +53,7 @@
 
             <!-- Mensagem quando não há resultados -->
             <div v-if="showSuggestions && suggestions.length === 0 && searchQuery.length >= 2 && !isLoading"
-                class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+                class="absolute z-50 w-full mt-1 bg-surface border border-gray-300 rounded-lg shadow-lg">
                 <div class="px-4 py-3 text-sm text-gray-500 text-center">
                     Nenhum usuário encontrado
                 </div>

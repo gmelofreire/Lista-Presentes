@@ -75,7 +75,7 @@ class AmizadeController extends Controller
             'link' => route('amizades.index'),
         ]);
 
-        return redirect()->route('amizades.show', $id);
+        return redirect()->route('amizades.show', $id)->with('status', 'Solicitação de amizade enviada.');
     }
 
     public function destroy($id)
@@ -88,7 +88,7 @@ class AmizadeController extends Controller
 
         Amizade::entre($id, auth()->user()->id)->delete();
 
-        return redirect()->route('amizades.show', $id);
+        return redirect()->route('amizades.show', $id)->with('status', 'Amizade desfeita.');
     }
 
     public function reject($id)
@@ -211,7 +211,7 @@ class AmizadeController extends Controller
                     'id' => $user->id,
                     'name' => $user->name,
                     'username' => $user->username,
-                    'avatar' => $user->perfil->avatar ?? null,
+                    'avatar' => $user->perfil->image_url ?? null,
                 ];
             });
 

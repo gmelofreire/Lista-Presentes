@@ -1,5 +1,7 @@
 <template>
-  <div v-if="!isDismissed" :class="alertClasses">
+  <Transition leave-active-class="transition duration-150 ease-out" leave-from-class="opacity-100"
+    leave-to-class="opacity-0 -translate-y-1">
+  <div v-if="!isDismissed" :class="alertClasses" :role="type === 'danger' ? 'alert' : 'status'">
     <div class="flex">
       <div class="shrink-0">
         <component :is="iconComponent" :class="iconClasses" aria-hidden="true" />
@@ -28,10 +30,11 @@
       </div>
     </div>
   </div>
+  </Transition>
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { 
   ExclamationTriangleIcon, 
   CheckCircleIcon, 
@@ -57,6 +60,11 @@ const props = defineProps({
   dismissible: {
     type: Boolean,
     default: true
+  },
+  // Avisos de sucesso somem sozinhos; use 0 para manter na tela
+  autoDismiss: {
+    type: Number,
+    default: 6000
   }
 })
 
@@ -69,13 +77,21 @@ const dismiss = () => {
   emit('dismiss')
 }
 
+let timer = null
+onMounted(() => {
+  if (props.type === 'success' && props.autoDismiss > 0) {
+    timer = setTimeout(dismiss, props.autoDismiss)
+  }
+})
+onUnmounted(() => clearTimeout(timer))
+
 const alertClasses = computed(() => {
-  const baseClasses = 'rounded-md p-4'
+  const baseClasses = 'rounded-xl border p-4'
   const typeClasses = {
-    success: 'bg-green-50',
-    danger: 'bg-red-50',
-    alert: 'bg-yellow-50',
-    info: 'bg-blue-50'
+    success: 'border-brand-200 bg-brand-50',
+    danger: 'border-red-200 bg-red-50',
+    alert: 'border-amber-200 bg-amber-50',
+    info: 'border-gray-200 bg-surface'
   }
   return `${baseClasses} ${typeClasses[props.type]}`
 })
@@ -93,10 +109,10 @@ const iconComponent = computed(() => {
 const iconClasses = computed(() => {
   const baseClasses = 'size-5'
   const typeClasses = {
-    success: 'text-green-400',
+    success: 'text-brand-600',
     danger: 'text-red-400',
-    alert: 'text-yellow-400',
-    info: 'text-blue-400'
+    alert: 'text-amber-500',
+    info: 'text-gray-400'
   }
   return `${baseClasses} ${typeClasses[props.type]}`
 })
@@ -104,10 +120,10 @@ const iconClasses = computed(() => {
 const titleClasses = computed(() => {
   const baseClasses = 'text-sm font-medium'
   const typeClasses = {
-    success: 'text-green-800',
+    success: 'text-brand-900',
     danger: 'text-red-800',
-    alert: 'text-yellow-800',
-    info: 'text-blue-800'
+    alert: 'text-amber-900',
+    info: 'text-gray-900'
   }
   return `${baseClasses} ${typeClasses[props.type]}`
 })
@@ -115,10 +131,10 @@ const titleClasses = computed(() => {
 const messageClasses = computed(() => {
   const baseClasses = 'mt-2 text-sm'
   const typeClasses = {
-    success: 'text-green-700',
+    success: 'text-brand-800',
     danger: 'text-red-700',
-    alert: 'text-yellow-700',
-    info: 'text-blue-700'
+    alert: 'text-amber-800',
+    info: 'text-gray-600'
   }
   return `${baseClasses} ${typeClasses[props.type]}`
 })
@@ -126,10 +142,10 @@ const messageClasses = computed(() => {
 const closeButtonClasses = computed(() => {
   const baseClasses = 'inline-flex rounded-md p-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors'
   const typeClasses = {
-    success: 'bg-green-50 text-green-500 hover:bg-green-100 focus:ring-green-600 focus:ring-offset-green-50',
+    success: 'bg-brand-50 text-brand-600 hover:bg-brand-100 focus:ring-brand-600 focus:ring-offset-brand-50',
     danger: 'bg-red-50 text-red-500 hover:bg-red-100 focus:ring-red-600 focus:ring-offset-red-50',
-    alert: 'bg-yellow-50 text-yellow-500 hover:bg-yellow-100 focus:ring-yellow-600 focus:ring-offset-yellow-50',
-    info: 'bg-blue-50 text-blue-500 hover:bg-blue-100 focus:ring-blue-600 focus:ring-offset-blue-50'
+    alert: 'bg-amber-50 text-amber-600 hover:bg-amber-100 focus:ring-amber-600 focus:ring-offset-amber-50',
+    info: 'bg-surface text-gray-500 hover:bg-gray-100 focus:ring-gray-500 focus:ring-offset-surface'
   }
   return `${baseClasses} ${typeClasses[props.type]}`
 })

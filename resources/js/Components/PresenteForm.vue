@@ -8,6 +8,7 @@ import Alert from '@/Components/Alert.vue';
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
 import { StarIcon, InformationCircleIcon, TrashIcon } from '@heroicons/vue/20/solid';
+import { PhotoIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
     mode: {
@@ -195,7 +196,7 @@ const submit = () => {
 
 const getStarColor = (starNumber) => {
     const activeRating = hoverRating.value || form.avaliacao;
-    return starNumber <= activeRating ? 'text-yellow-400' : 'text-gray-300';
+    return starNumber <= activeRating ? 'text-amber-400' : 'text-gray-200';
 };
 
 const toggleCategoria = (categoriaId) => {
@@ -239,54 +240,52 @@ onUnmounted(() => {
 
 <template>
     <Head :title="title" />
-    <div>
-        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    <Alert v-if="hasErrorMessage" type="danger" title="Erro ao salvar"
-                        message="Por favor, corrija os erros abaixo e tente novamente." class="mb-6" />
-                    
-                    <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-2xl font-bold text-gray-900">
-                            {{ isEdit ? 'Editar Presente' : 'Novo Presente' }}
-                        </h2>
-                        <button v-if="isEdit" @click="showDeleteModal = true"
-                            class="text-white bg-red-600 hover:bg-red-800 font-medium px-4 py-2 rounded-md flex items-center gap-2">
-                            <TrashIcon class="w-5 h-5" />
-                            apagar
-                        </button>
-                    </div>
-                    
-                    <form>
-                        <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+    <div class="mx-auto max-w-3xl">
+        <Alert v-if="hasErrorMessage" type="danger" title="Não foi possível salvar"
+            message="Corrija os campos indicados e tente novamente." class="mb-6" />
+
+        <div class="mb-8 flex items-start justify-between gap-4">
+            <div>
+                <h2 class="text-3xl font-semibold text-gray-900">
+                    {{ isEdit ? 'Editar presente' : 'Novo presente' }}
+                </h2>
+                <p class="mt-1 text-gray-600">
+                    {{ isEdit ? 'Atualize as informações do item.' : 'Cole o link da loja para preencher nome, preço e foto automaticamente.' }}
+                </p>
+            </div>
+            <button v-if="isEdit" type="button" @click="showDeleteModal = true" class="btn-ghost text-red-600 hover:bg-red-50 hover:text-red-700">
+                <TrashIcon class="size-5" aria-hidden="true" />
+                Apagar
+            </button>
+        </div>
+
+        <div class="surface p-5 sm:p-8">
+            <form class="space-y-8" @submit.prevent="submit">
+                        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
                             <div class="col-span-full">
                                 <InputLabel for="image_url" value="Foto do Presente" />
-                                <div v-if="!imagePreview"
-                                    class="mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-lg cursor-pointer border-gray-300 hover:border-indigo-500 hover:bg-indigo-50 transition"
+                                <button type="button" v-if="!imagePreview"
+                                    class="press mt-2 flex w-full justify-center rounded-xl border-2 border-dashed border-gray-300 px-6 py-8 hover:border-brand-500 hover:bg-brand-50/50"
                                     @click="$refs.fileInput.click()">
                                     <div class="space-y-1 text-center">
-                                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor"
-                                            fill="none" viewBox="0 0 48 48">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                stroke-width="2"
-                                                d="M28 8H12a4 4 0 00-4 4v24a4 4 0 004 4h24a4 4 0 004-4V20l-12-12z" />
-                                        </svg>
+                                        <PhotoIcon class="mx-auto size-10 text-gray-400" aria-hidden="true" />
                                         <div class="flex text-sm text-gray-600 justify-center">
-                                            <span class="relative font-medium text-indigo-600 hover:text-indigo-500">
+                                            <span class="font-medium text-brand-700">
                                                 Clique para enviar
                                             </span>
                                         </div>
-                                        <p class="text-xs text-gray-500">PNG, JPG até 5MB</p>
+                                        <p class="text-xs text-gray-500">PNG ou JPG, até 5MB</p>
                                     </div>
-                                </div>
+                                </button>
                                 <input type="file" ref="fileInput" id="image_url" name="image_url"
                                     accept="image/*" class="hidden" @change="handleFileChange" />
                                 <div v-if="imagePreview" class="mt-4 relative">
                                     <img :src="imagePreview" alt="Preview da imagem"
-                                        class="w-full h-56 object-contain rounded-lg border shadow-sm" />
+                                        class="h-56 w-full rounded-xl border border-gray-200 bg-gray-50 object-contain" />
                                     <button type="button" @click="removeImage"
-                                        class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600">
-                                        ×
+                                        class="press absolute right-2 top-2 flex size-8 items-center justify-center rounded-full bg-surface/90 text-gray-700 shadow-sm backdrop-blur hover:bg-surface">
+                                        <XMarkIcon class="size-4" aria-hidden="true" />
+                                        <span class="sr-only">Remover imagem</span>
                                     </button>
                                 </div>
                                 <InputError class="mt-2" :message="form.errors.image_url" />
@@ -294,37 +293,37 @@ onUnmounted(() => {
 
                             <div class="sm:col-span-1">
                                 <InputLabel for="nome" value="Nome do Presente" :required="true" />
-                                <TextInput id="nome" type="text" class="mt-1 block w-full" v-model="form.nome"
+                                <TextInput id="nome" type="text" class="mt-1.5 block w-full" v-model="form.nome"
                                     required autofocus autocomplete="nome" />
                                 <InputError class="mt-2" :message="form.errors.nome" />
                             </div>
                             
                             <div class="sm:col-span-1">
                                 <InputLabel for="preco" value="Preço" />
-                                <TextInput id="preco" type="number" class="mt-1 block w-full"
-                                    v-model="form.preco" autofocus autocomplete="preco" />
+                                <TextInput id="preco" type="number" step="0.01" min="0" inputmode="decimal" class="mt-1.5 block w-full"
+                                    v-model="form.preco" autocomplete="off" />
                                 <InputError class="mt-2" :message="form.errors.preco" />
                             </div>
                             
                             <div class="col-span-full">
                                 <InputLabel for="descricao" value="Descrição" />
                                 <textarea id="descricao" name="descricao" rows="3"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    class="mt-1.5 block w-full"
                                     v-model="form.descricao"
-                                    placeholder="Descreva sua lista de presentes..."></textarea>
+                                    placeholder="Cor, tamanho, modelo ou qualquer detalhe que ajude"></textarea>
                                 <InputError class="mt-2" :message="form.errors.descricao" />
                             </div>
                             
                             <div class="col-span-full">
                                 <InputLabel for="link" value="Link" />
-                                <div class="flex gap-2 mt-1">
-                                    <TextInput id="link" type="text" class="flex-1" v-model="form.link"
-                                        autofocus autocomplete="link" @blur="handleLinkInput" @keyup.enter="buscarDadosUrl" />
+                                <div class="mt-1.5 flex gap-2">
+                                    <TextInput id="link" type="text" class="min-w-0 flex-1" v-model="form.link"
+                                        autocomplete="off" @blur="handleLinkInput" @keydown.enter.prevent="buscarDadosUrl" />
                                     <button type="button" @click="buscarDadosUrl"
                                         :disabled="!form.link || loadingUrl"
-                                        class="px-3 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap text-sm">
+                                        class="btn-primary">
                                         <span v-if="loadingUrl">Buscando...</span>
-                                        <span v-else>Buscar Dados</span>
+                                        <span v-else>Preencher dados</span>
                                     </button>
                                 </div>
                                 <p v-if="urlErro" class="mt-1 text-sm text-red-600">{{ urlErro }}</p>
@@ -335,7 +334,7 @@ onUnmounted(() => {
                                 <InputLabel for="categoria_ids" value="Categorias" />
                                 <div class="mt-2 relative categoria-dropdown">
                                     <button type="button" @click="showCategorias = !showCategorias"
-                                        class="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-left shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                                        class="w-full rounded-md border border-gray-300 bg-surface px-3 py-2.5 text-left text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/25">
                                         <div class="flex items-center justify-between">
                                             <div class="flex items-center space-x-2 flex-wrap">
                                                 <span v-if="form.categoria_ids.length === 0"
@@ -346,7 +345,7 @@ onUnmounted(() => {
                                                     <div v-for="categoriaId in form.categoria_ids"
                                                         :key="categoriaId"
                                                         class="inline-flex items-center space-x-1 bg-gray-100 rounded-full px-2 py-1 text-xs">
-                                                        <div class="w-3 h-3 rounded-full border border-white shadow-sm"
+                                                        <div class="w-3 h-3 rounded-full border border-surface shadow-sm"
                                                             :style="{ backgroundColor: categorias.find(c => c.id === categoriaId)?.hex_cor || '#6B7280' }">
                                                         </div>
                                                         <span class="text-gray-700">
@@ -364,7 +363,7 @@ onUnmounted(() => {
                                         </div>
                                     </button>
                                     <div v-show="showCategorias"
-                                        class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto"
+                                        class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-xl border border-gray-200 bg-surface shadow-lg"
                                         @click.stop>
                                         <div v-if="!categorias || categorias.length === 0"
                                             class="px-3 py-2 text-gray-500 text-sm">
@@ -374,10 +373,10 @@ onUnmounted(() => {
                                             <div v-for="categoria in categorias" :key="categoria.id"
                                                 @click="toggleCategoria(categoria.id)"
                                                 class="flex items-center space-x-3 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors duration-150"
-                                                :class="{ 'bg-indigo-50': isCategoriaSelected(categoria.id) }">
+                                                :class="{ 'bg-brand-50': isCategoriaSelected(categoria.id) }">
                                                 <div class="flex-shrink-0">
                                                     <div class="w-4 h-4 border-2 rounded flex items-center justify-center transition-all duration-150"
-                                                        :class="isCategoriaSelected(categoria.id) ? 'bg-indigo-600 border-indigo-600' : 'border-gray-300'">
+                                                        :class="isCategoriaSelected(categoria.id) ? 'bg-brand-600 border-brand-600' : 'border-gray-300'">
                                                         <svg v-if="isCategoriaSelected(categoria.id)"
                                                             class="w-3 h-3 text-white" fill="currentColor"
                                                             viewBox="0 0 20 20">
@@ -387,7 +386,7 @@ onUnmounted(() => {
                                                         </svg>
                                                     </div>
                                                 </div>
-                                                <div class="w-6 h-6 rounded-full border-2 border-white shadow-sm flex items-center justify-center"
+                                                <div class="w-6 h-6 rounded-full border-2 border-surface shadow-sm flex items-center justify-center"
                                                     :style="{ backgroundColor: categoria.hex_cor || '#6B7280' }">
                                                     <span class="text-xs font-semibold"
                                                         :class="isDarkColor(categoria.hex_cor) ? 'text-white' : 'text-gray-800'">
@@ -416,76 +415,70 @@ onUnmounted(() => {
                             <div class="col-span-full">
                                 <InputLabel for="anotacoes" value="Anotações" />
                                 <textarea id="anotacoes" name="anotacoes" rows="3"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    class="mt-1.5 block w-full"
                                     v-model="form.anotacoes"
                                     placeholder="Adicione anotações sobre o presente..."></textarea>
                                 <InputError class="mt-2" :message="form.errors.anotacoes" />
                             </div>
                             
                             <div class="col-span-full">
-                                <InputLabel for="anotacoes" value="Avaliação" />
-                                <div class="flex justify-center">
-                                    <span v-for="n in 5" :key="n" class="cursor-pointer"
+                                <InputLabel value="O quanto você quer este presente" />
+                                <div class="mt-2 flex gap-1">
+                                    <button v-for="n in 5" :key="n" type="button" class="press rounded-md p-1"
+                                        :aria-label="`${n} de 5`"
                                         @click="form.avaliacao = n" @mouseenter="hoverRating = n"
                                         @mouseleave="hoverRating = 0">
                                         <StarIcon :class="[
-                                            'size-7 transition-colors duration-200',
+                                            'size-8 transition-colors duration-150',
                                             getStarColor(n)
                                         ]" />
-                                    </span>
-                                </div>
-                                <div class="text-center mt-2">
-                                    {{ intensidadesDesejo[(hoverRating || form.avaliacao) - 1] || 'Selecione uma avaliação' }}
-                                </div>
-                                <InputError class="mt-2" :message="form.errors.anotacoes" />
-                            </div>
-                            
-                            <div class="col-span-full">
-                                <div class="flex justify-between">
-                                    <slot name="cancel">
-                                        <Link :href="isEdit ? route('listas.show', presente.lista_id) : route('listas.show', lista_id)">
-                                            <button type="button"
-                                                class="border bg-white text-black px-4 py-2 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
-                                                Cancelar
-                                            </button>
-                                        </Link>
-                                    </slot>
-                                    <button @click="submit" type="button"
-                                        class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                                        {{ isEdit ? 'Atualizar' : 'Salvar' }}
                                     </button>
                                 </div>
+                                <div class="mt-1 text-sm text-gray-600">
+                                    {{ intensidadesDesejo[(hoverRating || form.avaliacao) - 1] || 'Selecione uma avaliação' }}
+                                </div>
+                                <InputError class="mt-2" :message="form.errors.avaliacao" />
+                            </div>
+                            
+                            <div class="col-span-full flex items-center justify-between gap-3 border-t border-gray-100 pt-6">
+                                <slot name="cancel">
+                                    <Link :href="isEdit ? route('listas.show', presente.lista_id) : route('listas.show', lista_id)"
+                                        class="btn-secondary">
+                                        Cancelar
+                                    </Link>
+                                </slot>
+                                <button type="submit" class="btn-primary" :disabled="form.processing">
+                                    {{ isEdit ? 'Salvar alterações' : 'Adicionar presente' }}
+                                </button>
                             </div>
                         </div>
                     </form>
-                </div>
-            </div>
         </div>
     </div>
 
     <TransitionRoot as="template" :show="showUrlWarning">
-        <Dialog class="relative z-10" @close="showUrlWarning = false">
-            <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
-                <div class="fixed inset-0 bg-gray-500/75 transition-opacity"></div>
+        <Dialog class="relative z-50" @close="showUrlWarning = false">
+            <TransitionChild as="template" enter="ease-out duration-200" enter-from="opacity-0" enter-to="opacity-100" leave="ease-out duration-150" leave-from="opacity-100" leave-to="opacity-0">
+                <div class="fixed inset-0 bg-zinc-950/50 backdrop-blur-[2px]"></div>
             </TransitionChild>
             <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
                 <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                    <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200" leave-from="opacity-100 translate-y-0 sm:scale-100" leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
-                        <DialogPanel class="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
+                    <TransitionChild as="template" enter="ease-out duration-200" enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-out duration-150" leave-from="opacity-100 translate-y-0 sm:scale-100" leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+                        <DialogPanel class="relative transform overflow-hidden rounded-2xl bg-surface px-5 pt-6 pb-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
                             <div>
-                                <div class="mx-auto flex size-12 items-center justify-center rounded-full bg-blue-100">
-                                    <InformationCircleIcon class="size-6 text-blue-600" />
+                                <div class="mx-auto flex size-12 items-center justify-center rounded-full bg-brand-100">
+                                    <InformationCircleIcon class="size-6 text-brand-700" />
                                 </div>
                                 <div class="mt-3 text-center sm:mt-5">
-                                    <DialogTitle as="h3" class="text-base font-semibold text-gray-900">Atenção</DialogTitle>
+                                    <DialogTitle as="h3" class="text-base font-semibold text-gray-900">Antes de continuar</DialogTitle>
                                     <div class="mt-2">
                                         <p class="text-sm text-gray-500">Nem sempre todas as informações (como preço e descrição) são preenchidas automaticamente, dependendo do site de origem. Você pode precisar preencher alguns campos manualmente.</p>
                                     </div>
                                 </div>
                             </div>
                             <div class="mt-5 sm:mt-6 flex gap-2">
-                                <button type="button" class="inline-flex w-full justify-center rounded-md bg-gray-200 px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs hover:bg-gray-300" @click="showUrlWarning = false">Cancelar</button>
-                                <button type="button" class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500" @click="confirmUrlFetch">Continuar</button>
+                                <button type="button" class="btn-secondary w-full" @click="showUrlWarning = false">Cancelar</button>
+                                <button type="button" class="btn-primary w-full" @click="confirmUrlFetch">Continuar</button>
                             </div>
                         </DialogPanel>
                     </TransitionChild>
@@ -495,14 +488,14 @@ onUnmounted(() => {
     </TransitionRoot>
 
     <TransitionRoot as="template" :show="showDeleteModal">
-        <Dialog class="relative z-10" @close="showDeleteModal = false">
-            <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
-                <div class="fixed inset-0 bg-gray-500/75 transition-opacity"></div>
+        <Dialog class="relative z-50" @close="showDeleteModal = false">
+            <TransitionChild as="template" enter="ease-out duration-200" enter-from="opacity-0" enter-to="opacity-100" leave="ease-out duration-150" leave-from="opacity-100" leave-to="opacity-0">
+                <div class="fixed inset-0 bg-zinc-950/50 backdrop-blur-[2px]"></div>
             </TransitionChild>
             <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
                 <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                    <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200" leave-from="opacity-100 translate-y-0 sm:scale-100" leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
-                        <DialogPanel class="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
+                    <TransitionChild as="template" enter="ease-out duration-200" enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-out duration-150" leave-from="opacity-100 translate-y-0 sm:scale-100" leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+                        <DialogPanel class="relative transform overflow-hidden rounded-2xl bg-surface px-5 pt-6 pb-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
                             <div>
                                 <div class="mx-auto flex size-12 items-center justify-center rounded-full bg-red-100">
                                     <TrashIcon class="size-6 text-red-600" />
@@ -515,9 +508,9 @@ onUnmounted(() => {
                                 </div>
                             </div>
                             <div class="mt-5 sm:mt-6 flex gap-2">
-                                <button type="button" class="inline-flex w-full justify-center rounded-md bg-gray-200 px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs hover:bg-gray-300" @click="showDeleteModal = false">Cancelar</button>
+                                <button type="button" class="btn-secondary w-full" @click="showDeleteModal = false">Cancelar</button>
                                 <Link :href="route('presentes.destroy', presente.id)" method="delete" as="button" type="button"
-                                    class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500">
+                                    class="btn-danger w-full">
                                     Excluir
                                 </Link>
                             </div>

@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue';
-import GuestLayout from '@/Layouts/GuestLayout.vue';
+import AuthSplitLayout from '@/Layouts/AuthSplitLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
@@ -22,40 +22,24 @@ const verificationLinkSent = computed(
 </script>
 
 <template>
-    <GuestLayout>
-        <Head title="Email Verification" />
+    <Head title="Verificar e-mail" />
 
-        <div class="mb-4 text-sm text-gray-600">
-            Thanks for signing up! Before getting started, could you verify your
-            email address by clicking on the link we just emailed to you? If you
-            didn't receive the email, we will gladly send you another.
+    <AuthSplitLayout title="Confirme seu e-mail"
+        subtitle="Enviamos um link para o e-mail do cadastro. Clique nele para ativar sua conta.">
+        <div v-if="verificationLinkSent" class="mb-6 rounded-md bg-brand-50 px-4 py-3 text-sm font-medium text-brand-800" role="status">
+            Enviamos um novo link de verificação para o e-mail informado no cadastro.
         </div>
 
-        <div
-            class="mb-4 text-sm font-medium text-green-600"
-            v-if="verificationLinkSent"
-        >
-            A new verification link has been sent to the email address you
-            provided during registration.
-        </div>
+        <p class="mb-6 text-sm text-gray-600">Não chegou? Veja a caixa de spam ou peça um novo envio.</p>
 
-        <form @submit.prevent="submit">
-            <div class="mt-4 flex items-center justify-between">
-                <PrimaryButton
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
-                >
-                    Resend Verification Email
-                </PrimaryButton>
+        <form class="space-y-4" @submit.prevent="submit">
+            <PrimaryButton class="w-full py-3" :disabled="form.processing">
+                {{ form.processing ? 'Enviando...' : 'Reenviar e-mail de verificação' }}
+            </PrimaryButton>
 
-                <Link
-                    :href="route('logout')"
-                    method="post"
-                    as="button"
-                    class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    >Log Out</Link
-                >
-            </div>
+            <Link :href="route('logout')" method="post" as="button" class="btn-ghost w-full">
+                Sair
+            </Link>
         </form>
-    </GuestLayout>
+    </AuthSplitLayout>
 </template>
