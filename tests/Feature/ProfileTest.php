@@ -14,86 +14,68 @@ class ProfileTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this
-            ->actingAs($user)
-            ->get('/profile');
-
-        $response->assertOk();
+        $this->actingAs($user)->get('/perfil')->assertOk();
     }
 
     public function test_profile_information_can_be_updated(): void
     {
         $user = User::factory()->create();
 
-        $response = $this
-            ->actingAs($user)
-            ->patch('/profile', [
-                'name' => 'Test User',
-                'email' => 'test@example.com',
-            ]);
-
-        $response
-            ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
-
-        $user->refresh();
-
-        $this->assertSame('Test User', $user->name);
-        $this->assertSame('test@example.com', $user->email);
-        $this->assertNull($user->email_verified_at);
-    }
-
-    public function test_email_verification_status_is_unchanged_when_the_email_address_is_unchanged(): void
-    {
-        $user = User::factory()->create();
-
-        $response = $this
-            ->actingAs($user)
-            ->patch('/profile', [
+        $this->actingAs($user)
+            ->post('/perfil', [
                 'name' => 'Test User',
                 'email' => $user->email,
-            ]);
-
-        $response
+                'username' => 'novo_username',
+                'perfil' => ['genero' => 'outro'],
+            ])
             ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
+            ->assertRedirect('/perfil');
 
-        $this->assertNotNull($user->refresh()->email_verified_at);
+        $user->refresh();
+        $this->assertSame('Test User', $user->name);
+        $this->assertSame('novo_username', $user->username);
     }
 
-    public function test_user_can_delete_their_account(): void
+    public function test_changing_email_requires_current_password(): void
     {
         $user = User::factory()->create();
 
-        $response = $this
-            ->actingAs($user)
-            ->delete('/profile', [
-                'password' => 'password',
-            ]);
+        $this->actingAs($user)
+            ->post('/perfil', [
+                'name' => $user->name,
+                'email' => 'outro@example.com',
+                'username' => $user->username,
+                'perfil' => [],
+            ])
+            ->assertSessionHasErrors('senha_atual');
 
-        $response
+        $this->assertNotSame('outro@example.com', $user->fresh()->email);
+    }
+
+    public function test_user_account_is_deactivated_not_deleted(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->delete('/perfil', ['password' => 'password', 'confirm_desativar' => true])
             ->assertSessionHasNoErrors()
             ->assertRedirect('/');
 
         $this->assertGuest();
-        $this->assertNull($user->fresh());
+        $this->assertNotNull($user->fresh());
+        $this->assertFalse((bool) $user->fresh()->conta_ativa);
     }
 
-    public function test_correct_password_must_be_provided_to_delete_account(): void
+    public function test_correct_password_must_be_provided_to_deactivate_account(): void
     {
         $user = User::factory()->create();
 
-        $response = $this
-            ->actingAs($user)
-            ->from('/profile')
-            ->delete('/profile', [
-                'password' => 'wrong-password',
-            ]);
-
-        $response
+        $this->actingAs($user)
+            ->from('/perfil')
+            ->delete('/perfil', ['password' => 'wrong-password', 'confirm_desativar' => true])
             ->assertSessionHasErrors('password')
-            ->assertRedirect('/profile');
+            ->assertRedirect('/perfil');
 
-        $this->assertNotNull($user->fresh());
+        $this->assertTrue((bool) $user->fresh()->conta_ativa);
     }
 }

@@ -15,7 +15,18 @@ class Grupo extends Model
         'image_url',
         'cadastrado_por',
         'user_id',
+        'banner_url',
+        'visibilidade',
+        'token_convite',
+        'token_expira_em',
     ];
+
+    protected $hidden = ['token_convite'];
+
+    protected function casts(): array
+    {
+        return ['token_expira_em' => 'datetime'];
+    }
 
     public function usuarios()
     {

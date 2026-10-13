@@ -28,6 +28,7 @@ class PresenteUpdateValidator extends FormRequest
             'image_url' => 'nullable',
             'anotacoes' => 'nullable|string',
             'categoria_ids' => 'nullable|array',
+            'categoria_ids.*' => ['string', \Illuminate\Validation\Rule::exists('categorias', 'id')->where('cadastrado_por', auth()->id())],
             'avaliacao' => 'nullable|integer',
         ];
     }

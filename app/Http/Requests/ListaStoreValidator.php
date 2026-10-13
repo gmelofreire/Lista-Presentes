@@ -29,7 +29,7 @@ class ListaStoreValidator extends FormRequest
             'visibilidade' => 'required|in:privada,publica',
             'data_evento' => 'nullable|date',
             'grupo_id' => 'nullable|exists:grupos,id',
-            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg',
+            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'cadastrado_por_id' => 'required|exists:users,id',
         ];
     }
@@ -41,7 +41,7 @@ class ListaStoreValidator extends FormRequest
             'visibilidade.required' => 'O visibilidade é obrigatório.',
             'data_evento.date' => 'A data do evento deve ser uma data válida.',
             'image_url.image' => 'A imagem deve ser um arquivo de imagem.',
-            'image_url.mimes' => 'A imagem deve ser um arquivo de tipo jpeg, png, jpg, gif ou svg.',
+            'image_url.mimes' => 'A imagem deve ser um arquivo de tipo jpeg, png, jpg, gif ou webp.',
         ];
     }
 
